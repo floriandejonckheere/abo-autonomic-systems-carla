@@ -158,3 +158,23 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
+
+# CARLA simulator files
+CarlaUE4/
+Engine/
+PythonAPI/
+automatic_control.py
+CarlaUE4.exe
+CHANGELOG
+Dockerfile
+dynamic_weather.py
+LICENSE
+manual_control.py
+no_rendering_mode.py
+python_api.md
+README
+requirements.txt
+spawn_npc.py
+synchronous_mode.py
+tutorial.py
+vehicle_gallery.py
