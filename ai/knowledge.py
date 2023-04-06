@@ -10,8 +10,9 @@ try:
 except IndexError:
     pass
 
-import carla
 from enum import Enum
+
+import carla
 
 class Status(Enum):
   ARRIVED = 0  
@@ -24,7 +25,7 @@ class Status(Enum):
 class Knowledge(object):
   def __init__(self):
     self.status = Status.ARRIVED
-    self.memory = {'location':carla.Vector3D(0.0,0.0,0.0)}    
+    self.memory = { 'location': carla.Vector3D(0.0, 0.0, 0.0) }
     self.destination = self.get_location()
     self.status_changed = lambda *_, **__: None
     self.destination_changed = lambda *_, **__: None
@@ -64,13 +65,13 @@ class Knowledge(object):
     return self.retrieve_data('location')
 
   def arrived_at(self, destination):
-    return self.distance(self.get_location(),destination) < 5.0
+    return self.distance(self.get_location(), destination) < 5.0
 
   def update_destination(self, new_destination):
     if self.distance(self.destination, new_destination) > 5.0:
       self.destination = new_destination
       self.destination_changed(new_destination)
-   
+
   # A function to receive data from monitor
   # TODO: Add callback so that analyser can know when to parse the data
   def update_data(self, data_name, pars):

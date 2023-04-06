@@ -14,7 +14,6 @@ import carla
 
 from .knowledge import Status
 
-
 # Executor is responsible for moving the vehicle around
 # In this implementation it only needs to match the steering and speed so that we arrive at provided waypoints
 # BONUS TODO: implement different speed limits so that planner would also provide speed target speed in addition to
@@ -39,10 +38,14 @@ class Executor(object):
     #  to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
+        print(f'Current location: {self.vehicle.get_location()}, destination: {destination}, id = {id(self.knowledge)}')
+
         # Calculate throttle and heading
         control = carla.VehicleControl()
+
         control.throttle = 0.0
         control.steer = 0.0
         control.brake = 0.0
         control.hand_brake = False
+
         self.vehicle.apply_control(control)

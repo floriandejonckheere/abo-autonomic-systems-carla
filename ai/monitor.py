@@ -13,12 +13,11 @@ except IndexError:
 import weakref
 import carla
 
-
 # Monitor is responsible for reading the data from the sensors and telling it to the knowledge
 # TODO: Implement other sensors (lidar and depth sensors mainly)
 # TODO: Use carla API to read whether car is at traffic lights and their status, update it into knowledge
 class Monitor(object):
-    def __init__(self, knowledge,vehicle):
+    def __init__(self, knowledge, vehicle):
         self.vehicle = vehicle
         self.knowledge = knowledge
         weak_self = weakref.ref(self)
@@ -42,4 +41,4 @@ class Monitor(object):
         self = weak_self()
         if not self:
             return
-        self.knowledge.update_data('lane_invasion',event.crossed_lane_markings)
+        self.knowledge.update_data('lane_invasion', event.crossed_lane_markings)
