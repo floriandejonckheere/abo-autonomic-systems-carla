@@ -25,7 +25,7 @@ import random
 import time
 import argparse
 
-import custom_ai as ai
+from ai.autopilot import Autopilot
 
 def get_dist(point1, point2):
     return point1.location.distance(point2)
@@ -115,7 +115,7 @@ def main():
             else:
                 autopilot.set_destination(end)
 
-        autopilot = ai.Autopilot(vehicle)
+        autopilot = Autopilot(vehicle)
         autopilot.set_destination(destination)
         autopilot.set_route_finished_callback(route_finished)
 

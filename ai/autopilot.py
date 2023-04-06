@@ -1,25 +1,24 @@
-#!/usr/bin/env python
-
 import glob
 import os
 import sys
 
 try:
-    sys.path.append(glob.glob('**/*%d.%d-%s.egg' % (
+    sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
         sys.version_info.minor,
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 except IndexError:
     pass
 
-from ai.monitor import *
-from ai.analyzer import *
-from ai.planner import *
-from ai.executor import *
-from ai.knowledge import *
 import time
 
-#Manager Script
+from .monitor import *
+from .analyzer import *
+from .planner import *
+from .executor import *
+from .knowledge import *
+
+# Manager script
 class Autopilot(object):
   def __init__(self, vehicle):
     self.vehicle = vehicle
@@ -28,7 +27,7 @@ class Autopilot(object):
     self.analyser = Analyzer(self.knowledge)
     self.monitor = Monitor(self.knowledge, self.vehicle)
     self.planner = Planner(self.knowledge)
-    self.executor = Executor(self.knowledge,self.vehicle)
+    self.executor = Executor(self.knowledge, self.vehicle)
     self.prev_time = int(round(time.time() * 1000))
     self.route_finished = lambda *_, **__: None
     self.crashed = lambda *_, **__: None
@@ -48,7 +47,7 @@ class Autopilot(object):
   def get_vehicle(self):
     return self.vehicle
  
-  #Update all the modules and return the current status
+  # Update all the modules and return the current status
   def update(self):
     ctime = int(round(time.time() * 1000))
     delta_time = ctime - self.prev_time
