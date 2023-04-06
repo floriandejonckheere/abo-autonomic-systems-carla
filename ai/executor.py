@@ -41,17 +41,22 @@ class Executor(object):
     def update_control(self, destination, additional_vars, delta_time):
         distance = self.knowledge.distance(self.vehicle.get_location(), destination)
 
-        print(f'Location: {self.vehicle.get_location()}, destination: {destination}, distance: {distance}')
+        print(f'[{self.knowledge.get_status()}] location: {self.vehicle.get_location()}, destination: {destination}, distance: {distance}')
 
         # Calculate throttle and heading
         control = carla.VehicleControl()
 
         # Apply throttle if vehicle is far away from destination
-        throttle = 1.0 if distance > 10.0 else 0.0
+        if distance > 10.0:
+            control.throttle = 0.6
+            control.brake = 0.0
+        else:
+            control.throttle = 0.0
+            control.brake = 1.0
 
-        control.throttle = throttle
         control.steer = 0.0
-        control.brake = 0.0
         control.hand_brake = False
+
+        print(f'Control: throttle={control.throttle}, steer={control.steer}, brake={control.brake}, hand_brake={control.hand_brake}')
 
         self.vehicle.apply_control(control)
