@@ -160,6 +160,7 @@ cython_debug/
 .idea/
 
 # CARLA simulator files
+_out/
 CarlaUE4/
 Engine/
 PythonAPI/
