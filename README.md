@@ -26,6 +26,8 @@ python manual_control.py
 
 ## Troubleshooting
 
+When running any Python script:
+
 ```
 ImportError: DLL load failed: The named module can't be found
 ```
@@ -39,4 +41,22 @@ ImportError: DLL load failed: The named module can't be found
 %ANACONDA_HOME%\Library\bin
 %ANACONDA_HOME%\Scripts
 %ANACONDA_HOME%\bin
+```
+
+When running `manual_control.py`:
+
+```
+...
+    mono = default_font if default_font in fonts else fonts[0]
+IndexError: list index out of range
+```
+
+Modify the file and replace line 374:
+
+```
+# Replace
+mono = default_font if default_font in fonts else fonts[0]
+
+# With
+mono = 'consolas'
 ```
