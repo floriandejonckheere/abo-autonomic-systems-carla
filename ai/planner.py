@@ -15,6 +15,7 @@ import carla
 
 from .knowledge import Status
 
+
 # Planner is responsible for creating a plan for moving around
 # In our case it creates a list of waypoints to follow so that vehicle arrives at destination
 # Alternatively this can also provide a list of waypoints to try avoid crashing or 'uncrash' itself
@@ -73,5 +74,3 @@ class Planner(object):
         self.path.append(destination)
         # TODO: create path of waypoints from source to
         return self.path
-
-

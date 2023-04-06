@@ -12,6 +12,7 @@ except IndexError:
 
 import carla
 
+
 # Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into
 # something usable
 # TODO: During the update step parse the data inside knowledge into information that could be used by planner to plan

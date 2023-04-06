@@ -13,6 +13,7 @@ except IndexError:
 import weakref
 import carla
 
+
 # Monitor is responsible for reading the data from the sensors and telling it to the knowledge
 # TODO: Implement other sensors (lidar and depth sensors mainly)
 # TODO: Use carla API to read whether car is at traffic lights and their status, update it into knowledge
