@@ -39,12 +39,17 @@ class Executor(object):
     #  to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
-        print(f'Current location: {self.vehicle.get_location()}, destination: {destination}, id = {id(self.knowledge)}')
+        distance = self.knowledge.distance(self.vehicle.get_location(), destination)
+
+        print(f'Location: {self.vehicle.get_location()}, destination: {destination}, distance: {distance}')
 
         # Calculate throttle and heading
         control = carla.VehicleControl()
 
-        control.throttle = 0.0
+        # Apply throttle if vehicle is far away from destination
+        throttle = 1.0 if distance > 10.0 else 0.0
+
+        control.throttle = throttle
         control.steer = 0.0
         control.brake = 0.0
         control.hand_brake = False
