@@ -54,10 +54,16 @@ def main():
         default=1,
         type=int,
         help='Milestone number (default: 1)')
+    argparser.add_argument(
+        '-w', '--waypoints',
+        metavar='W',
+        default=False,
+        type=bool,
+        help='Render waypoints (default: false)')
     args = argparser.parse_args()
  
     actor_list = []
- 
+
     try:
         client = carla.Client('localhost', 2000)
         client.set_timeout(2.0)
@@ -97,6 +103,14 @@ def main():
         ex = milestones[ms]
         end = ex[len(ex)-1]
         destination = ex[1]
+
+        # Render waypoints
+        if args.waypoints:
+            for i, wp in enumerate(ex):
+                world.debug.draw_string(wp, str(i), draw_shadow=False,
+                                        color=carla.Color(r=255, g=0, b=0), life_time=20.0,
+                                        persistent_lines=True)
+
 
         # Getting waypoint to spawn
         start = get_start_point(world, ex[0])
