@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 import glob
 import os
@@ -28,18 +28,21 @@ class Executor(object):
     self.knowledge = knowledge
     self.target_pos = knowledge.get_location()
     
-  #Update the executor at some intervals to steer the car in desired direction
+  # Update the executor at some intervals to steer the car in desired direction
   def update(self, time_elapsed):
     status = self.knowledge.get_status()
-    #TODO: this needs to be able to handle
+    # TODO: this needs to be able to handle
     if status == Status.DRIVING:
       dest = self.knowledge.get_current_destination()
       self.update_control(dest, [1], time_elapsed)
 
   # TODO: steer in the direction of destination and throttle or brake depending on how close we are to destination
-  # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be additional data passed between planner and executor, or there needs to be some way to tell this that it is ok to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with parameters that can tell us which things we can do (for example going in reverse)
+  # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be
+  # additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
+  # to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
+  # parameters that can tell us which things we can do (for example going in reverse)
   def update_control(self, destination, additional_vars, delta_time):
-    #calculate throttle and heading
+    # Calculate throttle and heading
     control = carla.VehicleControl()
     control.throttle = 0.0
     control.steer = 0.0
@@ -66,7 +69,7 @@ class Planner(object):
     self.update_plan()
     self.knowledge.update_destination(self.get_current_destination())
   
-  #Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
+  # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
   def update_plan(self):
     if len(self.path) == 0:
       return
@@ -79,31 +82,31 @@ class Planner(object):
     else:
       self.knowledge.update_status(Status.DRIVING)
 
-  #get current destination 
+  # Get current destination
   def get_current_destination(self):
     status = self.knowledge.get_status()
-    #if we are driving, then the current destination is next waypoint
+    # If we are driving, then the current destination is next waypoint
     if status == Status.DRIVING:
-      #TODO: Take into account traffic lights and other cars
+      # TODO: Take into account traffic lights and other cars
       return self.path[0]
     if status == Status.ARRIVED:
       return self.knowledge.get_location()
     if status == Status.HEALING:
-      #TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
-      #Afterwards needs to remake the path.
+      # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
+      # Afterwards needs to remake the path.
       return self.knowledge.get_location()
     if status == Status.CRASHED:
-      #TODO: implement function for crash handling, should provide map of wayoints to move towards to for exiting crash state. 
-      #You should use separate waypoint list for that, to not mess with the original path. 
+      # TODO: implement function for crash handling, should provide map of wayoints to move towards to for exiting
+      # crash state. You should use separate waypoint list for that, to not mess with the original path.
       return self.knowledge.get_location()
-    #otherwise destination is same as current position
+    # Otherwise destination is same as current position
     return self.knowledge.get_location()
 
-  #TODO: Implementation
+  # TODO: Implementation
   def build_path(self, source, destination):
     self.path = deque([])
     self.path.append(destination)
-    #TODO: create path of waypoints from source to
+    # TODO: create path of waypoints from source to
     return self.path
 
 
