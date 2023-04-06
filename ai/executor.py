@@ -12,6 +12,7 @@ except IndexError:
 
 import carla
 
+from .controllers.fuzzy import Fuzzy
 from .knowledge import Status
 
 
@@ -24,6 +25,7 @@ class Executor(object):
         self.vehicle = vehicle
         self.knowledge = knowledge
         self.target_pos = knowledge.get_location()
+        self.controller = Fuzzy()
 
     # Update the executor at some intervals to steer the car in desired direction
     def update(self, time_elapsed):
@@ -39,24 +41,22 @@ class Executor(object):
     #  to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
+        # Calculate Euclidian distance to destination
         distance = self.knowledge.distance(self.vehicle.get_location(), destination)
 
-        print(f'[{self.knowledge.get_status()}] location: {self.vehicle.get_location()}, destination: {destination}, distance: {distance}')
+        # Update fuzzy controller
+        self.controller.update(distance)
 
-        # Calculate throttle and heading
         control = carla.VehicleControl()
 
-        # Apply throttle if vehicle is far away from destination
-        if distance > 10.0:
-            control.throttle = 0.6
-            control.brake = 0.0
-        else:
-            control.throttle = 0.0
-            control.brake = 1.0
+        # Calculate throttle and brake
+        control.throttle = self.controller.get_throttle()
+        control.brake = self.controller.get_brake()
 
+        # Calculate steering
         control.steer = 0.0
         control.hand_brake = False
 
-        print(f'Control: throttle={control.throttle}, steer={control.steer}, brake={control.brake}, hand_brake={control.hand_brake}')
+        print(f's={self.knowledge.get_status()} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
 
         self.vehicle.apply_control(control)
