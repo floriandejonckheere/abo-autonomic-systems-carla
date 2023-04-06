@@ -12,30 +12,31 @@ try:
 except IndexError:
     pass
 
-import carla
-import ai_knowledge as data
-import ai_control as control
-import ai_parser as parser
+from ai.monitor import *
+from ai.analyzer import *
+from ai.planner import *
+from ai.executor import *
+from ai.knowledge import *
 import time
 
 #Manager Script
 class Autopilot(object):
   def __init__(self, vehicle):
     self.vehicle = vehicle
-    self.knowledge = data.Knowledge()
+    self.knowledge = Knowledge()
     self.knowledge.set_status_changed_callback(self.status_updated)
-    self.analyser = parser.Analyser(self.knowledge)
-    self.monitor = parser.Monitor(self.knowledge, self.vehicle)
-    self.planner = control.Planner(self.knowledge)
-    self.executor = control.Executor(self.knowledge,self.vehicle)
+    self.analyser = Analyzer(self.knowledge)
+    self.monitor = Monitor(self.knowledge, self.vehicle)
+    self.planner = Planner(self.knowledge)
+    self.executor = Executor(self.knowledge,self.vehicle)
     self.prev_time = int(round(time.time() * 1000))
     self.route_finished = lambda *_, **__: None
     self.crashed = lambda *_, **__: None
 
   def status_updated(self, new_status):
-    if new_status == data.Status.ARRIVED:
+    if new_status == Status.ARRIVED:
       self.route_finished(self)
-    if new_status == data.Status.CRASHED:
+    if new_status == Status.CRASHED:
       self.crashed(self)
 
   def set_route_finished_callback(self, callback):
