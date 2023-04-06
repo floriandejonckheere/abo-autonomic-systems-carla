@@ -60,3 +60,7 @@ mono = default_font if default_font in fonts else fonts[0]
 # With
 mono = 'consolas'
 ```
+
+## License
+
+This repository is released under the [MIT License](LICENSE.md).
