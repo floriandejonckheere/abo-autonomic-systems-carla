@@ -74,9 +74,22 @@ class Executor(object):
         control.throttle = self.controller.get_throttle()
         control.brake = self.controller.get_brake()
 
+        # Debug lines
+        self.vehicle.get_world().debug.draw_line(source, destination, life_time=0.5, color=carla.Color(255, 255, 255))
+        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(5, 0, 0), life_time=0.5, color=carla.Color(255, 0, 0))
+        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
+        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
+
         # Apply steering
-        self.vehicle.get_world().debug.draw_line(source, destination, life_time=0.5, color=carla.Color(255, 0, 0))
-        control.steer = min(0.7, max(-0.7, (angle - rotation) / 2))
+        angle -= rotation
+
+        st_x = source.x - 10 * np.cos(angle)
+        st_y = source.y - 10 * np.sin(angle)
+
+        st_v = carla.Location(st_x, st_y, 1)
+
+        # self.vehicle.get_world().debug.draw_line(source, st_v, life_time=0.5, color=carla.Color(0, 255, 0))
+        control.steer = min(0.7, max(-0.7, angle))
         control.hand_brake = False
 
         self.vehicle.apply_control(control)
