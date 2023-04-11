@@ -57,6 +57,9 @@ class Knowledge(object):
 
         return 3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)
 
+    def get_target_speed(self):
+        return self.retrieve_data('target_speed')
+
     # Retrieving data from memory
     # !Take note that it is unsafe and does not check whether the given field is in dic
     def retrieve_data(self, data_name):

@@ -26,6 +26,7 @@ class Monitor(object):
         self.knowledge.update_data('location', self.vehicle.get_transform().location)
         self.knowledge.update_data('rotation', self.vehicle.get_transform().rotation)
         self.knowledge.update_data('velocity', self.vehicle.get_velocity())
+        self.knowledge.update_data('target_speed', self.vehicle.get_speed_limit())
 
         world = self.vehicle.get_world()
         bp = world.get_blueprint_library().find('sensor.other.lane_detector')
@@ -38,6 +39,7 @@ class Monitor(object):
         self.knowledge.update_data('location', self.vehicle.get_transform().location)
         self.knowledge.update_data('rotation', self.vehicle.get_transform().rotation)
         self.knowledge.update_data('velocity', self.vehicle.get_velocity())
+        self.knowledge.update_data('target_speed', self.vehicle.get_speed_limit())
 
     @staticmethod
     def _on_invasion(weak_self, event):
