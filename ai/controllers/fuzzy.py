@@ -17,7 +17,7 @@ class Fuzzy:
         self.distance = distance
 
     def get_throttle(self):
-        return fz.interp_membership(self.x_distance, self.dist_hi, self.distance)
+        return 0.8 * fz.interp_membership(self.x_distance, self.dist_hi, self.distance)
 
     def get_brake(self):
         return 0.6 * fz.interp_membership(self.x_distance, self.dist_lo, self.distance)
