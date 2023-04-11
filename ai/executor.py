@@ -75,6 +75,7 @@ class Executor(object):
         control.brake = self.controller.get_brake()
 
         # Apply steering
+        self.vehicle.get_world().debug.draw_line(source, destination, life_time=0.5, color=carla.Color(255, 0, 0))
         control.steer = min(0.7, max(-0.7, (angle - rotation) / 2))
         control.hand_brake = False
 
