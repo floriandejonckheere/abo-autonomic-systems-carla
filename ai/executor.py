@@ -43,9 +43,14 @@ class Executor(object):
     def update_control(self, destination, additional_vars, delta_time):
         # Calculate Euclidian distance to destination
         distance = self.knowledge.distance(self.vehicle.get_location(), destination)
+        speed = self.knowledge.get_speed()
+        target_speed = self.knowledge.get_target_speed()
+
+        # print(f's={self.knowledge.get_status()} v={self.knowledge.get_speed():.2f} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
+        # print(f'v={speed:.2f} vt={target_speed:.2f}')
 
         # Update fuzzy controller
-        self.controller.update(distance)
+        self.controller.update(distance, speed, target_speed)
 
         control = carla.VehicleControl()
 
@@ -56,8 +61,5 @@ class Executor(object):
         # Calculate steering
         control.steer = 0.0
         control.hand_brake = False
-
-        # print(f's={self.knowledge.get_status()} v={self.knowledge.get_speed():.2f} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
-        print(f'v={self.knowledge.get_speed():.2f} vt={self.knowledge.get_target_speed():.2f}')
 
         self.vehicle.apply_control(control)
