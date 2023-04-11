@@ -57,6 +57,6 @@ class Executor(object):
         control.steer = 0.0
         control.hand_brake = False
 
-        print(f's={self.knowledge.get_status()} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
+        print(f's={self.knowledge.get_status()} v={self.knowledge.get_speed():.2f} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
 
         self.vehicle.apply_control(control)

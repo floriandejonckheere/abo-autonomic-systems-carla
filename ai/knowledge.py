@@ -1,6 +1,7 @@
 import glob
 import os
 import sys
+import math
 
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
@@ -50,6 +51,11 @@ class Knowledge(object):
 
     def get_current_destination(self):
         return self.destination
+
+    def get_speed(self):
+        v = self.retrieve_data('velocity')
+
+        return 3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)
 
     # Retrieving data from memory
     # !Take note that it is unsafe and does not check whether the given field is in dic
