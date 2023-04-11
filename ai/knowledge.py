@@ -67,7 +67,7 @@ class Knowledge(object):
     def retrieve_data(self, data_name):
         return self.memory[data_name]
 
-    # updating status to correct value and making sure that everything is handled properly
+    # Update status to correct value and make sure that everything is handled properly
     def update_status(self, new_status):
         if (self.status != Status.CRASHED or new_status == Status.HEALING) and self.status != new_status:
             self.set_status(new_status)
@@ -76,6 +76,10 @@ class Knowledge(object):
     # Return current location of the vehicle
     def get_location(self):
         return self.retrieve_data('location')
+
+    # Return current rotation of the vehicle
+    def get_rotation(self):
+        return self.retrieve_data('rotation')
 
     def arrived_at(self, destination):
         return utils.distance(self.get_location(), destination) < 5.0

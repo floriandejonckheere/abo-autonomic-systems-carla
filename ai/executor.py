@@ -2,6 +2,8 @@ import glob
 import os
 import sys
 
+import numpy as np
+
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -43,25 +45,37 @@ class Executor(object):
     #  to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
-        # Calculate Euclidian distance to destination
-        distance = utils.distance(self.vehicle.get_location(), destination)
+        # Get (current) location
+        source = self.knowledge.get_location()
+
+        # Get current and target speed
         speed = self.knowledge.get_speed()
         target_speed = self.knowledge.get_target_speed()
 
+        # Distance to waypoint
+        distance = utils.distance(self.vehicle.get_location(), destination)
+
+        # Angle between vehicle and waypoint
+        angle = utils.angle([source.x, source.y], [destination.x, destination.y])
+
+        # Current rotation of the vehicle (in radians, shifted with 2*PI)
+        rotation = np.deg2rad(self.knowledge.get_rotation().yaw + 180)
+
         # print(f's={self.knowledge.get_status()} v={self.knowledge.get_speed():.2f} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
         # print(f'v={speed:.2f} vt={target_speed:.2f}')
+        print(f's=({source.x:.2f}, {source.y:.2f}) d=({destination.x:.2f}, {destination.y:.2f}) r=({rotation:.2f}) a={angle:.2f} d={distance:.2f}')
 
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed)
 
         control = carla.VehicleControl()
 
-        # Calculate throttle and brake
+        # Apply throttle and brake
         control.throttle = self.controller.get_throttle()
         control.brake = self.controller.get_brake()
 
-        # Calculate steering
-        control.steer = 0.0
+        # Apply steering
+        control.steer = min(0.7, max(-0.7, (angle - rotation) / 2))
         control.hand_brake = False
 
         self.vehicle.apply_control(control)
