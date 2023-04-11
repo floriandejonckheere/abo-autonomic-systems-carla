@@ -15,6 +15,8 @@ from enum import Enum
 
 import carla
 
+import ai.utils as utils
+
 
 class Status(Enum):
     ARRIVED = 0
@@ -76,10 +78,10 @@ class Knowledge(object):
         return self.retrieve_data('location')
 
     def arrived_at(self, destination):
-        return self.distance(self.get_location(), destination) < 5.0
+        return utils.distance(self.get_location(), destination) < 5.0
 
     def update_destination(self, new_destination):
-        if self.distance(self.destination, new_destination) > 5.0:
+        if utils.distance(self.destination, new_destination) > 5.0:
             self.destination = new_destination
             self.destination_changed(new_destination)
 
@@ -88,8 +90,3 @@ class Knowledge(object):
     def update_data(self, data_name, pars):
         self.memory[data_name] = pars
         self.data_changed(data_name)
-
-    def distance(self, vec1, vec2):
-        l1 = carla.Location(vec1)
-        l2 = carla.Location(vec2)
-        return l1.distance(l2)

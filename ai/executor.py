@@ -12,6 +12,8 @@ except IndexError:
 
 import carla
 
+import ai.utils as utils
+
 from .controllers.fuzzy import Fuzzy
 from .knowledge import Status
 
@@ -42,7 +44,7 @@ class Executor(object):
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
         # Calculate Euclidian distance to destination
-        distance = self.knowledge.distance(self.vehicle.get_location(), destination)
+        distance = utils.distance(self.vehicle.get_location(), destination)
         speed = self.knowledge.get_speed()
         target_speed = self.knowledge.get_target_speed()
 
