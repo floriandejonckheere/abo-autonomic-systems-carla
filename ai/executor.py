@@ -41,9 +41,6 @@ class Executor(object):
     #  to drive in reverse during HEALING and CRASHED states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
-        # Get (current) location
-        source = self.vehicle.get_transform().get_forward_vector()
-
         # Get current and target speed
         speed = self.knowledge.get_speed()
         target_speed = self.knowledge.get_target_speed()
@@ -65,13 +62,7 @@ class Executor(object):
         # Set steering
         control.steer = self.controller.get_steer()
 
-        # Debug lines
-        self.vehicle.get_world().debug.draw_line(source, destination, life_time=0.5, color=carla.Color(255, 255, 255))
-        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(5, 0, 0), life_time=0.5, color=carla.Color(255, 0, 0))
-        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
-        self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
-
-        # print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
+        print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
 
         # Apply control
         self.vehicle.apply_control(control)
