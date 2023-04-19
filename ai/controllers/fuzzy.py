@@ -8,6 +8,7 @@ class Fuzzy:
         self.distance = 0.0
         self.speed = 0.0
         self.target_speed = 0.0
+        self.angle = 0.0
 
         # Universe variables
         self.x_distance = np.arange(0, 101, 1)
@@ -19,10 +20,11 @@ class Fuzzy:
         self.dist_hi = fz.smf(self.x_distance, 5, 15)
         self.speed_hi = fz.smf(self.x_speed, 4, 5)
 
-    def update(self, distance, speed, target_speed):
+    def update(self, distance, speed, target_speed, angle):
         self.distance = distance
         self.speed = speed
         self.target_speed = target_speed
+        self.angle = angle
 
     def get_throttle(self):
         # Throttle is proportional to the distance
@@ -33,8 +35,14 @@ class Fuzzy:
 
         # print(f'{self.speed:.2f}/{self.target_speed:.2f} => ({t1:.2f}, {t2:.2f})')
 
-        return 0.6 * t1 * t2
+        return 0.7 * t1 * t2
 
     def get_brake(self):
         # return 0.6 * fz.interp_membership(self.x_distance, self.dist_lo, self.distance)
         return 0.0
+
+    def get_steer(self):
+        if self.angle < 0:
+            return -0.2
+        else:
+            return 0.2

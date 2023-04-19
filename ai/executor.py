@@ -55,8 +55,6 @@ class Executor(object):
         # Distance to waypoint
         distance = utils.distance(self.vehicle.get_location(), destination)
 
-        # print(f'x={source.x}, y={source.y}, x={self.vehicle.get_transform().get_forward_vector().x}, y={self.vehicle.get_transform().get_forward_vector().y}')
-
         # Normalize source and destination vectors
         source_norm = [source.x, source.y]
         source_norm /= np.linalg.norm(source_norm)
@@ -68,24 +66,22 @@ class Executor(object):
         dot_product = np.dot(source_norm, destination_norm)
 
         # Calculate cross product between vectors
-        cross_product = np.cross(source_norm, destination_norm)
+        direction = np.cross(source_norm, destination_norm)
 
         # Calculate angle in radians
         angle_radians = np.arccos(dot_product)
 
         # Determine direction of angle using cross product
-        if cross_product < 0:
+        if direction < 0:
             angle_radians = -angle_radians
 
         # Convert angle from radians to degrees
-        angle_degrees = np.degrees(angle_radians)
+        angle = np.degrees(angle_radians)
 
-        steer = cross_product * 0.2
-
-        print(f'cp={cross_product:.2f}, angle={angle_degrees:.2f}, steering={steer:.2f}')
+        print(f'angle={angle:.2f}')
 
         # Update fuzzy controller
-        self.controller.update(distance, speed, target_speed)
+        self.controller.update(distance, speed, target_speed, angle)
 
         control = carla.VehicleControl()
 
@@ -99,7 +95,7 @@ class Executor(object):
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
 
-        control.steer = min(0.3, max(-0.3, steer))
+        control.steer = self.controller.get_steer()
         control.hand_brake = False
 
         self.vehicle.apply_control(control)
