@@ -42,12 +42,15 @@ class Planner(object):
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update_plan(self):
+        # If we have no waypoints, then we have arrived
         if len(self.path) == 0:
             return
 
-        if self.knowledge.arrived_at(self.path[0]):
+        # If we are close enough to the next waypoint, remove it from the list
+        if utils.distance(self.knowledge.get_location(), self.path[0]) < 5.0:
             self.path.popleft()
 
+        # Stop driving if we have arrived
         if len(self.path) == 0:
             self.knowledge.update_status(Status.ARRIVED)
         else:
@@ -56,6 +59,7 @@ class Planner(object):
     # Get current destination
     def get_current_destination(self):
         status = self.knowledge.get_status()
+
         # If we are driving, then the current destination is next waypoint
         if status == Status.DRIVING:
             # TODO: Take into account traffic lights and other cars
@@ -67,53 +71,44 @@ class Planner(object):
             # Afterwards needs to remake the path.
             return self.knowledge.get_location()
         if status == Status.CRASHED:
-            # TODO: implement function for crash handling, should provide map of wayoints to move towards to for exiting
+            # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
             #  crash state. You should use separate waypoint list for that, to not mess with the original path.
             return self.knowledge.get_location()
         # Otherwise destination is same as current position
         return self.knowledge.get_location()
 
-    # TODO: Implementation
     def build_path(self, source, destination):
         self.path = deque([])
-        # TODO: create path of waypoints from source to
 
         debug = self.vehicle.get_world().debug
 
         # Current waypoint
         waypoint = self.knowledge.get_waypoint()
 
-        while True:
+        distance = float('inf')
+
+        # Iterate over waypoints until we are close enough to the destination,
+        # or the distance is increasing again (the vehicle overshot)
+        while distance > 5.0 and utils.distance(waypoint.transform.location, destination) < distance:
             # Compute current waypoint distance to destination
             distance = utils.distance(waypoint.transform.location, destination)
 
-            # If we are close enough to destination, then stop
-            if distance < 5.0:
-                print('Reached destination')
-                break
-
             # Draw current waypoint
             debug.draw_point(waypoint.transform.location, size=0.2, life_time=10)
-            print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
+            # print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
 
-            # Decide on next waypoint
+            # Get next (legal) waypoints
             next_waypoints = waypoint.next(2.0)
 
             # If there is only one next waypoint, then select it
             if len(next_waypoints) == 1:
                 waypoint = next_waypoints[0]
-                continue
-
-            # If there are multiple next waypoints, then select the one that is closest to destination
-            waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
+            else:
+                # If there are multiple next waypoints, then select the one that is closest to destination
+                waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
 
             # Add waypoint to path
             self.path.append(waypoint.transform.location)
-
-            # If the distance is increasing (the vehicle overshot), then stop
-            if utils.distance(waypoint.transform.location, destination) > distance:
-                print('Overshot destination')
-                break
 
         # Add destination to path
         self.path.append(destination)
