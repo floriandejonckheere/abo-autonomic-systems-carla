@@ -61,7 +61,7 @@ class Executor(object):
         source_norm = [source.x, source.y]
         source_norm /= np.linalg.norm(source_norm)
 
-        destination_norm = [destination.x, destination.y]
+        destination_norm = [destination.x - self.vehicle.get_location().x, destination.y - self.vehicle.get_location().y]
         destination_norm /= np.linalg.norm(destination_norm)
 
         # Calculate dot product between vectors
@@ -80,11 +80,7 @@ class Executor(object):
         # Convert angle from radians to degrees
         angle_degrees = np.degrees(angle_radians)
 
-        # steer = angle_degrees - 180.0
-        if cross_product < 0:
-            steer = 0.3
-        else:
-            steer = -0.3
+        steer = cross_product * 0.2
 
         print(f'cp={cross_product:.2f}, angle={angle_degrees:.2f}, steering={steer:.2f}')
 
