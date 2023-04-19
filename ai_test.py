@@ -171,7 +171,7 @@ def main():
 
             
             #print ("distance: ", vehicle.get_transform().location.distance(carla.Location(ex1[2])))
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     finally:
 
