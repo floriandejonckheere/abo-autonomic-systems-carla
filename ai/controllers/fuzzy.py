@@ -49,5 +49,5 @@ class Fuzzy:
         # Rescale to [-1, 1]
         steer = (steer - 0.5) * 2
 
-        # Clamp to [-0.7, 0.7]
-        return np.clip(steer, -0.7, 0.7)
+        # Limit to 70% of the maximum steering angle
+        return 0.7 * steer
