@@ -33,7 +33,7 @@ class Fuzzy:
 
         # print(f'{self.speed:.2f}/{self.target_speed:.2f} => ({t1:.2f}, {t2:.2f})')
 
-        return t1 * t2
+        return 0.4 * t1 * t2
 
     def get_brake(self):
         # return 0.6 * fz.interp_membership(self.x_distance, self.dist_lo, self.distance)

@@ -46,7 +46,7 @@ class Executor(object):
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self, destination, additional_vars, delta_time):
         # Get (current) location
-        source = self.knowledge.get_location()
+        source = self.vehicle.get_transform().get_forward_vector()
 
         # Get current and target speed
         speed = self.knowledge.get_speed()
@@ -55,11 +55,38 @@ class Executor(object):
         # Distance to waypoint
         distance = utils.distance(self.vehicle.get_location(), destination)
 
-        # Angle between vehicle and waypoint
-        angle = utils.angle([source.x, source.y], [destination.x, destination.y])
+        # print(f'x={source.x}, y={source.y}, x={self.vehicle.get_transform().get_forward_vector().x}, y={self.vehicle.get_transform().get_forward_vector().y}')
 
-        # Current rotation of the vehicle (in radians, shifted with 2*PI)
-        rotation = np.deg2rad(self.knowledge.get_rotation().yaw + 180)
+        # Normalize source and destination vectors
+        source_norm = [source.x, source.y]
+        source_norm /= np.linalg.norm(source_norm)
+
+        destination_norm = [destination.x, destination.y]
+        destination_norm /= np.linalg.norm(destination_norm)
+
+        # Calculate dot product between vectors
+        dot_product = np.dot(source_norm, destination_norm)
+
+        # Calculate cross product between vectors
+        cross_product = np.cross(source_norm, destination_norm)
+
+        # Calculate angle in radians
+        angle_radians = np.arccos(dot_product)
+
+        # Determine direction of angle using cross product
+        if cross_product < 0:
+            angle_radians = -angle_radians
+
+        # Convert angle from radians to degrees
+        angle_degrees = np.degrees(angle_radians)
+
+        # steer = angle_degrees - 180.0
+        if cross_product < 0:
+            steer = 0.3
+        else:
+            steer = -0.3
+
+        print(f'cp={cross_product:.2f}, angle={angle_degrees:.2f}, steering={steer:.2f}')
 
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed)
@@ -76,16 +103,7 @@ class Executor(object):
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
 
-        # Apply steering
-        angle -= rotation
-
-        st_x = source.x - 10 * np.cos(angle)
-        st_y = source.y - 10 * np.sin(angle)
-
-        st_v = carla.Location(st_x, st_y, 1)
-
-        # self.vehicle.get_world().debug.draw_line(source, st_v, life_time=0.5, color=carla.Color(0, 255, 0))
-        control.steer = min(0.7, max(-0.7, angle))
+        control.steer = min(0.3, max(-0.3, steer))
         control.hand_brake = False
 
         self.vehicle.apply_control(control)
