@@ -17,11 +17,11 @@ class Fuzzy:
         self.x_angle = np.arange(-180, 180, 1)
 
         # Fuzzy membership functions
-        self.dist_lo = fz.zmf(self.x_distance, 0.5, 2)
-        self.dist_hi = fz.smf(self.x_distance, 0.5, 2)
-        self.speed_hi = fz.smf(self.x_speed, 7, 9)
+        self.dist_lo = fz.zmf(self.x_distance, 0.2, 3)
+        self.dist_hi = fz.smf(self.x_distance, 0.2, 3)
+        self.speed_hi = fz.smf(self.x_speed, 3, 5)
 
-        self.steer_hi = fz.smf(self.x_angle, -90, 90)
+        self.steer_hi = fz.smf(self.x_angle, -80, 80)
 
     def update(self, distance, speed, target_speed, angle):
         self.distance = distance
