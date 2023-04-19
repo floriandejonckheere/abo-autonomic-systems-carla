@@ -44,6 +44,7 @@ class Planner(object):
     def update_plan(self):
         # If we have no waypoints, then we have arrived
         if len(self.path) == 0:
+            self.knowledge.update_status(Status.ARRIVED)
             return
 
         # If we are close enough to the next waypoint, remove it from the list
