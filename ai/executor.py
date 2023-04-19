@@ -61,10 +61,6 @@ class Executor(object):
         # Current rotation of the vehicle (in radians, shifted with 2*PI)
         rotation = np.deg2rad(self.knowledge.get_rotation().yaw + 180)
 
-        # print(f's={self.knowledge.get_status()} v={self.knowledge.get_speed():.2f} d={distance:.2f}, t={control.throttle:.2f} s={control.steer:.2f} b={control.brake:.2f} hb={control.hand_brake:.2f}')
-        # print(f'v={speed:.2f} vt={target_speed:.2f}')
-        print(f's=({source.x:.2f}, {source.y:.2f}) d=({destination.x:.2f}, {destination.y:.2f}) r=({rotation:.2f}) a={angle:.2f} d={distance:.2f}')
-
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed)
 

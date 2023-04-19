@@ -80,6 +80,8 @@ import random
 import re
 import weakref
 
+from ai.autopilot import Autopilot
+
 try:
     import pygame
     from pygame.locals import KMOD_CTRL
@@ -240,9 +242,19 @@ class KeyboardControl(object):
     def __init__(self, world, start_in_autopilot):
         self._autopilot_enabled = start_in_autopilot
         self._control = carla.VehicleControl()
-        world.player.set_autopilot(self._autopilot_enabled)
+
         self._steer_cache = 0.0
         world.hud.notification("Press 'H' or '?' for help.", seconds=4.0)
+
+        # Autopilot
+        self._autopilot = Autopilot(world.player)
+
+        destination = carla.Vector3D(22,-4,1.8431)
+        self._autopilot.set_destination(destination)
+
+        # world.debug.draw_string(destination, "0", draw_shadow=False,
+        #                         color=carla.Color(r=255, g=0, b=0), life_time=20.0,
+        #                         persistent_lines=True)
 
     def parse_events(self, client, world, clock):
         for event in pygame.event.get():
@@ -317,9 +329,10 @@ class KeyboardControl(object):
                         self._control.gear = self._control.gear + 1
                     elif event.key == K_p and not (pygame.key.get_mods() & KMOD_CTRL):
                         self._autopilot_enabled = not self._autopilot_enabled
-                        world.player.set_autopilot(self._autopilot_enabled)
                         world.hud.notification('Autopilot %s' % ('On' if self._autopilot_enabled else 'Off'))
-        if not self._autopilot_enabled:
+        if self._autopilot_enabled:
+            self._autopilot.update()
+        else:
             self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
             self._control.reverse = self._control.gear < 0
             world.player.apply_control(self._control)
