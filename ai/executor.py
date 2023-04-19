@@ -2,8 +2,6 @@ import glob
 import os
 import sys
 
-import numpy as np
-
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -52,40 +50,22 @@ class Executor(object):
         speed = self.knowledge.get_speed()
         target_speed = self.knowledge.get_target_speed()
 
-        # Distance to waypoint
-        distance = utils.distance(self.vehicle.get_location(), destination)
-
-        # Normalize source and destination vectors
-        source_norm = [source.x, source.y]
-        source_norm /= np.linalg.norm(source_norm)
-
-        destination_norm = [destination.x - self.vehicle.get_location().x, destination.y - self.vehicle.get_location().y]
-        destination_norm /= np.linalg.norm(destination_norm)
-
-        # Calculate dot product between vectors
-        dot_product = np.dot(source_norm, destination_norm)
-
-        # Calculate cross product between vectors
-        direction = np.cross(source_norm, destination_norm)
-
-        # Calculate angle in radians
-        angle_radians = np.arccos(dot_product)
-
-        # Determine direction of angle using cross product
-        if direction < 0:
-            angle_radians = -angle_radians
-
-        # Convert angle from radians to degrees
-        angle = np.degrees(angle_radians)
+        # Distance and angle to waypoint
+        distance = self.knowledge.get_distance_to_destination()
+        angle = self.knowledge.get_angle_to_destination()
 
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed, angle)
 
         control = carla.VehicleControl()
 
-        # Apply throttle and brake
+        # Set throttle and brake
         control.throttle = self.controller.get_throttle()
         control.brake = self.controller.get_brake()
+        control.hand_brake = False
+
+        # Set steering
+        control.steer = self.controller.get_steer()
 
         # Debug lines
         self.vehicle.get_world().debug.draw_line(source, destination, life_time=0.5, color=carla.Color(255, 255, 255))
@@ -93,9 +73,8 @@ class Executor(object):
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
 
-        control.steer = self.controller.get_steer()
-        control.hand_brake = False
-
+        # print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
         print(f'angle={angle:.2f} steer={control.steer:.2f}')
 
+        # Apply control
         self.vehicle.apply_control(control)

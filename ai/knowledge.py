@@ -3,6 +3,8 @@ import os
 import sys
 import math
 
+import numpy as np
+
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -32,7 +34,8 @@ class Knowledge(object):
         # Variables
         self.status = Status.ARRIVED
         self.memory = {
-            'location': carla.Vector3D(0.0, 0.0, 0.0),
+            'location': carla.Location(0.0, 0.0, 0.0),
+            'rotation': carla.Rotation(0.0, 0.0, 0.0),
         }
         self.destination = self.get_location()
 
@@ -58,6 +61,36 @@ class Knowledge(object):
     # Get the target speed of the vehicle
     def get_target_speed(self):
         return self.memory['target_speed']
+
+    # Get the distance to the current destination
+    def get_distance_to_destination(self):
+        return utils.distance(self.get_location(), self.destination)
+
+    def get_angle_to_destination(self):
+        # Normalize source and destination vectors
+        source_vector = self.memory['rotation'].get_forward_vector()
+        source_norm = [source_vector.x, source_vector.y]
+        source_norm /= np.linalg.norm(source_norm)
+
+        # Destination vector (relative to current position of vehicle)
+        destination_norm = [self.destination.x - self.memory['location'].x, self.destination.y - self.memory['location'].y]
+        destination_norm /= np.linalg.norm(destination_norm)
+
+        # Calculate dot product between vectors
+        dot_product = np.dot(source_norm, destination_norm)
+
+        # Calculate cross product between vectors
+        cross_product = np.cross(source_norm, destination_norm)
+
+        # Calculate angle in radians
+        angle_radians = np.arccos(dot_product)
+
+        # Determine direction of angle using cross product
+        if cross_product < 0:
+            angle_radians = -angle_radians
+
+        # Convert angle from radians to degrees
+        return np.degrees(angle_radians)
 
     # Return current location of the vehicle
     def get_location(self):
