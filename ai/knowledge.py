@@ -39,6 +39,8 @@ class Knowledge(object):
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
         self.target_speed = 0.0
 
+        self.lane_invasion = False
+
         # Callbacks
         self.status_changed = lambda *_, **__: None
         self.destination_changed = lambda *_, **__: None

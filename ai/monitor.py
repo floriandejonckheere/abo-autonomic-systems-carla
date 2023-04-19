@@ -45,4 +45,4 @@ class Monitor(object):
         self = weak_self()
         if not self:
             return
-        self.knowledge.update_data('lane_invasion', event.crossed_lane_markings)
+        self.knowledge.update(lane_invasion=event.crossed_lane_markings)
