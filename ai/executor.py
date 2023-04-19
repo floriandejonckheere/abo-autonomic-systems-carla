@@ -78,8 +78,6 @@ class Executor(object):
         # Convert angle from radians to degrees
         angle = np.degrees(angle_radians)
 
-        print(f'angle={angle:.2f}')
-
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed, angle)
 
@@ -97,5 +95,7 @@ class Executor(object):
 
         control.steer = self.controller.get_steer()
         control.hand_brake = False
+
+        print(f'angle={angle:.2f} steer={control.steer:.2f}')
 
         self.vehicle.apply_control(control)

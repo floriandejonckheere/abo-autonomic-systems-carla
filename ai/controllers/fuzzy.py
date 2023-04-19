@@ -14,11 +14,14 @@ class Fuzzy:
         self.x_distance = np.arange(0, 101, 1)
         self.x_speed = np.arange(0, 101, 1)
         self.x_target_speed = np.arange(0, 101, 1)
+        self.x_angle = np.arange(-180, 180, 1)
 
         # Fuzzy membership functions
         self.dist_lo = fz.zmf(self.x_distance, 5, 15)
         self.dist_hi = fz.smf(self.x_distance, 5, 15)
         self.speed_hi = fz.smf(self.x_speed, 4, 5)
+
+        self.steer_hi = fz.smf(self.x_angle, -65, 65)
 
     def update(self, distance, speed, target_speed, angle):
         self.distance = distance
@@ -42,7 +45,11 @@ class Fuzzy:
         return 0.0
 
     def get_steer(self):
-        if self.angle < 0:
-            return -0.2
-        else:
-            return 0.2
+        # Steer is proportional to the angle
+        steer = fz.interp_membership(self.x_angle, self.steer_hi, self.angle)
+
+        # Rescale to [-1, 1]
+        steer = (steer - 0.5) * 2
+
+        # Clamp to [-0.7, 0.7]
+        return np.clip(steer, -0.7, 0.7)
