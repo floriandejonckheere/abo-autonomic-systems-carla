@@ -24,6 +24,26 @@ Run the `CarlaUE4.exe` binary to start the simulation server, and run the Python
 python manual_control.py
 ```
 
+## Usage
+
+Run the `manual_control.py` script to control the vehicle in the simulation.
+
+```sh
+python manual_control.py
+```
+
+Run the `ai_test.py` script to test the AI controller.
+
+```sh
+python ai_test.py
+```
+
+Run the `ai_control.py` script to control the vehicle in the simulation using the AI controller.
+
+```sh
+python ai_control.py
+```
+
 ## Troubleshooting
 
 When running any Python script:
