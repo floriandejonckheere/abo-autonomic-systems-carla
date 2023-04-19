@@ -36,6 +36,8 @@ class Knowledge(object):
         self.memory = {
             'location': carla.Location(0.0, 0.0, 0.0),
             'rotation': carla.Rotation(0.0, 0.0, 0.0),
+            'velocity': 0.0,
+            'target_speed': 0.0,
         }
         self.destination = self.get_location()
 
