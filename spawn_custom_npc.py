@@ -26,7 +26,7 @@ import argparse
 import random
 import time
 
-import custom_ai as ai
+from ai.autopilot import Autopilot
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -96,7 +96,7 @@ def main():
             if vehicle is not None:
                 actor_list.append(vehicle)
                 #Instead of setting default autopilot, we create our own and append it to the list of autopilots 
-                autopilot = ai.Autopilot(vehicle)
+                autopilot = Autopilot(vehicle)
                 #We also register callback to know when the vehicle has arrived at it's destination
                 autopilot.set_route_finished_callback(route_finished)
                 vai_list.append(autopilot)
