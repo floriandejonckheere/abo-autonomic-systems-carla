@@ -34,7 +34,7 @@ class Executor(object):
         status = self.knowledge.get_status()
         # TODO: this needs to be able to handle
         if status == Status.DRIVING:
-            dest = self.knowledge.get_current_destination()
+            dest = self.knowledge.get_destination()
             self.update_control(dest, [1], time_elapsed)
 
     # TODO: steer in the direction of destination and throttle or brake depending on how close we are to destination

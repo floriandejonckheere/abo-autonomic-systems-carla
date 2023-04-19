@@ -33,49 +33,49 @@ class Knowledge(object):
     def __init__(self):
         # Variables
         self.status = Status.ARRIVED
-        self.memory = {
-            'location': carla.Location(0.0, 0.0, 0.0),
-            'rotation': carla.Rotation(0.0, 0.0, 0.0),
-            'velocity': 0.0,
-            'target_speed': 0.0,
-        }
-        self.destination = self.get_location()
+        self.destination = carla.Location(0.0, 0.0, 0.0)
+        self.location = carla.Location(0.0, 0.0, 0.0)
+        self.rotation = carla.Rotation(0.0, 0.0, 0.0)
+        self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
+        self.target_speed = 0.0
 
         # Callbacks
         self.status_changed = lambda *_, **__: None
         self.destination_changed = lambda *_, **__: None
         self.data_changed = lambda *_, **__: None
 
-    # Get the current status of the vehicle
     def get_status(self):
         return self.status
 
-    # Get the current destination of the vehicle
-    def get_current_destination(self):
+    def get_destination(self):
         return self.destination
 
-    # Get the current speed of the vehicle
-    def get_speed(self):
-        v = self.memory['velocity']
+    def get_location(self):
+        return self.location
 
-        return 3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)
+    def get_rotation(self):
+        return self.rotation
 
-    # Get the target speed of the vehicle
+    def get_velocity(self):
+        return self.velocity
+
     def get_target_speed(self):
-        return self.memory['target_speed']
+        return self.target_speed
 
-    # Get the distance to the current destination
+    def get_speed(self):
+        return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
+
     def get_distance_to_destination(self):
         return utils.distance(self.get_location(), self.destination)
 
     def get_angle_to_destination(self):
         # Normalize source and destination vectors
-        source_vector = self.memory['rotation'].get_forward_vector()
+        source_vector = self.rotation.get_forward_vector()
         source_norm = [source_vector.x, source_vector.y]
         source_norm /= np.linalg.norm(source_norm)
 
         # Destination vector (relative to current position of vehicle)
-        destination_norm = [self.destination.x - self.memory['location'].x, self.destination.y - self.memory['location'].y]
+        destination_norm = [self.destination.x - self.location.x, self.destination.y - self.location.y]
         destination_norm /= np.linalg.norm(destination_norm)
 
         # Calculate dot product between vectors
@@ -94,14 +94,6 @@ class Knowledge(object):
         # Convert angle from radians to degrees
         return np.degrees(angle_radians)
 
-    # Return current location of the vehicle
-    def get_location(self):
-        return self.memory['location']
-
-    # Return current rotation of the vehicle
-    def get_rotation(self):
-        return self.memory['rotation']
-
     # Whether the vehicle has arrived at the destination
     def arrived_at(self, destination):
         return utils.distance(self.get_location(), destination) < 5.0
@@ -119,9 +111,11 @@ class Knowledge(object):
 
     # A function to receive data from monitor
     # TODO: Add callback so that analyser can know when to parse the data
-    def update_data(self, data_name, pars):
-        self.memory[data_name] = pars
-        self.data_changed(data_name)
+    def update(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+        for key in kwargs:
+            self.data_changed(key)
 
     def set_status_changed_callback(self, callback):
         self.status_changed = callback
