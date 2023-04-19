@@ -21,7 +21,7 @@ class Fuzzy:
         self.dist_hi = fz.smf(self.x_distance, 2, 5)
         self.speed_hi = fz.smf(self.x_speed, 7, 9)
 
-        self.steer_hi = fz.smf(self.x_angle, -65, 65)
+        self.steer_hi = fz.smf(self.x_angle, -90, 90)
 
     def update(self, distance, speed, target_speed, angle):
         self.distance = distance
