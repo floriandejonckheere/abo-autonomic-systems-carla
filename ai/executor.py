@@ -73,8 +73,7 @@ class Executor(object):
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 5, 0), life_time=0.5, color=carla.Color(0, 255, 0))
         self.vehicle.get_world().debug.draw_line(source, source + carla.Location(0, 0, 5), life_time=0.5, color=carla.Color(0, 0, 255))
 
-        # print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
-        print(f'angle={angle:.2f} steer={control.steer:.2f}')
+        print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
 
         # Apply control
         self.vehicle.apply_control(control)

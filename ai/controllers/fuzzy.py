@@ -31,14 +31,15 @@ class Fuzzy:
 
     def get_throttle(self):
         # Throttle is proportional to the distance
-        t1 = fz.interp_membership(self.x_distance, self.dist_hi, self.distance)
+        dst = fz.interp_membership(self.x_distance, self.dist_hi, self.distance)
 
         # Modifier to the throttle based on speed relative to the speed target_speed
-        t2 = fz.interp_membership(self.x_speed, self.speed_hi, self.target_speed - self.speed)
+        spd = fz.interp_membership(self.x_speed, self.speed_hi, self.target_speed - self.speed)
 
-        # print(f'{self.speed:.2f}/{self.target_speed:.2f} => ({t1:.2f}, {t2:.2f})')
+        throttle = dst * spd
 
-        return 0.7 * t1 * t2
+        # Clamp to [0.0, 0.8]
+        return np.clip(throttle, 0.0, 0.8)
 
     def get_brake(self):
         # return 0.6 * fz.interp_membership(self.x_distance, self.dist_lo, self.distance)
