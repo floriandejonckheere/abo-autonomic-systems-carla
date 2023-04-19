@@ -19,7 +19,7 @@ class Fuzzy:
         # Fuzzy membership functions
         self.dist_lo = fz.zmf(self.x_distance, 5, 15)
         self.dist_hi = fz.smf(self.x_distance, 5, 15)
-        self.speed_hi = fz.smf(self.x_speed, 4, 5)
+        self.speed_hi = fz.smf(self.x_speed, 7, 9)
 
         self.steer_hi = fz.smf(self.x_angle, -65, 65)
 
@@ -36,10 +36,7 @@ class Fuzzy:
         # Modifier to the throttle based on speed relative to the speed target_speed
         spd = fz.interp_membership(self.x_speed, self.speed_hi, self.target_speed - self.speed)
 
-        throttle = dst * spd
-
-        # Clamp to [0.0, 0.8]
-        return np.clip(throttle, 0.0, 0.8)
+        return dst * spd
 
     def get_brake(self):
         # return 0.6 * fz.interp_membership(self.x_distance, self.dist_lo, self.distance)
