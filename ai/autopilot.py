@@ -27,7 +27,7 @@ class Autopilot(object):
         self.knowledge.set_status_changed_callback(self.status_updated)
         self.analyser = Analyzer(self.knowledge)
         self.monitor = Monitor(self.knowledge, self.vehicle)
-        self.planner = Planner(self.knowledge)
+        self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
         self.prev_time = int(round(time.time() * 1000))
         self.route_finished = lambda *_, **__: None

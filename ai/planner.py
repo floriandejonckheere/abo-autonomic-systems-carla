@@ -13,6 +13,8 @@ except IndexError:
 
 import carla
 
+import ai.utils as utils
+
 from .knowledge import Status
 
 
@@ -20,8 +22,11 @@ from .knowledge import Status
 # In our case it creates a list of waypoints to follow so that vehicle arrives at destination
 # Alternatively this can also provide a list of waypoints to try avoid crashing or 'uncrash' itself
 class Planner(object):
-    def __init__(self, knowledge):
+    def __init__(self, knowledge, vehicle):
         self.knowledge = knowledge
+        self.vehicle = vehicle
+
+        # List of waypoints to follow
         self.path = deque([])
 
     # Create a map of waypoints to follow to the destination and save it
@@ -71,6 +76,46 @@ class Planner(object):
     # TODO: Implementation
     def build_path(self, source, destination):
         self.path = deque([])
-        self.path.append(destination)
         # TODO: create path of waypoints from source to
+
+        debug = self.vehicle.get_world().debug
+
+        # Current waypoint
+        waypoint = self.knowledge.get_waypoint()
+
+        while True:
+            # Compute current waypoint distance to destination
+            distance = utils.distance(waypoint.transform.location, destination)
+
+            # If we are close enough to destination, then stop
+            if distance < 5.0:
+                print('Reached destination')
+                break
+
+            # Draw current waypoint
+            debug.draw_point(waypoint.transform.location, size=0.2, life_time=10)
+            print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
+
+            # Decide on next waypoint
+            next_waypoints = waypoint.next(2.0)
+
+            # If there is only one next waypoint, then select it
+            if len(next_waypoints) == 1:
+                waypoint = next_waypoints[0]
+                continue
+
+            # If there are multiple next waypoints, then select the one that is closest to destination
+            waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
+
+            # Add waypoint to path
+            self.path.append(waypoint.transform.location)
+
+            # If the distance is increasing (the vehicle overshot), then stop
+            if utils.distance(waypoint.transform.location, destination) > distance:
+                print('Overshot destination')
+                break
+
+        # Add destination to path
+        self.path.append(destination)
+
         return self.path
