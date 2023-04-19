@@ -29,60 +29,53 @@ class Status(Enum):
 # Class that holds the knowledge of the current state and serves as interaction point for all the modules
 class Knowledge(object):
     def __init__(self):
+        # Variables
         self.status = Status.ARRIVED
-        self.memory = {'location': carla.Vector3D(0.0, 0.0, 0.0)}
+        self.memory = {
+            'location': carla.Vector3D(0.0, 0.0, 0.0),
+        }
         self.destination = self.get_location()
+
+        # Callbacks
         self.status_changed = lambda *_, **__: None
         self.destination_changed = lambda *_, **__: None
         self.data_changed = lambda *_, **__: None
 
-    def set_data_changed_callback(self, callback):
-        self.data_changed = callback
-
-    def set_status_changed_callback(self, callback):
-        self.status_changed = callback
-
-    def set_destination_changed_callback(self, callback):
-        self.destination_changed = callback
-
+    # Get the current status of the vehicle
     def get_status(self):
         return self.status
 
-    def set_status(self, new_status):
-        self.status = new_status
-
+    # Get the current destination of the vehicle
     def get_current_destination(self):
         return self.destination
 
+    # Get the current speed of the vehicle
     def get_speed(self):
-        v = self.retrieve_data('velocity')
+        v = self.memory['velocity']
 
         return 3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)
 
+    # Get the target speed of the vehicle
     def get_target_speed(self):
-        return self.retrieve_data('target_speed')
+        return self.memory['target_speed']
 
-    # Retrieving data from memory
-    # !Take note that it is unsafe and does not check whether the given field is in dic
-    def retrieve_data(self, data_name):
-        return self.memory[data_name]
+    # Return current location of the vehicle
+    def get_location(self):
+        return self.memory['location']
+
+    # Return current rotation of the vehicle
+    def get_rotation(self):
+        return self.memory['rotation']
+
+    # Whether the vehicle has arrived at the destination
+    def arrived_at(self, destination):
+        return utils.distance(self.get_location(), destination) < 5.0
 
     # Update status to correct value and make sure that everything is handled properly
     def update_status(self, new_status):
         if (self.status != Status.CRASHED or new_status == Status.HEALING) and self.status != new_status:
-            self.set_status(new_status)
+            self.status = new_status
             self.status_changed(new_status)
-
-    # Return current location of the vehicle
-    def get_location(self):
-        return self.retrieve_data('location')
-
-    # Return current rotation of the vehicle
-    def get_rotation(self):
-        return self.retrieve_data('rotation')
-
-    def arrived_at(self, destination):
-        return utils.distance(self.get_location(), destination) < 5.0
 
     def update_destination(self, new_destination):
         if utils.distance(self.destination, new_destination) > 5.0:
@@ -94,3 +87,12 @@ class Knowledge(object):
     def update_data(self, data_name, pars):
         self.memory[data_name] = pars
         self.data_changed(data_name)
+
+    def set_status_changed_callback(self, callback):
+        self.status_changed = callback
+
+    def set_destination_changed_callback(self, callback):
+        self.destination_changed = callback
+
+    def set_data_changed_callback(self, callback):
+        self.data_changed = callback
