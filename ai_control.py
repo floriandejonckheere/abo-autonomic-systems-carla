@@ -9,6 +9,38 @@
 # Allows controlling a vehicle with a keyboard. For a simpler and more
 # documented example, please take a look at tutorial.py.
 
+"""
+Welcome to CARLA manual control.
+
+Use ARROWS or WASD keys for control.
+
+    W            : throttle
+    S            : brake
+    AD           : steer
+    Q            : toggle reverse
+    Space        : hand-brake
+    P            : toggle autopilot
+    M            : toggle manual transmission
+    ,/.          : gear up/down
+
+    TAB          : change sensor position
+    `            : next sensor
+    [1-9]        : change to sensor [1-9]
+    C            : change weather (Shift+C reverse)
+    Backspace    : change vehicle
+
+    R            : toggle recording images to disk
+
+    CTRL + R     : toggle recording of simulation (replacing any previous)
+    CTRL + P     : start replaying last recorded simulation
+    CTRL + +     : increments the start time of the replay by 1 second (+SHIFT = 10 seconds)
+    CTRL + -     : decrements the start time of the replay by 1 second (+SHIFT = 10 seconds)
+
+    F1           : toggle HUD
+    H/?          : toggle help
+    ESC          : quit
+"""
+
 from __future__ import print_function
 
 
@@ -207,15 +239,8 @@ class World(object):
 class KeyboardControl(object):
     def __init__(self, world, start_in_autopilot):
         self._autopilot_enabled = start_in_autopilot
-        if isinstance(world.player, carla.Vehicle):
-            self._control = carla.VehicleControl()
-            world.player.set_autopilot(self._autopilot_enabled)
-        elif isinstance(world.player, carla.Walker):
-            self._control = carla.WalkerControl()
-            self._autopilot_enabled = False
-            self._rotation = world.player.get_transform().rotation
-        else:
-            raise NotImplementedError("Actor type not supported")
+        self._control = carla.VehicleControl()
+        world.player.set_autopilot(self._autopilot_enabled)
         self._steer_cache = 0.0
         world.hud.notification("Press 'H' or '?' for help.", seconds=4.0)
 
@@ -295,11 +320,8 @@ class KeyboardControl(object):
                         world.player.set_autopilot(self._autopilot_enabled)
                         world.hud.notification('Autopilot %s' % ('On' if self._autopilot_enabled else 'Off'))
         if not self._autopilot_enabled:
-            if isinstance(self._control, carla.VehicleControl):
-                self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
-                self._control.reverse = self._control.gear < 0
-            elif isinstance(self._control, carla.WalkerControl):
-                self._parse_walker_keys(pygame.key.get_pressed(), clock.get_time())
+            self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
+            self._control.reverse = self._control.gear < 0
             world.player.apply_control(self._control)
 
     def _parse_vehicle_keys(self, keys, milliseconds):
@@ -397,19 +419,14 @@ class HUD(object):
             'GNSS:% 24s' % ('(% 2.6f, % 3.6f)' % (world.gnss_sensor.lat, world.gnss_sensor.lon)),
             'Height:  % 18.0f m' % t.location.z,
             '']
-        if isinstance(c, carla.VehicleControl):
-            self._info_text += [
-                ('Throttle:', c.throttle, 0.0, 1.0),
-                ('Steer:', c.steer, -1.0, 1.0),
-                ('Brake:', c.brake, 0.0, 1.0),
-                ('Reverse:', c.reverse),
-                ('Hand brake:', c.hand_brake),
-                ('Manual:', c.manual_gear_shift),
-                'Gear:        %s' % {-1: 'R', 0: 'N'}.get(c.gear, c.gear)]
-        elif isinstance(c, carla.WalkerControl):
-            self._info_text += [
-                ('Speed:', c.speed, 0.0, 5.556),
-                ('Jump:', c.jump)]
+        self._info_text += [
+            ('Throttle:', c.throttle, 0.0, 1.0),
+            ('Steer:', c.steer, -1.0, 1.0),
+            ('Brake:', c.brake, 0.0, 1.0),
+            ('Reverse:', c.reverse),
+            ('Hand brake:', c.hand_brake),
+            ('Manual:', c.manual_gear_shift),
+            'Gear:        %s' % {-1: 'R', 0: 'N'}.get(c.gear, c.gear)]
         self._info_text += [
             '',
             'Collision:',
