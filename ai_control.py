@@ -132,12 +132,18 @@ class World(object):
         # Keep same camera config if the camera manager exists.
         cam_index = self.camera_manager._index if self.camera_manager is not None else 0
         cam_pos_index = self.camera_manager._transform_index if self.camera_manager is not None else 0
+
         # Get a random blueprint.
-        blueprint = random.choice(self.world.get_blueprint_library().filter(self._actor_filter))
+        blueprints = self.world.get_blueprint_library().filter(self._actor_filter)
+        blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
+        blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
+        blueprint = random.choice(blueprints)
+
         blueprint.set_attribute('role_name', 'hero')
         if blueprint.has_attribute('color'):
             color = random.choice(blueprint.get_attribute('color').recommended_values)
             blueprint.set_attribute('color', color)
+
         # Spawn the player.
         if self.player is not None:
             spawn_point = self.player.get_transform()
