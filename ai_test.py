@@ -114,7 +114,8 @@ def main():
                 hud.render(display)
 
                 pygame.display.flip()
-
+    except KeyboardInterrupt:
+        pass
     finally:
         if game:
             # Stop game (autopilot)
