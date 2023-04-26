@@ -86,7 +86,7 @@ class Game:
                 self.counter = 0
 
     def stop(self):
-        print('Exiting game...')
+        print('Exiting...')
         for actor in self.actors:
             actor.is_alive and actor.destroy()
 
