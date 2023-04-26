@@ -56,13 +56,18 @@ class Planner(object):
         waypoint = self.navigator.update()
 
         if waypoint is None:
-            # If there are no more waypoints, we have arrived
+            # If there are no more waypoints, the vehicle has arrived
             self.knowledge.state_machine.arrive()
             # TODO: add a soft braking action to the queue?
         else:
-            # Otherwise, we keep driving to the next waypoint
+            # Otherwise, we keep driving towards the next waypoint
             self.knowledge.update(waypoint=waypoint)
 
             self.knowledge.state_machine.drive()
-            self.knowledge.queue.append(actions.Drive(self.knowledge))
 
+            # Accelerate towards the next waypoint
+            self.knowledge.queue.append(actions.Accelerate(self.knowledge))
+            self.knowledge.queue.append(actions.Limit(self.knowledge))
+
+            # Steer towards the next waypoint
+            self.knowledge.queue.append(actions.Steer(self.knowledge))
