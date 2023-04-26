@@ -70,7 +70,7 @@ class Game:
         self.autopilot.set_destination(destination)
 
         # Set up callback for destination arrival
-        broker.subscribe('state', self.state_changed)
+        broker.subscribe('state_changed', self.state_changed)
 
         # Spawn kamikaze for milestone 2
         if ms == 2:
@@ -128,9 +128,9 @@ class Game:
         start_point = points[index]
         return self.world.get_map().get_waypoint(start_point.location)
 
-    def state_changed(self, state):
+    def state_changed(self, event):
         # Handle only arrived state change
-        if state is not 'arrived':
+        if event['state'] is not 'arrived':
             return
 
         pos = self.autopilot.vehicle.get_transform().location

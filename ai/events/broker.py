@@ -4,10 +4,10 @@ class Broker:
     def __init__(self):
         self.topics = {}
 
-    def publish(self, topic, message):
+    def publish(self, topic, **event):
         if topic in self.topics:
             for callback in self.topics[topic]:
-                callback(message)
+                callback(event)
 
     def subscribe(self, topic, callback):
         if topic not in self.topics:

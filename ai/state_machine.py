@@ -16,20 +16,5 @@ class StateMachine(sm.StateMachine):
     heal = crashed.to(healing)
     park = driving.to(parked) | arrived.to(parked)
 
-    def on_enter_idle(self):
-        broker.publish('state', 'idle')
-
-    def on_enter_arrived(self):
-        broker.publish('state', 'arrived')
-
-    def on_enter_driving(self):
-        broker.publish('state', 'driving')
-
-    def on_enter_crashed(self):
-        broker.publish('state', 'crashed')
-
-    def on_enter_healing(self):
-        broker.publish('state', 'healing')
-
-    def on_enter_parked(self):
-        broker.publish('state', 'parked')
+    def on_enter_state(self, event, state):
+        broker.publish('state_changed', state=state.id, event=event)
