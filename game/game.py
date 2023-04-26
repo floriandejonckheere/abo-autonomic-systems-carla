@@ -129,7 +129,7 @@ class Game:
         return self.world.get_map().get_waypoint(start_point.location)
 
     def route_finished(self):
-        pos = self.autopilot.get_vehicle().get_transform().location
+        pos = self.autopilot.vehicle.get_transform().location
         print("Vehicle arrived at destination: ", pos)
         if pos.distance(carla.Location(self.waypoints[-1])) < 5.0:
             print("Excercise route finished")

@@ -35,9 +35,6 @@ class Autopilot(object):
     def set_crash_callback(self, callback):
         self.knowledge.state_machine.crashed_callback = callback
 
-    def get_vehicle(self):
-        return self.vehicle
-
     # Update all the modules and return the current status
     def update(self):
         self.monitor.update()
