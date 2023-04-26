@@ -21,7 +21,6 @@ except IndexError:
 import carla
 import pygame
 
-import time
 import argparse
 
 from game.game import Game
@@ -42,9 +41,17 @@ def main():
         default=False,
         type=bool,
         help='Enable debug view (default: false)')
+    argparser.add_argument(
+        '--res',
+        metavar='WIDTHxHEIGHT',
+        default='480x720',
+        help='window resolution (default: 480x720)')
     args = argparser.parse_args()
+    args.width, args.height = [int(x) for x in args.res.split('x')]
 
-    # Initialize game context
+    # Initialize game
+    pygame.init()
+    pygame.font.init()
     game = None
 
     try:
@@ -52,16 +59,28 @@ def main():
         client.set_timeout(20.0)
         world = client.get_world()
 
+        if args.debug:
+            display = pygame.display.set_mode(
+                (args.width, args.height),
+                pygame.HWSURFACE | pygame.DOUBLEBUF)
+
         # Initialize game context
-        game = Game(world, args.debug, args.milestone_number)
+        game = Game(world, args.debug, args.milestone_number, args.width, args.height, display)
 
         # Setup game (actors, autopilot)
         game.setup()
 
+        # Setup clock
+        clock = pygame.time.Clock()
+
         # Main loop
         while game.running:
-            game.tick()
-            time.sleep(0.1)
+            clock.tick_busy_loop(100)
+
+            game.tick(clock)
+
+            if args.debug:
+                game.hud.render(display)
 
     finally:
         game and game.stop()

@@ -15,6 +15,7 @@ import carla
 import random
 
 from ai.autopilot import Autopilot
+from .hud import HUD
 
 
 class Game:
@@ -28,10 +29,17 @@ class Game:
 
     MILESTONES = [EX1, EX2, EX3]
 
-    def __init__(self, world, debug, milestone_number):
+    def __init__(self, world, debug, milestone_number, width, height, display=None):
         self.world = world
         self.debug = debug
         self.milestone_number = milestone_number
+
+        self.hud = HUD(self, width, height)
+        self.display = display
+
+        # Set HUD world tick callback
+        debug and self.world.on_tick(self.hud.on_world_tick)
+
 
         self.autopilot = None
         self.actors = []
@@ -73,7 +81,8 @@ class Game:
         if ms == 2:
             self.spawn_kamikaze(start.get_right_lane())
 
-    def tick(self):
+    def tick(self, clock):
+        # Update autopilot
         status = self.autopilot.update()
 
         if status is None:
@@ -83,6 +92,10 @@ class Game:
                 self.running = False
             else:
                 self.counter = 0
+
+        # Update HUD
+        if self.debug:
+            self.hud.tick(self, clock)
 
     def stop(self):
         print('Exiting game...')
