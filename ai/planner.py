@@ -15,7 +15,7 @@ import carla
 
 import ai.utils as utils
 
-from .knowledge import Status
+from .state_machine import StateMachine
 
 
 # Planner is responsible for creating a plan for moving around
@@ -44,34 +44,35 @@ class Planner(object):
     def update_plan(self):
         # If we have no waypoints, then we have arrived
         if len(self.path) == 0:
-            self.knowledge.update_status(Status.ARRIVED)
+            self.knowledge.state_machine.arrive()
             return
 
         # If we are close enough to the next waypoint, remove it from the list
         if utils.distance(self.knowledge.get_location(), self.path[0]) < 5.0:
             self.path.popleft()
 
-        # Stop driving if we have arrived
         if len(self.path) == 0:
-            self.knowledge.update_status(Status.ARRIVED)
+            # If we have no waypoints, then we have arrived
+            self.knowledge.state_machine.arrive()
         else:
-            self.knowledge.update_status(Status.DRIVING)
+            # Otherwise, we keep driving (possibly after arriving)
+            self.knowledge.state_machine.drive()
 
     # Get current destination
     def get_current_destination(self):
-        status = self.knowledge.get_status()
+        state = self.knowledge.get_state()
 
         # If we are driving, then the current destination is next waypoint
-        if status == Status.DRIVING:
+        if state == StateMachine.driving:
             # TODO: Take into account traffic lights and other cars
             return self.path[0]
-        if status == Status.ARRIVED:
+        if state == StateMachine.arrived:
             return self.knowledge.get_location()
-        if status == Status.HEALING:
+        if state == StateMachine.healing:
             # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
             # Afterwards needs to remake the path.
             return self.knowledge.get_location()
-        if status == Status.CRASHED:
+        if state == StateMachine.crashed:
             # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
             #  crash state. You should use separate waypoint list for that, to not mess with the original path.
             return self.knowledge.get_location()
@@ -96,7 +97,7 @@ class Planner(object):
 
             # Draw current waypoint
             debug.draw_point(waypoint.transform.location, size=0.2, life_time=20)
-            print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
+            # print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
 
             # Get next (legal) waypoints
             next_waypoints = waypoint.next(2.0)

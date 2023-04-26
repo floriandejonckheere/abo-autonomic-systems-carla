@@ -19,20 +19,14 @@ import carla
 
 import ai.utils as utils
 
-
-class Status(Enum):
-    ARRIVED = 0
-    DRIVING = 1
-    CRASHED = 2
-    HEALING = 3
-    UNDEFINED = 4
+from .state_machine import StateMachine
 
 
 # Class that holds the knowledge of the current state and serves as interaction point for all the modules
 class Knowledge(object):
     def __init__(self):
         # Variables
-        self.status = Status.ARRIVED
+        self.state_machine = StateMachine()
         self.destination = carla.Location(0.0, 0.0, 0.0)
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
@@ -43,12 +37,12 @@ class Knowledge(object):
         self.lane_invasion = False
 
         # Callbacks
-        self.status_changed = lambda *_, **__: None
+        self.state_changed = lambda *_, **__: None
         self.destination_changed = lambda *_, **__: None
         self.data_changed = lambda *_, **__: None
 
-    def get_status(self):
-        return self.status
+    def get_state(self):
+        return self.state_machine.current_state
 
     def get_destination(self):
         return self.destination
@@ -104,12 +98,6 @@ class Knowledge(object):
     def arrived_at(self, destination):
         return utils.distance(self.get_location(), destination) < 5.0
 
-    # Update status to correct value and make sure that everything is handled properly
-    def update_status(self, new_status):
-        if (self.status != Status.CRASHED or new_status == Status.HEALING) and self.status != new_status:
-            self.status = new_status
-            self.status_changed(new_status)
-
     def update_destination(self, new_destination):
         if utils.distance(self.destination, new_destination) > 5.0:
             self.destination = new_destination
@@ -122,9 +110,6 @@ class Knowledge(object):
 
         for key in kwargs:
             self.data_changed(key)
-
-    def set_status_changed_callback(self, callback):
-        self.status_changed = callback
 
     def set_destination_changed_callback(self, callback):
         self.destination_changed = callback

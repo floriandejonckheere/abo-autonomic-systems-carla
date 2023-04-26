@@ -141,7 +141,6 @@ class Game:
             control.brake = 1.0
             control.hand_brake = True
             self.autopilot.get_vehicle().apply_control(control)
-
         else:
             self.autopilot.set_destination(self.waypoints[-1])
 

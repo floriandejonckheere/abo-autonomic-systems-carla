@@ -24,26 +24,17 @@ class Autopilot(object):
     def __init__(self, vehicle):
         self.vehicle = vehicle
         self.knowledge = Knowledge()
-        self.knowledge.set_status_changed_callback(self.status_updated)
         self.analyzer = Analyzer(self.knowledge)
         self.monitor = Monitor(self.knowledge, self.vehicle)
         self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
         self.prev_time = int(round(time.time() * 1000))
-        self.route_finished = lambda *_, **__: None
-        self.crashed = lambda *_, **__: None
-
-    def status_updated(self, new_status):
-        if new_status == Status.ARRIVED:
-            self.route_finished()
-        if new_status == Status.CRASHED:
-            self.crashed(self)
 
     def set_route_finished_callback(self, callback):
-        self.route_finished = callback
+        self.knowledge.state_machine.arrived_callback = callback
 
     def set_crash_callback(self, callback):
-        self.crashed = callback
+        self.knowledge.state_machine.crashed_callback = callback
 
     def get_vehicle(self):
         return self.vehicle
@@ -59,7 +50,7 @@ class Autopilot(object):
         self.planner.update(delta_time)
         self.executor.update(delta_time)
 
-        return self.knowledge.get_status()
+        return self.knowledge.get_state()
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
     def set_destination(self, destination):
