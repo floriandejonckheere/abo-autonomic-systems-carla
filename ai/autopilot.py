@@ -35,7 +35,7 @@ class Autopilot(object):
 
     def status_updated(self, new_status):
         if new_status == Status.ARRIVED:
-            self.route_finished(self)
+            self.route_finished()
         if new_status == Status.CRASHED:
             self.crashed(self)
 

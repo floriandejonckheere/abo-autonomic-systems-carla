@@ -35,24 +35,27 @@ class Game:
 
         self.autopilot = None
         self.actors = []
+        self.waypoints = []
 
         self.running = True
 
     def setup(self):
+        # Setup waypoints
         ms = max(0, min(self.milestone_number - 1, len(self.MILESTONES) - 1))
-        ex = self.MILESTONES[ms]
-        end = ex[len(ex) - 1]
-        destination = ex[1]
+        self.waypoints = self.MILESTONES[ms]
+
+        # First destination is second waypoint
+        destination = self.waypoints[1]
 
         # Render waypoints
         if self.debug:
-            for i, wp in enumerate(ex):
+            for i, wp in enumerate(self.waypoints):
                 self.world.debug.draw_string(wp, str(i), draw_shadow=False,
                                              color=carla.Color(r=255, g=0, b=0), life_time=20.0,
                                              persistent_lines=True)
 
         # Getting waypoint to spawn
-        start = self.get_start_point(ex[0])
+        start = self.get_start_point(self.waypoints[0])
 
         # Spawning
         vehicle = self.try_spawn_random_vehicle_at(start.transform)
@@ -60,20 +63,12 @@ class Game:
         if vehicle is None:
             raise Exception("Could not spawn vehicle")
 
-        # Setting autopilot
-        def route_finished(autopilot):
-            pos = self.autopilot.get_vehicle().get_transform().location
-            print("Vehicle arrived at destination: ", pos)
-            if pos.distance(carla.Location(end)) < 5.0:
-                print("Excercise route finished")
-                self.running = False
-            else:
-                self.autopilot.set_destination(end)
-
+        # Set up autopilot
         self.autopilot = Autopilot(vehicle)
         self.autopilot.set_destination(destination)
-        self.autopilot.set_route_finished_callback(route_finished)
+        self.autopilot.set_route_finished_callback(self.route_finished)
 
+        # Spawn kamikaze for exercise 2
         if ms == 2:
             spawn = start.get_right_lane()
             kamikaze = self.try_spawn_random_vehicle_at(spawn.transform)
@@ -102,11 +97,9 @@ class Game:
         return self.autopilot.update()
 
     def stop(self):
-        print('Destroying actors')
+        print('Exiting game...')
         for actor in self.actors:
             actor.destroy()
-
-        print('Done. Exiting...')
 
     def try_spawn_random_vehicle_at(self, transform, recursion=0):
         blueprints = self.world.get_blueprint_library().filter('vehicle.*')
@@ -145,3 +138,12 @@ class Game:
                 index = ti
         start_point = points[index]
         return self.world.get_map().get_waypoint(start_point.location)
+
+    def route_finished(self):
+        pos = self.autopilot.get_vehicle().get_transform().location
+        print("Vehicle arrived at destination: ", pos)
+        if pos.distance(carla.Location(self.waypoints[-1])) < 5.0:
+            print("Excercise route finished")
+            self.running = False
+        else:
+            self.autopilot.set_destination(self.waypoints[-1])
