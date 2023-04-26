@@ -69,7 +69,9 @@ class HUD:
 
         self.throttle_history.append(c.throttle)
         self.brake_history.append(c.brake)
-        self.steer_history.append(c.steer)
+
+        # Normalize steer to [0, 1]
+        self.steer_history.append(c.steer + 1 / 2)
 
         destination = self.game.autopilot.knowledge.get_destination()
 
