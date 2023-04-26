@@ -134,6 +134,14 @@ class Game:
         if pos.distance(carla.Location(self.waypoints[-1])) < 5.0:
             print("Excercise route finished")
             self.running = False
+
+            # Stop car
+            control = carla.VehicleControl()
+            control.throttle = 0.0
+            control.brake = 1.0
+            control.hand_brake = True
+            self.autopilot.get_vehicle().apply_control(control)
+
         else:
             self.autopilot.set_destination(self.waypoints[-1])
 
