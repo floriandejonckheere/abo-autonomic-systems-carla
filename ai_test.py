@@ -22,6 +22,8 @@ import carla
 import pygame
 
 import argparse
+import threading
+import time
 
 from game.game import Game
 from game.hud import HUD
@@ -55,7 +57,9 @@ def main():
     # Initialize game
     pygame.init()
     pygame.font.init()
+
     game = None
+    t = None
 
     try:
         client = carla.Client('localhost', 2000)
@@ -82,21 +86,27 @@ def main():
         # Setup game (actors, autopilot)
         game.setup()
 
+        # Game (autopilot) loop
+        def game_loop():
+            clock = pygame.time.Clock()
+
+            while game.running:
+                # Limit game loop to 10 FPS
+                clock.tick(10)
+
+                game.tick()
+
+        # Start game (autopilot) loop
+        t = threading.Thread(target=game_loop)
+        t.start()
+
         # Setup clock
         clock = pygame.time.Clock()
 
-        # Schedule game tick (autopilot) every 500ms
-        pygame.time.set_timer(TICK, 500)
-
         # Main loop
-        while game.running:
-            # Limit loop to 60 FPS
+        while True:
+            # Limit main loop to 60 FPS
             clock.tick(60)
-
-            # Update game (autopilot) if needed
-            for event in pygame.event.get():
-                if event.type == TICK:
-                    game.tick()
 
             # Update HUD
             if args.debug:
@@ -105,11 +115,14 @@ def main():
 
                 pygame.display.flip()
 
-        # Stop game (autopilot)
-        pygame.time.set_timer(pygame.USEREVENT, 0)
-
     finally:
-        game and game.stop()
+        if game:
+            # Stop game (autopilot)
+            game.running = False
+
+            game.stop()
+
+            t.join()
 
         pygame.quit()
 
