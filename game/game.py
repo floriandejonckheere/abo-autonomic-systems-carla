@@ -78,7 +78,7 @@ class Game:
     def stop(self):
         print('Exiting game...')
         for actor in self.actors:
-            actor.destroy()
+            actor.is_alive and actor.destroy()
 
     def try_spawn_random_vehicle_at(self, transform, recursion=0):
         blueprints = self.world.get_blueprint_library().filter('vehicle.*')
