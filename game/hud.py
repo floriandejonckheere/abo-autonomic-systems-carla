@@ -26,6 +26,7 @@ def get_actor_display_name(actor, truncate=250):
     name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
     return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
 
+
 class HUD:
     def __init__(self, game, width, height):
         self.game = game
@@ -74,7 +75,7 @@ class HUD:
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
             'Target speed:% 11.2f km/h' % game.autopilot.knowledge.get_target_speed(),
-            'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
+            'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)),
             u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (t.location.x, t.location.y)),
             'Height:  % 18.0f m' % t.location.z,
