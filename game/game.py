@@ -68,30 +68,9 @@ class Game:
         self.autopilot.set_destination(destination)
         self.autopilot.set_route_finished_callback(self.route_finished)
 
-        # Spawn kamikaze for exercise 2
+        # Spawn kamikaze for milestone 2
         if ms == 2:
-            spawn = start.get_right_lane()
-            kamikaze = self.try_spawn_random_vehicle_at(spawn.transform)
-            bp = self.world.get_blueprint_library().find('sensor.other.collision')
-            sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
-
-            def _on_collision(self, event):
-                if not self:
-                    return
-                print('Collision with: ', event.other_actor.type_id)
-                if event.other_actor.type_id.split('.')[0] == 'vehicle':
-                    print("Test FAILED")
-                kamikaze.destroy()
-                sensor.destroy()
-
-            sensor.listen(lambda event: _on_collision(kamikaze, event))
-
-            control = carla.VehicleControl()
-            control.throttle = 1.0
-            control.steer = -0.07
-            control.brake = 0.0
-            control.hand_brake = False
-            kamikaze.apply_control(control)
+            self.spawn_kamikaze(start.get_right_lane())
 
     def tick(self):
         return self.autopilot.update()
@@ -147,3 +126,26 @@ class Game:
             self.running = False
         else:
             self.autopilot.set_destination(self.waypoints[-1])
+
+    def spawn_kamikaze(self, spawn_point):
+        kamikaze = self.try_spawn_random_vehicle_at(spawn_point.transform)
+        bp = self.world.get_blueprint_library().find('sensor.other.collision')
+        sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
+
+        def _on_collision(self, event):
+            if not self:
+                return
+            print('Collision with: ', event.other_actor.type_id)
+            if event.other_actor.type_id.split('.')[0] == 'vehicle':
+                print("Test FAILED")
+            kamikaze.destroy()
+            sensor.destroy()
+
+        sensor.listen(lambda event: _on_collision(kamikaze, event))
+
+        control = carla.VehicleControl()
+        control.throttle = 1.0
+        control.steer = -0.07
+        control.brake = 0.0
+        control.hand_brake = False
+        kamikaze.apply_control(control)
