@@ -133,10 +133,12 @@ class Game:
         print("Vehicle arrived at destination: ", pos)
         if pos.distance(carla.Location(self.waypoints[-1])) < 5.0:
             print("Excercise route finished")
-            self.running = False
 
-            # Park car (final destination)
+            # Park car (final destination reached)
             self.autopilot.knowledge.state_machine.park()
+
+            # Stop autopilot
+            self.running = False
         else:
             # Set next destination
             self.autopilot.set_destination(self.waypoints[-1])
