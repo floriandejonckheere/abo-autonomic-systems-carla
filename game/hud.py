@@ -13,9 +13,11 @@ except IndexError:
 import carla
 import pygame
 
+import numpy as np
+
+import collections
 import datetime
 import math
-import random
 
 from ai.autopilot import Autopilot
 
@@ -33,6 +35,8 @@ class HUD:
         self.server_fps = 0
         self.frame_number = 0
         self.simulation_time = 0
+
+        self.throttle_history = collections.deque(200 * [0], 200)
 
         self._info_text = []
         self._server_clock = pygame.time.Clock()
@@ -54,6 +58,8 @@ class HUD:
         heading += 'S' if abs(t.rotation.yaw) > 90.5 else ''
         heading += 'E' if 179.5 > t.rotation.yaw > 0.5 else ''
         heading += 'W' if -0.5 > t.rotation.yaw > -179.5 else ''
+
+        self.throttle_history.append(c.throttle)
 
         vehicles = game.world.get_actors().filter('vehicle.*')
 
@@ -82,6 +88,9 @@ class HUD:
             'Reverse:    % 17.2f' % c.reverse,
             'Hand brake: % 17s' % c.hand_brake,
             'Number of vehicles: % 9d' % len(vehicles),
+            '',
+            'Throttle:',
+            self.throttle_history,
         ]
 
     def render(self, display):
@@ -95,7 +104,7 @@ class HUD:
         for item in self._info_text:
             if v_offset + 18 > self.height:
                 break
-            if isinstance(item, list):
+            if isinstance(item, list) or isinstance(item, collections.deque):
                 if len(item) > 1:
                     points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]
                     pygame.draw.lines(display, (255, 136, 0), False, points, 2)
