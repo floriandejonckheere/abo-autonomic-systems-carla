@@ -38,6 +38,7 @@ class Game:
         self.waypoints = []
 
         self.running = True
+        self.counter = 0
 
     def setup(self):
         # Setup waypoints
@@ -73,7 +74,15 @@ class Game:
             self.spawn_kamikaze(start.get_right_lane())
 
     def tick(self):
-        return self.autopilot.update()
+        status = self.autopilot.update()
+
+        if status is None:
+            self.counter += 1
+
+            if self.counter > 3:
+                self.running = False
+            else:
+                self.counter = 0
 
     def stop(self):
         print('Exiting game...')

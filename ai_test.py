@@ -59,17 +59,10 @@ def main():
         game.setup()
 
         # Main loop
-        ctr = 0
         while game.running:
-            status = game.tick()
-            if status == None:
-                ctr += 1
-                if ctr > 3:
-                    game.running = False
-            else:
-                ctr = 0
-
+            game.tick()
             time.sleep(0.1)
+
     finally:
         game and game.stop()
 
