@@ -10,18 +10,12 @@ try:
 except IndexError:
     pass
 
-import carla
 import pygame
 
 import collections
 import datetime
-import math
 
 from .features import Features
-
-
-# Size of graphs (in px)
-GRAPH_SIZE = 200
 
 
 class HUD:
@@ -37,10 +31,6 @@ class HUD:
 
         self.features = Features()
 
-        self.throttle_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
-        self.brake_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
-        self.steer_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
-
         self._info_text = []
         self._server_clock = pygame.time.Clock()
 
@@ -55,12 +45,6 @@ class HUD:
     def tick(self, clock):
         # Extract features
         self.features.analyze(self.game.autopilot)
-
-        self.throttle_history.append(self.features.throttle)
-        self.brake_history.append(self.features.brake)
-
-        # Normalize steer to [0, 1]
-        self.steer_history.append(self.features.steer + 1 / 2)
 
         destination = self.game.autopilot.knowledge.get_destination()
 
@@ -85,13 +69,13 @@ class HUD:
             'Hand brake: % 17s' % self.features.hand_brake,
             '',
             'Throttle:   % 17.2f' % self.features.throttle,
-            self.throttle_history,
+            self.features.throttle_history,
             '',
             'Brake:      % 17.2f' % self.features.brake,
-            self.brake_history,
+            self.features.brake_history,
             '',
             'Steer:      % 17.2f' % self.features.steer,
-            self.steer_history,
+            self.features.steer_history,
         ]
 
     def render(self, display):

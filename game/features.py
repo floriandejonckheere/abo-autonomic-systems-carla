@@ -10,8 +10,12 @@ try:
 except IndexError:
     pass
 
+import collections
 import math
 
+
+# Size of history buffer
+HISTORY_SIZE = 200
 
 def get_actor_display_name(actor, truncate=250):
     name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
@@ -35,6 +39,10 @@ class Features:
         self.reverse = None
 
         self.target_speed = None
+
+        self.throttle_history = collections.deque(HISTORY_SIZE * [0], HISTORY_SIZE)
+        self.brake_history = collections.deque(HISTORY_SIZE * [0], HISTORY_SIZE)
+        self.steer_history = collections.deque(HISTORY_SIZE * [0], HISTORY_SIZE)
 
     def analyze(self, autopilot):
         vehicle = autopilot.vehicle
@@ -61,3 +69,9 @@ class Features:
 
         knowledge = autopilot.knowledge
         self.target_speed = knowledge.get_target_speed()
+
+        self.throttle_history.append(self.throttle)
+        self.brake_history.append(self.brake)
+
+        # Normalize steer to [0, 1]
+        self.steer_history.append(self.steer + 1 / 2)
