@@ -41,11 +41,6 @@ class Knowledge(object):
         # Lane invasion
         self.lane_invasion = False
 
-        # Callbacks
-        self.state_changed = lambda *_, **__: None
-        self.destination_changed = lambda *_, **__: None
-        self.data_changed = lambda *_, **__: None
-
     def state(self):
         return self.state_machine.current_state
 
@@ -69,9 +64,3 @@ class Knowledge(object):
     # TODO: Add callback so that analyzer can know when to parse the data
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
-
-        for key in kwargs:
-            self.data_changed(key)
-
-    def set_data_changed_callback(self, callback):
-        self.data_changed = callback
