@@ -36,6 +36,7 @@ class HUD:
         self.server_fps = 0
         self.frame_number = 0
         self.simulation_time = 0
+        self.map = game.world.get_map().name
 
         self.throttle_history = collections.deque(200 * [0], 200)
 
@@ -51,9 +52,11 @@ class HUD:
         self.simulation_time = timestamp.elapsed_seconds
 
     def tick(self, clock):
-        t = self.game.autopilot.vehicle.get_transform()
-        v = self.game.autopilot.vehicle.get_velocity()
-        c = self.game.autopilot.vehicle.get_control()
+        vehicle = self.game.autopilot.vehicle
+
+        t = vehicle.get_transform()
+        v = vehicle.get_velocity()
+        c = vehicle.get_control()
 
         heading = 'N' if abs(t.rotation.yaw) < 89.5 else ''
         heading += 'S' if abs(t.rotation.yaw) > 90.5 else ''
@@ -69,7 +72,7 @@ class HUD:
             'Client:  % 16.0f FPS' % clock.get_fps(),
             '',
             'Vehicle: % 20s' % get_actor_display_name(self.game.autopilot.vehicle, truncate=20),
-            'Map:     % 20s' % self.game.world.get_map().name,
+            'Map:     % 20s' % self.map,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
             'Target speed:% 11.2f km/h' % self.game.autopilot.knowledge.get_target_speed(),
@@ -81,13 +84,12 @@ class HUD:
             'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_destination(),
             '',
-            'Throttle:   % 17.2f' % c.throttle,
             'Steer:      % 17.2f' % c.steer,
             'Brake:      % 17.2f' % c.brake,
             'Reverse:    % 17.2f' % c.reverse,
             'Hand brake: % 17s' % c.hand_brake,
             '',
-            'Throttle:',
+            'Throttle:   % 17.2f' % c.throttle,
             self.throttle_history,
         ]
 

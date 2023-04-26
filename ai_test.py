@@ -27,6 +27,8 @@ from game.game import Game
 from game.hud import HUD
 
 
+TICK = pygame.USEREVENT + 1
+
 def main():
     argparser = argparse.ArgumentParser(
         description=__doc__)
@@ -83,23 +85,28 @@ def main():
         # Setup clock
         clock = pygame.time.Clock()
 
+        # Schedule game tick (autopilot) every 500ms
+        pygame.time.set_timer(TICK, 500)
+
         # Main loop
         while game.running:
             # Limit loop to 60 FPS
-            clock.tick_busy_loop(60)
+            clock.tick(60)
 
-            print(clock.get_time())
+            # Update game (autopilot) if needed
+            for event in pygame.event.get():
+                if event.type == TICK:
+                    game.tick()
 
-            # Update game (autopilot) if around 500ms have elapsed
-            if clock.get_time() > 450:
-                game.tick()
-
+            # Update HUD
             if args.debug:
-                # Update HUD
                 hud.tick(clock)
                 hud.render(display)
 
                 pygame.display.flip()
+
+        # Stop game (autopilot)
+        pygame.time.set_timer(pygame.USEREVENT, 0)
 
     finally:
         game and game.stop()
