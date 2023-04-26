@@ -142,7 +142,7 @@ class Game:
             self.autopilot.knowledge.state_machine.park()
 
             # Stop autopilot
-            self.running = False
+            # self.running = False
         else:
             # Set next destination
             self.autopilot.set_destination(self.waypoints[-1])

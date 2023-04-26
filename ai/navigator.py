@@ -18,11 +18,37 @@ import ai.utils as utils
 
 
 class Navigator:
-    def __init__(self, world: carla.World):
+    def __init__(self, knowledge, world):
+        self.knowledge = knowledge
         self.world = world
         self.map = world.get_map()
 
-    def navigate(self, source: carla.Location, destination: carla.Location) -> deque:
+        # List of waypoints to follow
+        self.path = deque([])
+
+    # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
+    def update(self):
+        # If there are no more waypoints, we have arrived
+        if len(self.path) == 0:
+            return
+
+        # If we are close enough to the next waypoint, remove it from the list
+        if utils.distance(self.knowledge.location, self.path[0]) < 5.0:
+            self.path.popleft()
+
+        if len(self.path) == 0:
+            # If there are no more waypoints, we have arrived
+            return
+        else:
+            # Otherwise, we keep driving
+            return self.path[0]
+
+    # Create a list of waypoints to follow to the destination and save it
+    def plan(self):
+        # Create a new path from the current location to the current destination
+        self.path = self.build_path(self.knowledge.location, self.knowledge.destination)
+
+    def build_path(self, source: carla.Location, destination: carla.Location) -> deque:
         path = deque([])
 
         # Waypoint on map closest to source location

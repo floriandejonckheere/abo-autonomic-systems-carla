@@ -55,6 +55,7 @@ class HUD:
         # Extract features
         self.features.analyze(self.game.autopilot)
 
+        destination = self.game.autopilot.knowledge.destination
         waypoint = self.game.autopilot.knowledge.waypoint
 
         self._info_text = [
@@ -70,6 +71,7 @@ class HUD:
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
             'Height:  % 18.0f m' % self.features.location.z,
             '',
+            'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Waypoint:   % 17s' % ('(% 5.2f, % 5.2f)' % (waypoint.x, waypoint.y)),
             'Distance:   % 15.2f m' % self.game.autopilot.knowledge.distance_to_waypoint(),
             '',

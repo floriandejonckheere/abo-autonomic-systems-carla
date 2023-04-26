@@ -43,8 +43,5 @@ class Autopilot(object):
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
     def set_destination(self, destination: carla.Location):
-        # Set destination in knowledge
+        # Set destination in knowledge, so that planner can plan the route
         self.knowledge.update(destination=destination)
-
-        # Clear the current plan and replan
-        self.planner.replan()
