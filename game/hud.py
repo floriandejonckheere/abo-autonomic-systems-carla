@@ -18,6 +18,15 @@ import datetime
 from .features import Features
 
 
+COLORS = [
+    (255, 136, 0),
+    (136, 255, 0),
+    (0, 255, 136),
+    (0, 136, 255),
+    (136, 0, 255),
+    (255, 0, 136),
+]
+
 class HUD:
     def __init__(self, game, width, height):
         self.game = game
@@ -56,8 +65,6 @@ class HUD:
             'Map:     % 20s' % self.map,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
-            'Target speed:% 11.2f km/h' % self.features.target_speed,
-            'Speed:   % 15.2f km/h' % self.features.speed,
             u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (self.features.rotation.yaw, self.features.heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
             'Height:  % 18.0f m' % self.features.location.z,
@@ -73,6 +80,10 @@ class HUD:
             '',
             'Brake:      % 17.2f' % self.features.brake,
             self.features.brake_history,
+            '',
+            'Target speed:% 11.2f km/h' % self.features.target_speed,
+            'Speed:       % 11.2f km/h' % self.features.speed,
+            [self.features.speed_history, self.features.target_speed_history],
             '',
             'Steer:      % 17.2f' % self.features.steer,
             self.features.steer_history,
@@ -91,8 +102,15 @@ class HUD:
                 break
             if isinstance(item, list) or isinstance(item, collections.deque):
                 if len(item) > 1:
-                    points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]
-                    pygame.draw.lines(display, (255, 136, 0), False, points, 2)
+                    if isinstance(item[0], list) or isinstance(item[0], collections.deque):
+                        # Two-dimensional list
+                        for i, series in enumerate(item):
+                            points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(series)]
+                            pygame.draw.lines(display, COLORS[i], False, points, 2)
+                    else:
+                        # One-dimensional list
+                        points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]
+                        pygame.draw.lines(display, (136, 255, 0), False, points, 2)
                 item = None
                 v_offset += 18
             elif isinstance(item, tuple):
