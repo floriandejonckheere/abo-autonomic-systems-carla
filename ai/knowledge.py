@@ -64,5 +64,3 @@ class Knowledge(object):
     # A function to receive data from monitor
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
-
-        event_broker.publish('data_changed', **kwargs)
