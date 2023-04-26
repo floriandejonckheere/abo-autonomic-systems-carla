@@ -1,7 +1,6 @@
 import glob
 import os
 import sys
-from collections import deque
 
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
@@ -12,6 +11,8 @@ except IndexError:
     pass
 
 import carla
+
+from collections import deque
 
 import ai.utils as utils
 
