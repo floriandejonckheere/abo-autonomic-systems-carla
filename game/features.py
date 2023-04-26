@@ -56,7 +56,7 @@ class Features:
         self.rotation = transform.rotation
         self.location = transform.location
 
-        self.state = autopilot.knowledge.state_machine.current_state.id
+        self.state = autopilot.knowledge.state_machine.current_state.id.upper()
 
         self.heading = 'N' if abs(self.rotation.yaw) < 89.5 else ''
         self.heading += 'S' if abs(self.rotation.yaw) > 90.5 else ''

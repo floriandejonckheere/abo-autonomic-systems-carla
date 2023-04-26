@@ -11,15 +11,19 @@ title: Vehicle state machine
 ---
 stateDiagram-v2
     [*] --> undefined
-    
+
     undefined --> driving: drive
     arrived --> driving: drive
     healing --> driving: drive
-    
+
     driving --> arrived: arrive
-    arrived --> [*]
-    
+
     driving --> crashed: crash
-    
+
     crashed --> healing: heal
+
+    driving --> parked: park
+    arrived --> parked: park
+
+    parked --> [*]
 ```

@@ -42,6 +42,10 @@ class Planner(object):
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update_plan(self):
+        # If the car is parked, we are not going anywhere
+        if self.knowledge.get_state() == StateMachine.parked:
+            return
+
         # If we have no waypoints, then we have arrived
         if len(self.path) == 0:
             self.knowledge.state_machine.arrive()
