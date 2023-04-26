@@ -1,0 +1,63 @@
+import glob
+import os
+import sys
+
+try:
+    sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
+        sys.version_info.major,
+        sys.version_info.minor,
+        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
+except IndexError:
+    pass
+
+import math
+
+
+def get_actor_display_name(actor, truncate=250):
+    name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
+    return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
+
+class Features:
+    def __init__(self):
+        self.vehicle = None
+
+        self.rotation = None
+        self.location = None
+
+        self.heading = None
+
+        self.speed = None
+
+        self.throttle = None
+        self.steer = None
+        self.brake = None
+        self.hand_brake = None
+        self.reverse = None
+
+        self.target_speed = None
+
+    def analyze(self, autopilot):
+        vehicle = autopilot.vehicle
+        self.vehicle = get_actor_display_name(vehicle, truncate=20)
+
+        transform = vehicle.get_transform()
+        self.rotation = transform.rotation
+        self.location = transform.location
+
+        self.heading = 'N' if abs(self.rotation.yaw) < 89.5 else ''
+        self.heading += 'S' if abs(self.rotation.yaw) > 90.5 else ''
+        self.heading += 'E' if 179.5 > self.rotation.yaw > 0.5 else ''
+        self.heading += 'W' if -0.5 > self.rotation.yaw > -179.5 else ''
+
+        velocity = vehicle.get_velocity()
+        self.speed = (3.6 * math.sqrt(velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2))
+
+        control = vehicle.get_control()
+        self.throttle = control.throttle
+        self.steer = control.steer
+        self.brake = control.brake
+        self.hand_brake = control.hand_brake
+        self.reverse = control.reverse
+
+        knowledge = autopilot.knowledge
+        self.target_speed = knowledge.get_target_speed()

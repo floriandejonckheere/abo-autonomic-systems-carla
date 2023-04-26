@@ -13,20 +13,15 @@ except IndexError:
 import carla
 import pygame
 
-import numpy as np
-
 import collections
 import datetime
 import math
 
-from ai.autopilot import Autopilot
+from .features import Features
 
 
+# Size of graphs (in px)
 GRAPH_SIZE = 200
-
-def get_actor_display_name(actor, truncate=250):
-    name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
-    return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
 
 
 class HUD:
@@ -39,6 +34,8 @@ class HUD:
         self.frame_number = 0
         self.simulation_time = 0
         self.map = game.world.get_map().name
+
+        self.features = Features()
 
         self.throttle_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
         self.brake_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
@@ -56,22 +53,14 @@ class HUD:
         self.simulation_time = timestamp.elapsed_seconds
 
     def tick(self, clock):
-        vehicle = self.game.autopilot.vehicle
+        # Extract features
+        self.features.analyze(self.game.autopilot)
 
-        t = vehicle.get_transform()
-        v = vehicle.get_velocity()
-        c = vehicle.get_control()
-
-        heading = 'N' if abs(t.rotation.yaw) < 89.5 else ''
-        heading += 'S' if abs(t.rotation.yaw) > 90.5 else ''
-        heading += 'E' if 179.5 > t.rotation.yaw > 0.5 else ''
-        heading += 'W' if -0.5 > t.rotation.yaw > -179.5 else ''
-
-        self.throttle_history.append(c.throttle)
-        self.brake_history.append(c.brake)
+        self.throttle_history.append(self.features.throttle)
+        self.brake_history.append(self.features.brake)
 
         # Normalize steer to [0, 1]
-        self.steer_history.append(c.steer + 1 / 2)
+        self.steer_history.append(self.features.steer + 1 / 2)
 
         destination = self.game.autopilot.knowledge.get_destination()
 
@@ -79,29 +68,29 @@ class HUD:
             'Server:  % 16.0f FPS' % self.server_fps,
             'Client:  % 16.0f FPS' % clock.get_fps(),
             '',
-            'Vehicle: % 20s' % get_actor_display_name(self.game.autopilot.vehicle, truncate=20),
+            'Vehicle: % 20s' % self.features.vehicle,
             'Map:     % 20s' % self.map,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
-            'Target speed:% 11.2f km/h' % self.game.autopilot.knowledge.get_target_speed(),
-            'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)),
-            u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
-            'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (t.location.x, t.location.y)),
-            'Height:  % 18.0f m' % t.location.z,
+            'Target speed:% 11.2f km/h' % self.features.target_speed,
+            'Speed:   % 15.2f km/h' % self.features.speed,
+            u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (self.features.rotation.yaw, self.features.heading),
+            'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
+            'Height:  % 18.0f m' % self.features.location.z,
             '',
             'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_destination(),
             '',
-            'Reverse:    % 17.2f' % c.reverse,
-            'Hand brake: % 17s' % c.hand_brake,
+            'Reverse:    % 17.2f' % self.features.reverse,
+            'Hand brake: % 17s' % self.features.hand_brake,
             '',
-            'Throttle:   % 17.2f' % c.throttle,
+            'Throttle:   % 17.2f' % self.features.throttle,
             self.throttle_history,
             '',
-            'Brake:      % 17.2f' % c.brake,
+            'Brake:      % 17.2f' % self.features.brake,
             self.brake_history,
             '',
-            'Steer:      % 17.2f' % c.steer,
+            'Steer:      % 17.2f' % self.features.steer,
             self.steer_history,
         ]
 
