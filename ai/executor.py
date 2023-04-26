@@ -12,9 +12,6 @@ except IndexError:
 
 import carla
 
-from .controllers.fuzzy import Fuzzy
-from .state_machine import StateMachine
-
 
 # Executor is responsible for moving the vehicle around
 # In this implementation it only needs to match the steering and speed so that we arrive at provided waypoints
@@ -25,41 +22,21 @@ class Executor(object):
         self.vehicle = vehicle
         self.knowledge = knowledge
 
-        self.controller = Fuzzy()
-
     # Update the executor at some intervals to steer the car in desired direction
     def update(self):
-        state = self.knowledge.state()
-        # TODO: this needs to be able to handle
-        if state == StateMachine.driving:
-            self.update_control()
-
-    # TODO: steer in the direction of destination and throttle or brake depending on how close we are to destination
-    # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be
-    #  additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
-    #  to drive in reverse during healing and crashed states. An example is additional_vars, that could be a list with
-    #  parameters that can tell us which things we can do (for example going in reverse)
-    def update_control(self):
-        # Get current and target speed
-        speed = self.knowledge.speed()
-        target_speed = self.knowledge.target_speed
-
-        # Distance and angle to waypoint
-        distance = self.knowledge.distance_to_waypoint()
-        angle = self.knowledge.angle_to_waypoint()
-
-        # Update fuzzy controller
-        self.controller.update(distance, speed, target_speed, angle)
-
+        # TODO: steer in the direction of destination and throttle or brake depending on how close we are to destination
+        # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be
+        #  additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
+        #  to drive in reverse during healing and crashed states. An example is additional_vars, that could be a list with
+        #  parameters that can tell us which things we can do (for example going in reverse)
         control = carla.VehicleControl()
 
-        # Set throttle and brake
-        control.throttle = self.controller.get_throttle()
-        control.brake = self.controller.get_brake()
-        control.hand_brake = False
+        # Execute action queue in-order
+        for action in self.knowledge.queue:
+            action.apply(control)
 
-        # Set steering
-        control.steer = self.controller.get_steer()
+        # Clear action queue
+        self.knowledge.queue.clear()
 
-        # Apply control
+        # Apply control to vehicle
         self.vehicle.apply_control(control)
