@@ -55,7 +55,7 @@ class HUD:
         # Extract features
         self.features.analyze(self.game.autopilot)
 
-        destination = self.game.autopilot.knowledge.get_destination()
+        waypoint = self.game.autopilot.knowledge.get_waypoint()
 
         self._info_text = [
             'Server:  % 16.0f FPS' % self.server_fps,
@@ -70,8 +70,8 @@ class HUD:
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
             'Height:  % 18.0f m' % self.features.location.z,
             '',
-            'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
-            'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_destination(),
+            'Waypoint:   % 17s' % ('(% 5.2f, % 5.2f)' % (waypoint.x, waypoint.y)),
+            'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_waypoint(),
             '',
             'Reverse:    % 17.2f' % self.features.reverse,
             'Hand brake: % 17s' % self.features.hand_brake,

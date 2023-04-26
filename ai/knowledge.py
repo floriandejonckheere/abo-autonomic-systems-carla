@@ -25,14 +25,21 @@ from .state_machine import StateMachine
 # Class that holds the knowledge of the current state and serves as interaction point for all the modules
 class Knowledge(object):
     def __init__(self):
-        # Variables
+        # Vehicle state
         self.state_machine = StateMachine()
-        self.destination = carla.Location(0.0, 0.0, 0.0)
+
+        # Waypoint to navigate towards
+        self.waypoint = carla.Location(0.0, 0.0, 0.0)
+
+        # Current location, rotation and velocity of the vehicle
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
+
+        # Current target speed
         self.target_speed = 0.0
 
+        # Lane invasion
         self.lane_invasion = False
 
         # Callbacks
@@ -43,17 +50,14 @@ class Knowledge(object):
     def get_state(self):
         return self.state_machine.current_state
 
-    def get_destination(self):
-        return self.destination
+    def get_waypoint(self):
+        return self.waypoint
 
     def get_location(self):
         return self.location
 
     def get_rotation(self):
         return self.rotation
-
-    def get_waypoint(self):
-        return self.waypoint
 
     def get_velocity(self):
         return self.velocity
@@ -64,24 +68,24 @@ class Knowledge(object):
     def get_speed(self):
         return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 
-    def get_distance_to_destination(self):
-        return utils.distance(self.get_location(), self.destination)
+    def get_distance_to_waypoint(self):
+        return utils.distance(self.get_location(), self.waypoint)
 
-    def get_angle_to_destination(self):
+    def get_angle_to_waypoint(self):
         # Normalize source and destination vectors
         source_vector = self.rotation.get_forward_vector()
         source_norm = [source_vector.x, source_vector.y]
         source_norm /= np.linalg.norm(source_norm)
 
         # Destination vector (relative to current position of vehicle)
-        destination_norm = [self.destination.x - self.location.x, self.destination.y - self.location.y]
-        destination_norm /= np.linalg.norm(destination_norm)
+        waypoint_norm = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
+        waypoint_norm /= np.linalg.norm(waypoint_norm)
 
         # Calculate dot product between vectors
-        dot_product = np.dot(source_norm, destination_norm)
+        dot_product = np.dot(source_norm, waypoint_norm)
 
         # Calculate cross product between vectors
-        cross_product = np.cross(source_norm, destination_norm)
+        cross_product = np.cross(source_norm, waypoint_norm)
 
         # Calculate angle in radians
         angle_radians = np.arccos(dot_product)
@@ -98,8 +102,8 @@ class Knowledge(object):
         return utils.distance(self.get_location(), destination) < 5.0
 
     def update_destination(self, new_destination):
-        if utils.distance(self.destination, new_destination) > 5.0:
-            self.destination = new_destination
+        if utils.distance(self.waypoint, new_destination) > 5.0:
+            self.waypoint = new_destination
             self.destination_changed(new_destination)
 
     # A function to receive data from monitor

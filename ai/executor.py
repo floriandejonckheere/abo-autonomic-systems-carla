@@ -24,7 +24,7 @@ class Executor(object):
     def __init__(self, knowledge, vehicle):
         self.vehicle = vehicle
         self.knowledge = knowledge
-        self.target_pos = knowledge.get_location()
+
         self.controller = Fuzzy()
 
     # Update the executor at some intervals to steer the car in desired direction
@@ -32,22 +32,21 @@ class Executor(object):
         state = self.knowledge.get_state()
         # TODO: this needs to be able to handle
         if state == StateMachine.driving:
-            dest = self.knowledge.get_destination()
-            self.update_control(dest, [1])
+            self.update_control()
 
     # TODO: steer in the direction of destination and throttle or brake depending on how close we are to destination
     # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be
     #  additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
     #  to drive in reverse during healing and crashed states. An example is additional_vars, that could be a list with
     #  parameters that can tell us which things we can do (for example going in reverse)
-    def update_control(self, destination, additional_vars):
+    def update_control(self):
         # Get current and target speed
         speed = self.knowledge.get_speed()
         target_speed = self.knowledge.get_target_speed()
 
         # Distance and angle to waypoint
-        distance = self.knowledge.get_distance_to_destination()
-        angle = self.knowledge.get_angle_to_destination()
+        distance = self.knowledge.get_distance_to_waypoint()
+        angle = self.knowledge.get_angle_to_waypoint()
 
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed, angle)
