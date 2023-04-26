@@ -1,6 +1,6 @@
 import statemachine as sm
 
-from .events.broker import broker
+from .event_broker import event_broker
 
 class StateMachine(sm.StateMachine):
     idle = sm.State(initial=True)
@@ -17,4 +17,4 @@ class StateMachine(sm.StateMachine):
     park = driving.to(parked) | arrived.to(parked)
 
     def on_enter_state(self, event, state):
-        broker.publish('state_changed', state=state.id, event=event)
+        event_broker.publish('state_changed', state=state.id, event=event)

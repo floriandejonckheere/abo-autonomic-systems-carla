@@ -15,7 +15,7 @@ import carla
 import random
 
 from ai.autopilot import Autopilot
-from ai.events.broker import broker
+from ai.event_broker import event_broker
 
 
 class Game:
@@ -70,7 +70,7 @@ class Game:
         self.autopilot.set_destination(destination)
 
         # Set up callback for destination arrival
-        broker.subscribe('state_changed', self.state_changed)
+        event_broker.subscribe('state_changed', self.state_changed)
 
         # Spawn kamikaze for milestone 2
         if ms == 2:

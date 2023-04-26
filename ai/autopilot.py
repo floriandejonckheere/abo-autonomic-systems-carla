@@ -17,7 +17,6 @@ from .analyzer import *
 from .planner import *
 from .executor import *
 from .knowledge import *
-from .events.broker import Broker
 
 
 # Manager script
@@ -25,9 +24,6 @@ class Autopilot(object):
     def __init__(self, vehicle):
         # Vehicle (CARLA actor)
         self.vehicle = vehicle
-
-        # Event broker
-        self.broker = Broker()
 
         # MAPE-K modules
         self.knowledge = Knowledge()
