@@ -60,6 +60,10 @@ def main():
         world = client.get_world()
 
         if args.debug:
+            # Set pygame window position
+            os.environ['SDL_VIDEO_WINDOW_POS'] = "0,30"
+
+            # Initialize pygame window
             display = pygame.display.set_mode(
                 (args.width, args.height),
                 pygame.HWSURFACE | pygame.DOUBLEBUF)
@@ -75,12 +79,13 @@ def main():
 
         # Main loop
         while game.running:
-            clock.tick_busy_loop(100)
+            clock.tick_busy_loop(60)
 
             game.tick(clock)
 
             if args.debug:
                 game.hud.render(display)
+                pygame.display.flip()
 
     finally:
         game and game.stop()
