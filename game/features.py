@@ -74,7 +74,7 @@ class Features:
         self.reverse = control.reverse
 
         knowledge = autopilot.knowledge
-        self.target_speed = knowledge.get_target_speed()
+        self.target_speed = knowledge.target_speed
 
         self.throttle_history.append(self.throttle)
         self.brake_history.append(self.brake)

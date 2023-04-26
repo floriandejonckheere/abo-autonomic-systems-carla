@@ -29,7 +29,7 @@ class Executor(object):
 
     # Update the executor at some intervals to steer the car in desired direction
     def update(self):
-        state = self.knowledge.get_state()
+        state = self.knowledge.state()
         # TODO: this needs to be able to handle
         if state == StateMachine.driving:
             self.update_control()
@@ -41,12 +41,12 @@ class Executor(object):
     #  parameters that can tell us which things we can do (for example going in reverse)
     def update_control(self):
         # Get current and target speed
-        speed = self.knowledge.get_speed()
-        target_speed = self.knowledge.get_target_speed()
+        speed = self.knowledge.speed()
+        target_speed = self.knowledge.target_speed
 
         # Distance and angle to waypoint
-        distance = self.knowledge.get_distance_to_waypoint()
-        angle = self.knowledge.get_angle_to_waypoint()
+        distance = self.knowledge.distance_to_waypoint()
+        angle = self.knowledge.angle_to_waypoint()
 
         # Update fuzzy controller
         self.controller.update(distance, speed, target_speed, angle)

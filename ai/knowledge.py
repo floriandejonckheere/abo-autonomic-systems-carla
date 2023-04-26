@@ -46,34 +46,16 @@ class Knowledge(object):
         self.destination_changed = lambda *_, **__: None
         self.data_changed = lambda *_, **__: None
 
-    def get_state(self):
+    def state(self):
         return self.state_machine.current_state
 
-    def get_waypoint(self):
-        return self.waypoint
-
-    def get_destination(self):
-        return self.destination
-
-    def get_location(self):
-        return self.location
-
-    def get_rotation(self):
-        return self.rotation
-
-    def get_velocity(self):
-        return self.velocity
-
-    def get_target_speed(self):
-        return self.target_speed
-
-    def get_speed(self):
+    def speed(self):
         return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 
-    def get_distance_to_waypoint(self):
-        return utils.distance(self.get_location(), self.waypoint)
+    def distance_to_waypoint(self):
+        return utils.distance(self.location, self.waypoint)
 
-    def get_angle_to_waypoint(self):
+    def angle_to_waypoint(self):
         # Source vector
         source = self.rotation.get_forward_vector()
         source_vector = [source.x, source.y]
@@ -82,10 +64,6 @@ class Knowledge(object):
         target_vector = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
 
         return utils.angle(source_vector, target_vector)
-
-    # Whether the vehicle has arrived at the destination
-    def arrived_at(self, destination):
-        return utils.distance(self.get_location(), destination) < 5.0
 
     # A function to receive data from monitor
     # TODO: Add callback so that analyzer can know when to parse the data

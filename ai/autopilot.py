@@ -42,7 +42,7 @@ class Autopilot(object):
         self.planner.update()
         self.executor.update()
 
-        return self.knowledge.get_state()
+        return self.knowledge.state()
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
     def set_destination(self, destination: carla.Location):

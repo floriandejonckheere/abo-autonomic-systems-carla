@@ -36,7 +36,7 @@ class Planner(object):
     # Create a map of waypoints to follow to the destination and save it
     def replan(self):
         # Create a new path from the current location to the current destination
-        self.path = self.navigator.navigate(self.knowledge.get_location(), self.knowledge.get_destination())
+        self.path = self.navigator.navigate(self.knowledge.location, self.knowledge.destination)
 
         # Modify plan based on current knowledge
         self.update_plan()
@@ -55,7 +55,7 @@ class Planner(object):
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update_plan(self):
         # If the car is parked, we are not going anywhere
-        if self.knowledge.get_state() == StateMachine.parked:
+        if self.knowledge.state() == StateMachine.parked:
             return
 
         # If we have no waypoints, then we have arrived
@@ -64,7 +64,7 @@ class Planner(object):
             return
 
         # If we are close enough to the next waypoint, remove it from the list
-        if utils.distance(self.knowledge.get_location(), self.path[0]) < 5.0:
+        if utils.distance(self.knowledge.location, self.path[0]) < 5.0:
             self.path.popleft()
 
         if len(self.path) == 0:
@@ -76,21 +76,21 @@ class Planner(object):
 
     # Get current destination
     def get_current_destination(self):
-        state = self.knowledge.get_state()
+        state = self.knowledge.state()
 
         # If we are driving, then the current destination is next waypoint
         if state == StateMachine.driving:
             # TODO: Take into account traffic lights and other cars
             return self.path[0]
         if state == StateMachine.arrived:
-            return self.knowledge.get_location()
+            return self.knowledge.location
         if state == StateMachine.healing:
             # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
             # Afterwards needs to remake the path.
-            return self.knowledge.get_location()
+            return self.knowledge.location
         if state == StateMachine.crashed:
             # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
             #  crash state. You should use separate waypoint list for that, to not mess with the original path.
-            return self.knowledge.get_location()
+            return self.knowledge.location
         # Otherwise destination is same as current position
-        return self.knowledge.get_location()
+        return self.knowledge.location
