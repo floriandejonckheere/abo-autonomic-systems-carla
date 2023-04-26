@@ -15,6 +15,7 @@ import carla
 
 import ai.utils as utils
 
+from .events.broker import broker
 from .state_machine import StateMachine
 
 
@@ -63,3 +64,5 @@ class Knowledge(object):
     # A function to receive data from monitor
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
+
+        broker.publish('data_changed', **kwargs)
