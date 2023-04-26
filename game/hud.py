@@ -20,6 +20,10 @@ import random
 from ai.autopilot import Autopilot
 
 
+def get_actor_display_name(actor, truncate=250):
+    name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
+    return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
+
 class HUD:
     def __init__(self, game, width, height):
         self.game = game
@@ -57,11 +61,11 @@ class HUD:
             'Server:  % 16.0f FPS' % self.server_fps,
             'Client:  % 16.0f FPS' % clock.get_fps(),
             '',
-            'Vehicle: % 20s' % self.get_actor_display_name(game.autopilot.vehicle, truncate=20),
+            'Vehicle: % 20s' % get_actor_display_name(game.autopilot.vehicle, truncate=20),
             'Map:     % 20s' % game.world.get_map().name,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
-            'Speed:   % 15.0f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
+            'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
             u'Heading:% 16.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (t.location.x, t.location.y)),
             'Height:  % 18.0f m' % t.location.z,
@@ -73,7 +77,6 @@ class HUD:
             'Hand brake: % 16s' % c.hand_brake,
             'Number of vehicles: % 8d' % len(vehicles),
         ]
-
 
     def render(self, display):
         info_surface = pygame.Surface((self.width, self.height))
@@ -110,7 +113,3 @@ class HUD:
                 surface = self._font_mono.render(item, True, (255, 255, 255))
                 display.blit(surface, (8, v_offset))
             v_offset += 18
-
-    def get_actor_display_name(self, actor, truncate=250):
-        name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
-        return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
