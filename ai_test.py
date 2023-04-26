@@ -91,10 +91,10 @@ def main():
             clock = pygame.time.Clock()
 
             while game.running:
+                game.tick()
+
                 # Limit game loop to 10 FPS
                 clock.tick(10)
-
-                game.tick()
 
         # Start game (autopilot) loop
         t = threading.Thread(target=game_loop)
