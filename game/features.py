@@ -28,6 +28,8 @@ class Features:
         self.rotation = None
         self.location = None
 
+        self.state = None
+
         self.heading = None
 
         self.speed = None
@@ -53,6 +55,8 @@ class Features:
         transform = vehicle.get_transform()
         self.rotation = transform.rotation
         self.location = transform.location
+
+        self.state = autopilot.knowledge.state_machine.current_state.id
 
         self.heading = 'N' if abs(self.rotation.yaw) < 89.5 else ''
         self.heading += 'S' if abs(self.rotation.yaw) > 90.5 else ''

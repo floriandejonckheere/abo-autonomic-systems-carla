@@ -65,6 +65,7 @@ class HUD:
             'Map:     % 20s' % self.map,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
+            'State:  % 21s' % self.features.state,
             u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (self.features.rotation.yaw, self.features.heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
             'Height:  % 18.0f m' % self.features.location.z,
