@@ -17,23 +17,24 @@ from .analyzer import *
 from .planner import *
 from .executor import *
 from .knowledge import *
+from .events.broker import Broker
 
 
 # Manager script
 class Autopilot(object):
     def __init__(self, vehicle):
+        # Vehicle (CARLA actor)
         self.vehicle = vehicle
+
+        # Event broker
+        self.broker = Broker()
+
+        # MAPE-K modules
         self.knowledge = Knowledge()
-        self.analyzer = Analyzer(self.knowledge)
         self.monitor = Monitor(self.knowledge, self.vehicle)
+        self.analyzer = Analyzer(self.knowledge)
         self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
-
-    def set_route_finished_callback(self, callback):
-        self.knowledge.state_machine.arrived_callback = callback
-
-    def set_crash_callback(self, callback):
-        self.knowledge.state_machine.crashed_callback = callback
 
     # Update all the modules and return the current status
     def update(self):

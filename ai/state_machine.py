@@ -1,5 +1,6 @@
 import statemachine as sm
 
+from .events.broker import broker
 
 class StateMachine(sm.StateMachine):
     idle = sm.State(initial=True)
@@ -15,14 +16,20 @@ class StateMachine(sm.StateMachine):
     heal = crashed.to(healing)
     park = driving.to(parked) | arrived.to(parked)
 
-    def __init__(self):
-        super().__init__()
-
-        self.arrived_callback = lambda *_, **__: None
-        self.crashed_callback = lambda *_, **__: None
+    def on_enter_idle(self):
+        broker.publish('state', 'idle')
 
     def on_enter_arrived(self):
-        self.arrived_callback()
+        broker.publish('state', 'arrived')
+
+    def on_enter_driving(self):
+        broker.publish('state', 'driving')
 
     def on_enter_crashed(self):
-        self.crashed_callback()
+        broker.publish('state', 'crashed')
+
+    def on_enter_healing(self):
+        broker.publish('state', 'healing')
+
+    def on_enter_parked(self):
+        broker.publish('state', 'parked')

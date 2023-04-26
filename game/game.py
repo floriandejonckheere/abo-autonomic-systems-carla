@@ -15,6 +15,7 @@ import carla
 import random
 
 from ai.autopilot import Autopilot
+from ai.events.broker import broker
 
 
 class Game:
@@ -67,7 +68,9 @@ class Game:
         # Set up autopilot
         self.autopilot = Autopilot(vehicle)
         self.autopilot.set_destination(destination)
-        self.autopilot.set_route_finished_callback(self.route_finished)
+
+        # Set up callback for destination arrival
+        broker.subscribe('state', self.state_changed)
 
         # Spawn kamikaze for milestone 2
         if ms == 2:
@@ -125,7 +128,11 @@ class Game:
         start_point = points[index]
         return self.world.get_map().get_waypoint(start_point.location)
 
-    def route_finished(self):
+    def state_changed(self, state):
+        # Handle only arrived state change
+        if state is not 'arrived':
+            return
+
         pos = self.autopilot.vehicle.get_transform().location
         print("Vehicle arrived at destination: ", pos)
         if pos.distance(carla.Location(self.waypoints[-1])) < 5.0:
