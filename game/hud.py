@@ -57,6 +57,8 @@ class HUD:
 
         vehicles = game.world.get_actors().filter('vehicle.*')
 
+        destination = game.autopilot.knowledge.get_destination()
+
         self._info_text = [
             'Server:  % 16.0f FPS' % self.server_fps,
             'Client:  % 16.0f FPS' % clock.get_fps(),
@@ -65,17 +67,21 @@ class HUD:
             'Map:     % 20s' % game.world.get_map().name,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
+            'Target speed:% 11.2f km/h' % game.autopilot.knowledge.get_target_speed(),
             'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
-            u'Heading:% 16.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
+            u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (t.location.x, t.location.y)),
             'Height:  % 18.0f m' % t.location.z,
             '',
-            'Throttle:   % 16.2f' % c.throttle,
-            'Steer:      % 16.2f' % c.steer,
-            'Brake:      % 16.2f' % c.brake,
-            'Reverse:    % 16.2f' % c.reverse,
-            'Hand brake: % 16s' % c.hand_brake,
-            'Number of vehicles: % 8d' % len(vehicles),
+            'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
+            'Distance:   % 15.2f m' % game.autopilot.knowledge.get_distance_to_destination(),
+            '',
+            'Throttle:   % 17.2f' % c.throttle,
+            'Steer:      % 17.2f' % c.steer,
+            'Brake:      % 17.2f' % c.brake,
+            'Reverse:    % 17.2f' % c.reverse,
+            'Hand brake: % 17s' % c.hand_brake,
+            'Number of vehicles: % 9d' % len(vehicles),
         ]
 
     def render(self, display):

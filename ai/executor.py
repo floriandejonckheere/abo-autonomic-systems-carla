@@ -62,7 +62,5 @@ class Executor(object):
         # Set steering
         control.steer = self.controller.get_steer()
 
-        print(f'th={control.throttle:.2f} br={control.brake:.2f} st={control.steer:.2f} dist={distance:.2f} speed={speed:.2f} target_speed={target_speed:.2f} angle={angle:.2f}')
-
         # Apply control
         self.vehicle.apply_control(control)
