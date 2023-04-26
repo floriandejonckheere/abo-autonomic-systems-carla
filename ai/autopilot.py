@@ -28,7 +28,6 @@ class Autopilot(object):
         self.monitor = Monitor(self.knowledge, self.vehicle)
         self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
-        self.prev_time = int(round(time.time() * 1000))
 
     def set_route_finished_callback(self, callback):
         self.knowledge.state_machine.arrived_callback = callback
@@ -41,14 +40,10 @@ class Autopilot(object):
 
     # Update all the modules and return the current status
     def update(self):
-        ctime = int(round(time.time() * 1000))
-        delta_time = ctime - self.prev_time
-        self.prev_time = ctime
-
-        self.monitor.update(delta_time)
-        self.analyzer.update(delta_time)
-        self.planner.update(delta_time)
-        self.executor.update(delta_time)
+        self.monitor.update()
+        self.analyzer.update()
+        self.planner.update()
+        self.executor.update()
 
         return self.knowledge.get_state()
 

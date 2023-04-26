@@ -22,5 +22,5 @@ class Analyzer(object):
         self.knowledge = knowledge
 
     # Function that is called at time intervals to update ai-state
-    def update(self, time_elapsed):
+    def update(self):
         return

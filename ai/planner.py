@@ -36,7 +36,7 @@ class Planner(object):
         self.knowledge.update_destination(self.get_current_destination())
 
     # Function that is called at time intervals to update ai-state
-    def update(self, time_elapsed):
+    def update(self):
         self.update_plan()
         self.knowledge.update_destination(self.get_current_destination())
 
