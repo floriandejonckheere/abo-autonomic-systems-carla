@@ -29,7 +29,8 @@ class Planner(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
-        state = self.knowledge.state()
+        # Clear action queue
+        self.knowledge.queue.clear()
 
         # TODO: Take into account traffic lights and other cars
         # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
@@ -37,6 +38,7 @@ class Planner(object):
         # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
         #  crash state. You should use separate waypoint list for that, to not mess with the original path.
 
+        state = self.knowledge.state()
         if state == StateMachine.parked:
             # If the vehicle is parked, apply handbrake
             return

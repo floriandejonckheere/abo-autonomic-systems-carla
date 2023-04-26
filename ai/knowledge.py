@@ -13,6 +13,8 @@ except IndexError:
 
 import carla
 
+from collections import deque
+
 import ai.utils as utils
 
 from .event_broker import event_broker
@@ -41,6 +43,9 @@ class Knowledge(object):
 
         # Lane invasion
         self.lane_invasion = False
+
+        # Action queue
+        self.queue = deque([])
 
     def state(self):
         return self.state_machine.current_state
