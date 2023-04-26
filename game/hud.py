@@ -50,10 +50,10 @@ class HUD:
         self.frame_number = timestamp.frame_count
         self.simulation_time = timestamp.elapsed_seconds
 
-    def tick(self, game, clock):
-        t = game.autopilot.vehicle.get_transform()
-        v = game.autopilot.vehicle.get_velocity()
-        c = game.autopilot.vehicle.get_control()
+    def tick(self, clock):
+        t = self.game.autopilot.vehicle.get_transform()
+        v = self.game.autopilot.vehicle.get_velocity()
+        c = self.game.autopilot.vehicle.get_control()
 
         heading = 'N' if abs(t.rotation.yaw) < 89.5 else ''
         heading += 'S' if abs(t.rotation.yaw) > 90.5 else ''
@@ -62,33 +62,30 @@ class HUD:
 
         self.throttle_history.append(c.throttle)
 
-        vehicles = game.world.get_actors().filter('vehicle.*')
-
-        destination = game.autopilot.knowledge.get_destination()
+        destination = self.game.autopilot.knowledge.get_destination()
 
         self._info_text = [
             'Server:  % 16.0f FPS' % self.server_fps,
             'Client:  % 16.0f FPS' % clock.get_fps(),
             '',
-            'Vehicle: % 20s' % get_actor_display_name(game.autopilot.vehicle, truncate=20),
-            'Map:     % 20s' % game.world.get_map().name,
+            'Vehicle: % 20s' % get_actor_display_name(self.game.autopilot.vehicle, truncate=20),
+            'Map:     % 20s' % self.game.world.get_map().name,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
-            'Target speed:% 11.2f km/h' % game.autopilot.knowledge.get_target_speed(),
+            'Target speed:% 11.2f km/h' % self.game.autopilot.knowledge.get_target_speed(),
             'Speed:   % 15.2f km/h' % (3.6 * math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2)),
             u'Heading:% 17.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
             'Location:% 20s' % ('(% 5.2f, % 5.2f)' % (t.location.x, t.location.y)),
             'Height:  % 18.0f m' % t.location.z,
             '',
             'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
-            'Distance:   % 15.2f m' % game.autopilot.knowledge.get_distance_to_destination(),
+            'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_destination(),
             '',
             'Throttle:   % 17.2f' % c.throttle,
             'Steer:      % 17.2f' % c.steer,
             'Brake:      % 17.2f' % c.brake,
             'Reverse:    % 17.2f' % c.reverse,
             'Hand brake: % 17s' % c.hand_brake,
-            'Number of vehicles: % 9d' % len(vehicles),
             '',
             'Throttle:',
             self.throttle_history,

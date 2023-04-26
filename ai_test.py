@@ -24,6 +24,7 @@ import pygame
 import argparse
 
 from game.game import Game
+from game.hud import HUD
 
 
 def main():
@@ -69,7 +70,12 @@ def main():
                 pygame.HWSURFACE | pygame.DOUBLEBUF)
 
         # Initialize game context
-        game = Game(world, args.debug, args.milestone_number, args.width, args.height, display)
+        game = Game(world, args.debug, args.milestone_number)
+
+        # Initialize HUD
+        hud = HUD(game, args.width, args.height)
+        if args.debug:
+            world.on_tick(hud.on_world_tick)
 
         # Setup game (actors, autopilot)
         game.setup()
@@ -79,12 +85,20 @@ def main():
 
         # Main loop
         while game.running:
+            # Limit loop to 60 FPS
             clock.tick_busy_loop(60)
 
-            game.tick(clock)
+            print(clock.get_time())
+
+            # Update game (autopilot) if around 500ms have elapsed
+            if clock.get_time() > 450:
+                game.tick()
 
             if args.debug:
-                game.hud.render(display)
+                # Update HUD
+                hud.tick(clock)
+                hud.render(display)
+
                 pygame.display.flip()
 
     finally:
