@@ -10,20 +10,20 @@ For convenience, epsilon transitions are not included in the diagram.
 title: Vehicle state machine
 ---
 stateDiagram-v2
-    [*] --> undefined
+    [*] --> Idle
 
-    undefined --> driving: drive
-    arrived --> driving: drive
-    healing --> driving: drive
+    Idle --> Driving: drive
+    Arrived --> Driving: drive
+    Healing --> Driving: drive
 
-    driving --> arrived: arrive
+    Driving --> Arrived: arrive
 
-    driving --> crashed: crash
+    Driving --> Crashed: crash
 
-    crashed --> healing: heal
+    Crashed --> Healing: heal
 
-    driving --> parked: park
-    arrived --> parked: park
+    Driving --> Parked: park
+    Arrived --> Parked: park
 
-    parked --> [*]
+    Parked --> [*]
 ```

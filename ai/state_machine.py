@@ -2,14 +2,14 @@ import statemachine as sm
 
 
 class StateMachine(sm.StateMachine):
-    undefined = sm.State(initial=True)
+    idle = sm.State(initial=True)
     arrived = sm.State()
     driving = sm.State()
     crashed = sm.State()
     healing = sm.State()
     parked = sm.State(final=True)
 
-    drive = arrived.to(driving) | driving.to(driving) | undefined.to(driving) | healing.to(driving)
+    drive = arrived.to(driving) | driving.to(driving) | idle.to(driving) | healing.to(driving)
     arrive = driving.to(arrived) | arrived.to(arrived)
     crash = driving.to(crashed)
     heal = crashed.to(healing)
