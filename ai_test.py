@@ -21,28 +21,10 @@ except IndexError:
 import carla
 import pygame
 
-import random
 import time
 import argparse
 
-from ai.autopilot import Autopilot
-
-def get_dist(point1, point2):
-    return point1.location.distance(point2)
-
-def get_start_point(world, coord):
-    points = world.get_map().get_spawn_points()
-    index = 0
-    ti = -1
-    td = get_dist(points[0],coord) 
-    for point in points:
-        ti += 1
-        d = get_dist(point, coord)
-        if d < td:
-            td = d
-            index = ti
-    start_point = points[index]
-    return world.get_map().get_waypoint(start_point.location)
+from game.game import Game
 
 
 def main():
@@ -55,134 +37,43 @@ def main():
         type=int,
         help='Milestone number (default: 1)')
     argparser.add_argument(
-        '-w', '--waypoints',
-        metavar='W',
+        '-d', '--debug',
+        metavar='D',
         default=False,
         type=bool,
-        help='Render waypoints (default: false)')
+        help='Enable debug view (default: false)')
     args = argparser.parse_args()
- 
-    actor_list = []
+
+    # Initialize game context
+    game = None
 
     try:
         client = carla.Client('localhost', 2000)
         client.set_timeout(20.0)
         world = client.get_world()
-        blueprints = world.get_blueprint_library().filter('vehicle.*')
-        blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
-        blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
 
-        def try_spawn_random_vehicle_at(transform, recursion=0):
-                blueprint = random.choice(blueprints)
-                if blueprint.has_attribute('color'):
-                    color = random.choice(blueprint.get_attribute('color').recommended_values)
-                    blueprint.set_attribute('color', color)
-                blueprint.set_attribute('role_name', 'autopilot')
-                vehicle = world.try_spawn_actor(blueprint, transform)
-                if vehicle is not None:
-                    actor_list.append(vehicle)
-                    print('spawned %r at %s' % (vehicle.type_id, transform.location))
-                else:
-                    if recursion > 20:
-                        print('WARNING: vehicle not spawned, NONE returned')
-                    else:
-                        return try_spawn_random_vehicle_at(transform, recursion+1)
-                return vehicle
+        # Initialize game context
+        game = Game(world, args.debug, args.milestone_number)
 
-        # Defining positions
-        ex1 = [ carla.Vector3D(42.5959,-4.3443,1.8431), carla.Vector3D(22,-4,1.8431), carla.Vector3D(9,-22,1.8431)]
-        ex2 = [ carla.Vector3D(42.5959,-4.3443,1.8431), carla.Vector3D(-30,167,1.8431)]
-        ex3 = [ carla.Vector3D(42.5959,-4.3443,1.8431), carla.Vector3D(22,-4,1.8431), carla.Vector3D(9,-22,1.8431)]
-        #ex4 = [ carla.Vector3D(42.5959,-4.3443,1.8431), carla.Vector3D(134,-3,1.8431)]
- 
+        # Setup game (actors, autopilot)
+        game.setup()
 
-        #kzs2 = carla.Vector3D(-85,-23,1.8431)
-        
-        milestones = [ex1, ex2, ex3]
-        ms = max(0,min(args.milestone_number-1,len(milestones)-1))
-        ex = milestones[ms]
-        end = ex[len(ex)-1]
-        destination = ex[1]
-
-        # Render waypoints
-        if args.waypoints:
-            for i, wp in enumerate(ex):
-                world.debug.draw_string(wp, str(i), draw_shadow=False,
-                                        color=carla.Color(r=255, g=0, b=0), life_time=20.0,
-                                        persistent_lines=True)
-
-
-        # Getting waypoint to spawn
-        start = get_start_point(world, ex[0])
-        # Spawning
-        vehicle = try_spawn_random_vehicle_at(start.transform)
-
-        if vehicle == None:
-            return
-        # Setting autopilot
-        def route_finished(autopilot):
-            pos = autopilot.get_vehicle().get_transform().location
-            print ("Vehicle arrived at destination: ", pos)
-            if pos.distance(carla.Location(end)) < 5.0:
-                print ("Excercise route finished")
-                running = False
-            else:
-                autopilot.set_destination(end)
-
-        autopilot = Autopilot(vehicle)
-        autopilot.set_destination(destination)
-        autopilot.set_route_finished_callback(route_finished)
-
-        if ms == 2:
-            spawn = start.get_right_lane()
-            kamikaze = try_spawn_random_vehicle_at(spawn.transform)
-            bp = world.get_blueprint_library().find('sensor.other.collision')
-            sensor = world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
-            
-            def _on_collision(self, event):
-                if not self:
-                    return
-                print ('Collision with: ', event.other_actor.type_id)
-                if event.other_actor.type_id.split('.')[0] == 'vehicle':
-                    print ("Test FAILED")
-                kamikaze.destroy()
-                sensor.destroy()
-       
-            sensor.listen(lambda event: _on_collision(kamikaze, event))
-    
-            control = carla.VehicleControl()
-            control.throttle = 1.0 
-            control.steer = -0.07
-            control.brake = 0.0
-            control.hand_brake = False
-            kamikaze.apply_control(control)
-   
-
+        # Main loop
         ctr = 0
-        running = True
-        while running:
-            status = autopilot.update()
+        while game.running:
+            status = game.tick()
             if status == None:
                 ctr += 1
                 if ctr > 3:
-                   running = False
+                    game.running = False
             else:
                 ctr = 0
 
-            
-            #print ("distance: ", vehicle.get_transform().location.distance(carla.Location(ex1[2])))
             time.sleep(0.1)
-
     finally:
-
-        print('destroying actors')
-        for actor in actor_list:
-            actor.destroy()
-        print('done.')
+        game and game.stop()
 
         pygame.quit()
 
-
 if __name__ == '__main__':
-
     main()
