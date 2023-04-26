@@ -3,8 +3,6 @@ import os
 import sys
 import math
 
-import numpy as np
-
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -12,8 +10,6 @@ try:
         'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
 except IndexError:
     pass
-
-from enum import Enum
 
 import carla
 
@@ -78,30 +74,14 @@ class Knowledge(object):
         return utils.distance(self.get_location(), self.waypoint)
 
     def get_angle_to_waypoint(self):
-        # Normalize source and destination vectors
-        source_vector = self.rotation.get_forward_vector()
-        source_norm = [source_vector.x, source_vector.y]
-        source_norm /= np.linalg.norm(source_norm)
+        # Source vector
+        source = self.rotation.get_forward_vector()
+        source_vector = [source.x, source.y]
 
         # Destination vector (relative to current position of vehicle)
-        waypoint_norm = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
-        waypoint_norm /= np.linalg.norm(waypoint_norm)
+        target_vector = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
 
-        # Calculate dot product between vectors
-        dot_product = np.dot(source_norm, waypoint_norm)
-
-        # Calculate cross product between vectors
-        cross_product = np.cross(source_norm, waypoint_norm)
-
-        # Calculate angle in radians
-        angle_radians = np.arccos(dot_product)
-
-        # Determine direction of angle using cross product
-        if cross_product < 0:
-            angle_radians = -angle_radians
-
-        # Convert angle from radians to degrees
-        return np.degrees(angle_radians)
+        return utils.angle(source_vector, target_vector)
 
     # Whether the vehicle has arrived at the destination
     def arrived_at(self, destination):
