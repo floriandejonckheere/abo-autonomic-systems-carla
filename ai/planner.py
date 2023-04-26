@@ -17,6 +17,7 @@ from collections import deque
 import ai.utils as utils
 
 from .state_machine import StateMachine
+from .navigator import Navigator
 
 
 # Planner is responsible for creating a plan for moving around
@@ -27,12 +28,14 @@ class Planner(object):
         self.knowledge = knowledge
         self.vehicle = vehicle
 
+        self.navigator = Navigator(self.vehicle.get_world())
+
         # List of waypoints to follow
         self.path = deque([])
 
     # Create a map of waypoints to follow to the destination and save it
-    def make_plan(self, source, destination):
-        self.path = self.build_path(source, destination)
+    def make_plan(self, source: carla.Location, destination: carla.Location):
+        self.path = self.navigator.navigate(source, destination)
         self.update_plan()
         self.knowledge.update_destination(self.get_current_destination())
 
@@ -83,44 +86,3 @@ class Planner(object):
             return self.knowledge.get_location()
         # Otherwise destination is same as current position
         return self.knowledge.get_location()
-
-    def build_path(self, source, destination):
-        path = deque([])
-
-        debug = self.vehicle.get_world().debug
-
-        # Current waypoint
-        waypoint = self.knowledge.get_waypoint()
-
-        distance = float('inf')
-
-        # Iterate over waypoints until we are close enough to the destination,
-        # or the distance is increasing again (the vehicle overshot)
-        while distance > 5.0 and len(path) < 150: # and utils.distance(waypoint.transform.location, destination) < distance:
-            # Compute current waypoint distance to destination
-            distance = utils.distance(waypoint.transform.location, destination)
-
-            # Draw current waypoint
-            debug.draw_point(waypoint.transform.location, size=0.2, life_time=20)
-            # print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
-
-            # Get next (legal) waypoints
-            next_waypoints = waypoint.next(2.0)
-
-            # If there is only one next waypoint, then select it
-            if len(next_waypoints) == 1:
-                waypoint = next_waypoints[0]
-            else:
-                for wp in next_waypoints:
-                    debug.draw_point(wp.transform.location, size=0.1, life_time=20, color=carla.Color(0, 255, 0))
-
-                # If there are multiple next waypoints, then select the one that is closest to destination
-                waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
-
-            # Add waypoint to path
-            path.append(waypoint.transform.location)
-
-        # Add destination to path
-        path.append(destination)
-
-        return path

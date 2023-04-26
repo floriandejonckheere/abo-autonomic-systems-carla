@@ -18,13 +18,13 @@ from ai.autopilot import Autopilot
 
 
 class Game:
-    EX1 = [carla.Vector3D(42.5959, -4.3443, 1.8431), carla.Vector3D(22, -4, 1.8431), carla.Vector3D(9, -22, 1.8431)]
-    EX2 = [carla.Vector3D(42.5959, -4.3443, 1.8431), carla.Vector3D(-30, 167, 1.8431)]
-    EX3 = [carla.Vector3D(42.5959, -4.3443, 1.8431), carla.Vector3D(22, -4, 1.8431), carla.Vector3D(9, -22, 1.8431)]
+    EX1 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(22, -4, 1.8431), carla.Location(9, -22, 1.8431)]
+    EX2 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(-30, 167, 1.8431)]
+    EX3 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(22, -4, 1.8431), carla.Location(9, -22, 1.8431)]
 
-    # EX4 = [ carla.Vector3D(42.5959,-4.3443,1.8431), carla.Vector3D(134,-3,1.8431)]
+    # EX4 = [ carla.Location(42.5959,-4.3443,1.8431), carla.Location(134,-3,1.8431)]
 
-    # KZS2 = carla.Vector3D(-85,-23,1.8431)
+    # KZS2 = carla.Location(-85,-23,1.8431)
 
     MILESTONES = [EX1, EX2, EX3]
 

@@ -10,7 +10,7 @@ try:
 except IndexError:
     pass
 
-import time
+import carla
 
 from .monitor import *
 from .analyzer import *
@@ -48,5 +48,5 @@ class Autopilot(object):
         return self.knowledge.get_state()
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
-    def set_destination(self, destination):
-        self.planner.make_plan(self.vehicle.get_transform(), destination)
+    def set_destination(self, destination: carla.Location):
+        self.planner.make_plan(self.vehicle.get_transform().location, destination)
