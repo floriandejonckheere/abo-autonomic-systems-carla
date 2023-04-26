@@ -34,15 +34,23 @@ class Planner(object):
         self.path = deque([])
 
     # Create a map of waypoints to follow to the destination and save it
-    def make_plan(self, source: carla.Location, destination: carla.Location):
-        self.path = self.navigator.navigate(source, destination)
+    def replan(self):
+        # Create a new path from the current location to the current destination
+        self.path = self.navigator.navigate(self.knowledge.get_location(), self.knowledge.get_destination())
+
+        # Modify plan based on current knowledge
         self.update_plan()
-        self.knowledge.update_destination(self.get_current_destination())
+
+        # Set next waypoint
+        self.knowledge.update(waypoint=self.get_current_destination())
 
     # Function that is called at time intervals to update ai-state
     def update(self):
+        # Modify plan based on current knowledge
         self.update_plan()
-        self.knowledge.update_destination(self.get_current_destination())
+
+        # Set next waypoint
+        self.knowledge.update(waypoint=self.get_current_destination())
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update_plan(self):

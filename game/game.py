@@ -135,8 +135,10 @@ class Game:
             print("Excercise route finished")
             self.running = False
 
+            # Park car (final destination)
             self.autopilot.knowledge.state_machine.park()
         else:
+            # Set next destination
             self.autopilot.set_destination(self.waypoints[-1])
 
     def spawn_kamikaze(self, spawn_point):

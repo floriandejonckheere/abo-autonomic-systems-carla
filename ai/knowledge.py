@@ -31,6 +31,9 @@ class Knowledge(object):
         # Waypoint to navigate towards
         self.waypoint = carla.Location(0.0, 0.0, 0.0)
 
+        # Final destination
+        self.destination = carla.Location(0.0, 0.0, 0.0)
+
         # Current location, rotation and velocity of the vehicle
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
@@ -52,6 +55,9 @@ class Knowledge(object):
 
     def get_waypoint(self):
         return self.waypoint
+
+    def get_destination(self):
+        return self.destination
 
     def get_location(self):
         return self.location
@@ -101,11 +107,6 @@ class Knowledge(object):
     def arrived_at(self, destination):
         return utils.distance(self.get_location(), destination) < 5.0
 
-    def update_destination(self, new_destination):
-        if utils.distance(self.waypoint, new_destination) > 5.0:
-            self.waypoint = new_destination
-            self.destination_changed(new_destination)
-
     # A function to receive data from monitor
     # TODO: Add callback so that analyzer can know when to parse the data
     def update(self, **kwargs):
@@ -113,9 +114,6 @@ class Knowledge(object):
 
         for key in kwargs:
             self.data_changed(key)
-
-    def set_destination_changed_callback(self, callback):
-        self.destination_changed = callback
 
     def set_data_changed_callback(self, callback):
         self.data_changed = callback
