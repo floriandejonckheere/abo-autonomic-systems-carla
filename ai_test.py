@@ -49,8 +49,8 @@ def main():
     argparser.add_argument(
         '--res',
         metavar='WIDTHxHEIGHT',
-        default='480x720',
-        help='window resolution (default: 480x720)')
+        default='320x640',
+        help='window resolution (default: 320x640)')
     args = argparser.parse_args()
     args.width, args.height = [int(x) for x in args.res.split('x')]
 
@@ -105,8 +105,8 @@ def main():
 
         # Main loop
         while True:
-            # Limit main loop to 60 FPS
-            clock.tick(60)
+            # Limit main loop to 30 FPS
+            clock.tick(30)
 
             # Update HUD
             if args.debug:

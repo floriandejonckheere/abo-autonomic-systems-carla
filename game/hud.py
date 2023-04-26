@@ -22,6 +22,8 @@ import math
 from ai.autopilot import Autopilot
 
 
+GRAPH_SIZE = 200
+
 def get_actor_display_name(actor, truncate=250):
     name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
     return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
@@ -38,7 +40,9 @@ class HUD:
         self.simulation_time = 0
         self.map = game.world.get_map().name
 
-        self.throttle_history = collections.deque(200 * [0], 200)
+        self.throttle_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
+        self.brake_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
+        self.steer_history = collections.deque(GRAPH_SIZE * [0], GRAPH_SIZE)
 
         self._info_text = []
         self._server_clock = pygame.time.Clock()
@@ -64,6 +68,8 @@ class HUD:
         heading += 'W' if -0.5 > t.rotation.yaw > -179.5 else ''
 
         self.throttle_history.append(c.throttle)
+        self.brake_history.append(c.brake)
+        self.steer_history.append(c.steer)
 
         destination = self.game.autopilot.knowledge.get_destination()
 
@@ -84,13 +90,17 @@ class HUD:
             'Destination:% 17s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Distance:   % 15.2f m' % self.game.autopilot.knowledge.get_distance_to_destination(),
             '',
-            'Steer:      % 17.2f' % c.steer,
-            'Brake:      % 17.2f' % c.brake,
             'Reverse:    % 17.2f' % c.reverse,
             'Hand brake: % 17s' % c.hand_brake,
             '',
             'Throttle:   % 17.2f' % c.throttle,
             self.throttle_history,
+            '',
+            'Brake:      % 17.2f' % c.brake,
+            self.brake_history,
+            '',
+            'Steer:      % 17.2f' % c.steer,
+            self.steer_history,
         ]
 
     def render(self, display):
