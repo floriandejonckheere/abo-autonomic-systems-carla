@@ -30,7 +30,6 @@ class Knowledge(object):
         self.destination = carla.Location(0.0, 0.0, 0.0)
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
-        self.waypoint = None
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
         self.target_speed = 0.0
 

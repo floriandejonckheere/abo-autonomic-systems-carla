@@ -33,12 +33,9 @@ class Monitor(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
-        map = self.vehicle.get_world().get_map()
-
         self.knowledge.update(
             location=self.vehicle.get_transform().location,
             rotation=self.vehicle.get_transform().rotation,
-            waypoint=map.get_waypoint(self.vehicle.get_location()),
             velocity=self.vehicle.get_velocity(),
             target_speed=self.vehicle.get_speed_limit(),
         )
