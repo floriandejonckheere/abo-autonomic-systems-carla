@@ -25,7 +25,7 @@ class Autopilot(object):
         self.vehicle = vehicle
         self.knowledge = Knowledge()
         self.knowledge.set_status_changed_callback(self.status_updated)
-        self.analyser = Analyzer(self.knowledge)
+        self.analyzer = Analyzer(self.knowledge)
         self.monitor = Monitor(self.knowledge, self.vehicle)
         self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
@@ -55,7 +55,7 @@ class Autopilot(object):
         self.prev_time = ctime
 
         self.monitor.update(delta_time)
-        self.analyser.update(delta_time)
+        self.analyzer.update(delta_time)
         self.planner.update(delta_time)
         self.executor.update(delta_time)
 

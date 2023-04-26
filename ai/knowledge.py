@@ -116,7 +116,7 @@ class Knowledge(object):
             self.destination_changed(new_destination)
 
     # A function to receive data from monitor
-    # TODO: Add callback so that analyser can know when to parse the data
+    # TODO: Add callback so that analyzer can know when to parse the data
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
 
