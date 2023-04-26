@@ -111,17 +111,14 @@ class Game:
                 return self.try_spawn_random_vehicle_at(transform, recursion + 1)
         return vehicle
 
-    def get_dist(self, point1, point2):
-        return point1.location.distance(point2)
-
     def get_start_point(self, coord):
         points = self.world.get_map().get_spawn_points()
         index = 0
         ti = -1
-        td = self.get_dist(points[0], coord)
+        td = points[0].location.distance(coord)
         for point in points:
             ti += 1
-            d = self.get_dist(point, coord)
+            d = point.location.distance(coord)
             if d < td:
                 td = d
                 index = ti
