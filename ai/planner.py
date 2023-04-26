@@ -79,7 +79,7 @@ class Planner(object):
         return self.knowledge.get_location()
 
     def build_path(self, source, destination):
-        self.path = deque([])
+        path = deque([])
 
         debug = self.vehicle.get_world().debug
 
@@ -90,13 +90,13 @@ class Planner(object):
 
         # Iterate over waypoints until we are close enough to the destination,
         # or the distance is increasing again (the vehicle overshot)
-        while distance > 5.0 and utils.distance(waypoint.transform.location, destination) < distance:
+        while distance > 5.0 and len(path) < 150: # and utils.distance(waypoint.transform.location, destination) < distance:
             # Compute current waypoint distance to destination
             distance = utils.distance(waypoint.transform.location, destination)
 
             # Draw current waypoint
-            debug.draw_point(waypoint.transform.location, size=0.2, life_time=10)
-            # print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
+            debug.draw_point(waypoint.transform.location, size=0.2, life_time=20)
+            print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
 
             # Get next (legal) waypoints
             next_waypoints = waypoint.next(2.0)
@@ -105,13 +105,16 @@ class Planner(object):
             if len(next_waypoints) == 1:
                 waypoint = next_waypoints[0]
             else:
+                for wp in next_waypoints:
+                    debug.draw_point(wp.transform.location, size=0.1, life_time=20, color=carla.Color(0, 255, 0))
+
                 # If there are multiple next waypoints, then select the one that is closest to destination
                 waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
 
             # Add waypoint to path
-            self.path.append(waypoint.transform.location)
+            path.append(waypoint.transform.location)
 
         # Add destination to path
-        self.path.append(destination)
+        path.append(destination)
 
-        return self.path
+        return path
