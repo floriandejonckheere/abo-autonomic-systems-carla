@@ -20,7 +20,6 @@ def distance(vec1, vec2):
     l2 = carla.Location(vec2)
     return l1.distance(l2)
 
-
 def angle(vec1, vec2):
     # Normalize vectors
     vec1 = vec1 / np.linalg.norm(vec1)
