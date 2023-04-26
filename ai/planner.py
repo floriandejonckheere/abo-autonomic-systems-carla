@@ -13,6 +13,7 @@ except IndexError:
 import carla
 
 import ai.utils as utils
+import ai.actions as actions
 
 from .state_machine import StateMachine
 from .navigator import Navigator
@@ -40,8 +41,8 @@ class Planner(object):
 
         state = self.knowledge.state()
         if state == StateMachine.parked:
-            # If the vehicle is parked, apply handbrake
-            return
+            # If the vehicle is parked, apply handbrake and do nothing
+            self.knowledge.queue.append(actions.Handbrake(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
             if self.knowledge.destination is not None and utils.distance(self.knowledge.location, self.knowledge.destination) > 5.0:
