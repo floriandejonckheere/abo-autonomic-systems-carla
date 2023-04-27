@@ -72,6 +72,8 @@ def main():
         client.set_timeout(20.0)
         world = client.get_world()
 
+        print(f'Connected to CARLA simulator (version {client.get_server_version()}) with {len(world.get_actors())} actors in the world.')
+
         if args.debug:
             # Set pygame window position
             os.environ['SDL_VIDEO_WINDOW_POS'] = "0,30"
@@ -136,7 +138,7 @@ def main():
             # Stop game (autopilot)
             game.running = False
 
-            game.stop()
+            game.destroy()
 
             t.join()
 

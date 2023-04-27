@@ -96,12 +96,13 @@ class Game:
             else:
                 self.counter = 0
 
-    def stop(self):
+    def destroy(self):
         print('Exiting...')
 
         for actor in self.actors:
             actor.is_alive and actor.destroy()
 
+        self.autopilot.destroy()
         self.scenario.destroy()
 
     def get_start_point(self, coord):

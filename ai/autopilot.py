@@ -41,6 +41,9 @@ class Autopilot(object):
 
         return self.knowledge.state()
 
+    def destroy(self):
+        self.monitor.destroy()
+
     # Main interaction point with autopilot - set the destination, so that it does the rest
     def set_destination(self, destination: carla.Location):
         # Set destination in knowledge, so that planner can plan the route

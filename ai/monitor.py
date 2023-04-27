@@ -57,6 +57,11 @@ class Monitor(object):
             traffic_light=self.vehicle.get_traffic_light(),
         )
 
+    def destroy(self):
+        self.lane_detector.destroy()
+        self.collision_sensor.destroy()
+        self.depth_sensor.destroy()
+
     @staticmethod
     def _on_invasion(weak_self, event):
         self = weak_self()
