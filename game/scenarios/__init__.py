@@ -6,3 +6,4 @@ from .milestone_three import MilestoneThree
 from .milestone_four import MilestoneFour
 
 from .learner_driver import LearnerDriver
+from .traffic_lights import TrafficLights
