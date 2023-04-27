@@ -37,8 +37,8 @@ Run the `ai_test.py` script to test the AI controller.
 ```sh
 python ai_test.py
 
-# Test a specific milestone
-python ai_test.py --milestone 1
+# Test a specific scenario (see game/scenarios for available scenarios)
+python ai_test.py --scenario MilestoneOne
 
 # Enable debug window
 python ai_test.py --debug

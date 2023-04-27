@@ -12,27 +12,18 @@ except IndexError:
 
 import carla
 
-import random
-
 from ai.autopilot import Autopilot
 from ai.event_broker import event_broker
 
+import game.utils as utils
+
+import game.scenarios as scenarios
 
 class Game:
-    EX1 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(22, -4, 1.8431), carla.Location(9, -22, 1.8431)]
-    EX2 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(-30, 167, 1.8431)]
-    EX3 = [carla.Location(42.5959, -4.3443, 1.8431), carla.Location(22, -4, 1.8431), carla.Location(9, -22, 1.8431)]
-
-    # EX4 = [ carla.Location(42.5959,-4.3443,1.8431), carla.Location(134,-3,1.8431)]
-
-    # KZS2 = carla.Location(-85,-23,1.8431)
-
-    MILESTONES = [EX1, EX2, EX3]
-
-    def __init__(self, world, debug, milestone_number):
+    def __init__(self, world, debug, scenario):
         self.world = world
         self.debug = debug
-        self.milestone_number = milestone_number
+        self.scenario = scenario
 
         self.autopilot = None
         self.actors = []
@@ -42,9 +33,16 @@ class Game:
         self.counter = 0
 
     def setup(self):
+        # Instantiate scenario
+        klass = getattr(scenarios, self.scenario)
+
+        if not issubclass(klass, scenarios.Scenario):
+            raise Exception(f'Invalid scenario: {self.scenario}')
+
+        self.scenario = klass(self.world)
+
         # Setup waypoints
-        ms = max(0, min(self.milestone_number - 1, len(self.MILESTONES) - 1))
-        self.waypoints = self.MILESTONES[ms]
+        self.waypoints = self.scenario.waypoints
 
         # First destination is second waypoint
         destination = self.waypoints[1]
@@ -59,11 +57,15 @@ class Game:
         # Getting waypoint to spawn
         start = self.get_start_point(self.waypoints[0])
 
-        # Spawning
-        vehicle = self.try_spawn_random_vehicle_at(start.transform)
+        # Spawn vehicle
+        vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)
+        self.actors.append(vehicle)
 
         if vehicle is None:
             raise Exception("Could not spawn vehicle")
+
+        # Set up scenario
+        self.scenario.setup()
 
         # Set up autopilot
         self.autopilot = Autopilot(vehicle)
@@ -71,10 +73,6 @@ class Game:
 
         # Set up callback for destination arrival
         event_broker.subscribe('state_changed', self.state_changed)
-
-        # Spawn kamikaze for milestone 2
-        if ms == 2:
-            self.spawn_kamikaze(start.get_right_lane())
 
     def tick(self):
         # Update autopilot
@@ -90,29 +88,11 @@ class Game:
 
     def stop(self):
         print('Exiting...')
+
         for actor in self.actors:
             actor.is_alive and actor.destroy()
 
-    def try_spawn_random_vehicle_at(self, transform, recursion=0):
-        blueprints = self.world.get_blueprint_library().filter('vehicle.*')
-        blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
-        blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
-
-        blueprint = random.choice(blueprints)
-        if blueprint.has_attribute('color'):
-            color = random.choice(blueprint.get_attribute('color').recommended_values)
-            blueprint.set_attribute('color', color)
-        blueprint.set_attribute('role_name', 'autopilot')
-        vehicle = self.world.try_spawn_actor(blueprint, transform)
-        if vehicle is not None:
-            self.actors.append(vehicle)
-            print('spawned %r at %s' % (vehicle.type_id, transform.location))
-        else:
-            if recursion > 20:
-                print('WARNING: vehicle not spawned, NONE returned')
-            else:
-                return self.try_spawn_random_vehicle_at(transform, recursion + 1)
-        return vehicle
+        self.scenario.teardown()
 
     def get_start_point(self, coord):
         points = self.world.get_map().get_spawn_points()
@@ -146,26 +126,3 @@ class Game:
         else:
             # Set next destination
             self.autopilot.set_destination(self.waypoints[-1])
-
-    def spawn_kamikaze(self, spawn_point):
-        kamikaze = self.try_spawn_random_vehicle_at(spawn_point.transform)
-        bp = self.world.get_blueprint_library().find('sensor.other.collision')
-        sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
-
-        def _on_collision(self, event):
-            if not self:
-                return
-            print('Collision with: ', event.other_actor.type_id)
-            if event.other_actor.type_id.split('.')[0] == 'vehicle':
-                print("Test FAILED")
-            kamikaze.destroy()
-            sensor.destroy()
-
-        sensor.listen(lambda event: _on_collision(kamikaze, event))
-
-        control = carla.VehicleControl()
-        control.throttle = 1.0
-        control.steer = -0.07
-        control.brake = 0.0
-        control.hand_brake = False
-        kamikaze.apply_control(control)

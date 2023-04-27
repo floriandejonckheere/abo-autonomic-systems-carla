@@ -2,8 +2,6 @@ import glob
 import os
 import sys
 
-import numpy as np
-
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -13,6 +11,8 @@ except IndexError:
     pass
 
 import carla
+
+import numpy as np
 
 
 def distance(vec1, vec2):

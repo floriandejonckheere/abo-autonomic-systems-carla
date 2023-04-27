@@ -37,9 +37,16 @@ def main():
     argparser.add_argument(
         '-m', '--milestone-number',
         metavar='M',
-        default=1,
+        default=None,
         type=int,
         help='Milestone number (default: 1)')
+    argparser.add_argument(
+        '-s', '--scenario',
+        metavar='S',
+        default='MilestoneOne',
+        type=str,
+        help='Scenario (default: MilestoneOne)'
+    )
     argparser.add_argument(
         '-d', '--debug',
         metavar='D',
@@ -75,8 +82,12 @@ def main():
                 (args.width, args.height),
                 pygame.HWSURFACE | pygame.DOUBLEBUF)
 
+        # Map milestone number to scenario for backwards compatibility
+        if args.milestone_number:
+            args.scenario = {1: "MilestoneOne", 2: "MilestoneTwo", 3: "MilestoneThree", 4: "MilestoneFour"}[args.milestone_number]
+
         # Initialize game context
-        game = Game(world, args.debug, args.milestone_number)
+        game = Game(world, args.debug, args.scenario)
 
         # Initialize HUD
         hud = HUD(game, args.width, args.height)
