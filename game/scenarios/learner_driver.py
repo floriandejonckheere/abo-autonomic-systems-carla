@@ -49,14 +49,13 @@ class LearnerDriver(Scenario):
             print('Collision with: ', event.other_actor.type_id)
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
-            learner.destroy()
             sensor.destroy()
 
         sensor.listen(lambda event: _on_collision(learner, event))
 
         def learner_control():
             # Wait for a while, then drive onto the roundabout the wrong way
-            time.sleep(3)
+            time.sleep(5)
 
             # Drive onto the roundabout the wrong way
             learner.is_alive and learner.apply_control(carla.VehicleControl(throttle=1.0, steer=-0.4))
