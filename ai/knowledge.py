@@ -52,19 +52,6 @@ class Knowledge(object):
     def speed(self):
         return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 
-    def distance_to_waypoint(self):
-        return utils.distance(self.location, self.waypoint)
-
-    def angle_to_waypoint(self):
-        # Source vector
-        source = self.rotation.get_forward_vector()
-        source_vector = [source.x, source.y]
-
-        # Waypoint vector (relative to current position of vehicle)
-        target_vector = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
-
-        return utils.angle(source_vector, target_vector)
-
     # A function to receive data from monitor
     def update(self, **kwargs):
         self.__dict__.update(kwargs)

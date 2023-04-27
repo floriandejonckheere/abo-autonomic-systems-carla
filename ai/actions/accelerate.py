@@ -3,12 +3,15 @@ import skfuzzy as fz
 
 from .action import Action
 
+import ai.utils as utils
+
 
 class Accelerate(Action):
-    """Apply throttle and release brake based on distance to the waypoint"""
+    """Apply throttle and release brake based on distance to a waypoint"""
 
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self, source, target):
+        self.source = source
+        self.target = target
 
         # Universe variables
         self.x_distance = np.arange(0, 101, 1)
@@ -24,5 +27,7 @@ class Accelerate(Action):
         control.brake = 0.0
 
     def calculate_throttle(self):
+        distance = utils.distance(self.source, self.target)
+
         # Throttle is proportional to the distance
-        return fz.interp_membership(self.x_distance, self.dist_hi, self.knowledge.distance_to_waypoint())
+        return fz.interp_membership(self.x_distance, self.dist_hi, distance)

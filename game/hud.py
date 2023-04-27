@@ -76,7 +76,7 @@ class HUD:
             '',
             'Destination:% 26s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Waypoint:   % 26s' % ('(% 5.2f, % 5.2f)' % (waypoint.x, waypoint.y)),
-            'Distance:   % 24.2f m' % self.game.autopilot.knowledge.distance_to_waypoint(),
+            'Distance:   % 24.2f m' % self.game.autopilot.knowledge.location.distance(self.game.autopilot.knowledge.waypoint),
             '',
             'Reverse:    % 26.2f' % self.features.reverse,
             'Hand brake: % 26s' % self.features.hand_brake,
