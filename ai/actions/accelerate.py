@@ -5,11 +5,10 @@ from .action import Action
 
 
 class Accelerate(Action):
-    """Apply throttle and release brake based on distance to a waypoint"""
+    """Apply throttle and release brake based on distance"""
 
-    def __init__(self, source, target):
-        self.source = source
-        self.target = target
+    def __init__(self, distance):
+        self.distance = distance
 
         # Universe variables
         self.x_distance = np.arange(0, 101, 1)
@@ -25,4 +24,4 @@ class Accelerate(Action):
 
     def calculate_throttle(self):
         # Throttle is proportional to the distance
-        return fz.interp_membership(self.x_distance, self.dist_hi, self.source.distance(self.target))
+        return fz.interp_membership(self.x_distance, self.dist_hi, self.distance)

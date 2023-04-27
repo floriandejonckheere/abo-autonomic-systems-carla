@@ -29,7 +29,7 @@ class Drive(Goal):
 
         return [
             # Accelerate towards a waypoint
-            actions.Accelerate(self.knowledge.location, self.knowledge.waypoint),
+            actions.Accelerate(self.knowledge.location.distance(self.knowledge.waypoint)),
             actions.Limit(self.knowledge.speed(), self.knowledge.target_speed),
 
             # Steer towards the next waypoint
