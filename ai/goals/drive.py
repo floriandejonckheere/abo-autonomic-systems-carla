@@ -34,4 +34,7 @@ class Drive(Goal):
 
             # Steer towards the next waypoint
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target),
+
+            # Stop-and-go in dense traffic
+            actions.Cruise(self.knowledge.proximity),
         ]
