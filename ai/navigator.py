@@ -22,7 +22,7 @@ class Navigator:
         self.map = world.get_map()
 
         # List of waypoints to follow
-        self.path = deque([])
+        self.path = deque()
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update(self):
@@ -43,7 +43,7 @@ class Navigator:
 
     # Create a list of waypoints from the current location to the current destination
     def plan(self):
-        self.path = deque([])
+        self.path = deque()
 
         # Waypoint on map closest to source location
         waypoint = self.map.get_waypoint(self.knowledge.location)

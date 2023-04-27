@@ -13,8 +13,6 @@ except IndexError:
 
 import carla
 
-from collections import deque
-
 from .state_machine import StateMachine
 
 

@@ -12,8 +12,6 @@ except IndexError:
 
 import carla
 
-from collections import deque
-
 
 class Plan:
     """Execution plan created by the planner, composed of high-level goals and low-level actions"""
