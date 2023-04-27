@@ -45,6 +45,8 @@ class Features:
 
         self.target_speed = None
 
+        self.depth_image = None
+
         self.throttle_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.brake_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.steer_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
@@ -80,6 +82,8 @@ class Features:
 
         knowledge = autopilot.knowledge
         self.target_speed = knowledge.target_speed
+
+        self.depth_image = knowledge.depth_image
 
         self.throttle_history.append(self.throttle)
         self.brake_history.append(self.brake)

@@ -38,6 +38,14 @@ class Monitor(object):
         self.collision_sensor = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
         self.collision_sensor.listen(lambda event: Monitor._on_collision(weak_self, event))
 
+        # Depth sensor
+        bp = world.get_blueprint_library().find('sensor.camera.depth')
+        bp.set_attribute('sensor_tick', '1.0')
+        bp.set_attribute('image_size_x', '320')
+        bp.set_attribute('image_size_y', '240')
+        self.depth_sensor = world.spawn_actor(bp, carla.Transform(carla.Location(x=1.5, z=2.4)), attach_to=self.vehicle)
+        self.depth_sensor.listen(lambda image: Monitor._on_depth(weak_self, image))
+
     # Function that is called at time intervals to update ai-state
     def update(self):
         self.knowledge.update(
@@ -64,3 +72,13 @@ class Monitor(object):
             return
 
         self.knowledge.update(collision=event.other_actor.type_id)
+
+    @staticmethod
+    def _on_depth(weak_self, image):
+        self = weak_self()
+        if not self:
+            return
+
+        self.knowledge.depth_image = image
+        # cc = carla.ColorConverter.LogarithmicDepth
+        # image.save_to_disk('_out/%06d.png' % image.frame_number, cc)

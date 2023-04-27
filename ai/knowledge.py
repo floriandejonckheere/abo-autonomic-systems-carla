@@ -43,6 +43,7 @@ class Knowledge(object):
         # Sensor data
         self.lane_invasion = False
         self.collision = False
+        self.depth_image = None
 
         # Execution plan
         self.plan = None

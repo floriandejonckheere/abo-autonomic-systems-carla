@@ -10,10 +10,14 @@ try:
 except IndexError:
     pass
 
+import carla
+
 import pygame
 
 import collections
 import datetime
+
+import numpy as np
 
 from .features import Features
 
@@ -44,6 +48,9 @@ class HUD:
         self._server_clock = pygame.time.Clock()
 
         self._font_mono = pygame.font.Font(pygame.font.match_font('consolas'), 14)
+
+        self._last_depth_image = None
+        self._last_depth_image_frame_number = 0
 
     def on_world_tick(self, timestamp):
         self._server_clock.tick()
@@ -144,3 +151,19 @@ class HUD:
                 surface = self._font_mono.render(item, True, (255, 255, 255))
                 display.blit(surface, (8, v_offset))
             v_offset += 18
+
+        # Render depth image
+        if self.features.depth_image is not None:
+            if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
+                self._last_depth_image_frame_number = self.features.depth_image.frame_number
+
+                self.features.depth_image.convert(carla.ColorConverter.LogarithmicDepth)
+                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype("uint8"))
+                array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
+                array = array[:, :, :3]
+                array = array[:, :, ::-1]
+                surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+
+                self._last_depth_image = surface
+
+            display.blit(self._last_depth_image, (320, 0))
