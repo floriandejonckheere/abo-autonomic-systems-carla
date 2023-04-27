@@ -72,7 +72,10 @@ def main():
         client.set_timeout(20.0)
         world = client.get_world()
 
-        print(f'Connected to CARLA simulator (version {client.get_server_version()}) with {len(world.get_actors())} actors in the world.')
+        actors = len(world.get_actors())
+
+        if actors > 64:
+            print(f'WARNING: {actors} actors in the world, did you forget to clean up any?')
 
         if args.debug:
             # Set pygame window position
