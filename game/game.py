@@ -62,7 +62,10 @@ class Game:
             #                                  persistent_lines=True)
 
         # Getting waypoint to spawn
-        start = self.get_start_point(self.waypoints[0])
+        if self.scenario.use_spawnpoint:
+            start = self.get_start_point(self.waypoints[0])
+        else:
+            start = self.world.get_map().get_waypoint(self.waypoints[0])
 
         # Spawn vehicle
         vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)

@@ -20,6 +20,9 @@ class Scenario:
         self.world = world
         self.actors = []
 
+        # Use nearby CARLA spawnpoint
+        self.use_spawnpoint = True
+
     def setup(self):
         pass
 
