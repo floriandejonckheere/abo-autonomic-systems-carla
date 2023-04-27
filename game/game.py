@@ -47,8 +47,8 @@ class Game:
         # First destination is second waypoint
         destination = self.waypoints[1]
 
-        # Render waypoints
         if self.debug:
+            # Render waypoints
             for i, wp in enumerate(self.waypoints):
                 self.world.debug.draw_string(wp, str(i), draw_shadow=False,
                                              color=carla.Color(r=255, g=0, b=0), life_time=20.0,
