@@ -27,7 +27,7 @@ class MilestoneThree(Scenario):
     ]
 
     def setup(self):
-        spawn_point = carla.Transform(location=carla.Location(42.6482, -7.84391, 1.8431),  rotation=carla.Rotation(pitch=360, yaw=180.856))
+        spawn_point = carla.Transform(location=carla.Location(42.6482, -7.84391, 1.8431),  rotation=carla.Rotation(yaw=180.856))
         kamikaze = utils.try_spawn_random_vehicle_at(self.world, spawn_point)
         self.actors.append(kamikaze)
 

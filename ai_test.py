@@ -23,7 +23,6 @@ import pygame
 
 import argparse
 import threading
-import time
 
 from game.game import Game
 from game.hud import HUD

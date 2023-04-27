@@ -12,8 +12,6 @@ except IndexError:
 
 import carla
 
-import random
-
 
 class Scenario:
     waypoints = []
