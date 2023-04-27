@@ -2,6 +2,7 @@ import statemachine as sm
 
 from .event_broker import event_broker
 
+
 class StateMachine(sm.StateMachine):
     idle = sm.State(initial=True)
     arrived = sm.State()

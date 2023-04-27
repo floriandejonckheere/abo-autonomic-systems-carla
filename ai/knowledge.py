@@ -1,7 +1,7 @@
 import glob
+import math
 import os
 import sys
-import math
 
 try:
     sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
@@ -17,7 +17,6 @@ from collections import deque
 
 import ai.utils as utils
 
-from .event_broker import event_broker
 from .state_machine import StateMachine
 
 

@@ -19,5 +19,6 @@ class EventBroker:
         if topic in self.topics:
             self.topics[topic].remove(callback)
 
+
 # Singleton instance
 event_broker = EventBroker()

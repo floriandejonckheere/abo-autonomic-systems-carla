@@ -17,7 +17,6 @@ import datetime
 
 from .features import Features
 
-
 COLORS = [
     (255, 136, 0),
     (136, 255, 0),
@@ -26,6 +25,7 @@ COLORS = [
     (136, 0, 255),
     (255, 0, 136),
 ]
+
 
 class HUD:
     def __init__(self, game, width, height):
