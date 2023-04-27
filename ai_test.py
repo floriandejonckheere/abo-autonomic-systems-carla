@@ -55,8 +55,8 @@ def main():
     argparser.add_argument(
         '--res',
         metavar='WIDTHxHEIGHT',
-        default='640x720',
-        help='window resolution (default: 640x720)')
+        default='480x800',
+        help='window resolution (default: 480x800)')
     args = argparser.parse_args()
     args.width, args.height = [int(x) for x in args.res.split('x')]
 
