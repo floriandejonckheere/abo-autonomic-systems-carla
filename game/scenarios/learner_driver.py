@@ -52,7 +52,6 @@ class LearnerDriver(Scenario):
                 print("Test FAILED")
 
             sensor.destroy()
-            self.actors.remove(sensor)
 
         sensor.listen(lambda event: _on_collision(learner, event))
 

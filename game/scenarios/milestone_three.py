@@ -43,10 +43,7 @@ class MilestoneThree(Scenario):
                 print("Test FAILED")
 
             kamikaze.destroy()
-            self.actors.remove(kamikaze)
-
             sensor.destroy()
-            self.actors.remove(sensor)
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
