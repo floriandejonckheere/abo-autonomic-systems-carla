@@ -75,6 +75,3 @@ class Navigator:
 
             # Add waypoint to path
             self.path.append(waypoint.transform.location)
-
-        # Add destination to path
-        self.path.append(self.knowledge.destination)
