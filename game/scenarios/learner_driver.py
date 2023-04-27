@@ -35,7 +35,7 @@ class LearnerDriver(Scenario):
         self.learner = None
 
     def setup(self):
-        spawn_point = carla.Transform(location=carla.Location(25.6482, -4.3443, 1.8431),  rotation=carla.Rotation(yaw=185))
+        spawn_point = carla.Transform(location=carla.Location(25.6482, -5, 1.8431),  rotation=carla.Rotation(yaw=185))
 
         learner = utils.try_spawn_random_vehicle_at(self.world, spawn_point)
         self.actors.append(learner)

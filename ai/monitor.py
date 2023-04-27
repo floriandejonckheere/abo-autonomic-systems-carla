@@ -40,10 +40,15 @@ class Monitor(object):
 
         # Depth sensor
         bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '1.0')
+        bp.set_attribute('sensor_tick', '0.1')
         bp.set_attribute('image_size_x', '320')
         bp.set_attribute('image_size_y', '240')
-        self.depth_sensor = world.spawn_actor(bp, carla.Transform(carla.Location(x=1.5, z=2.4)), attach_to=self.vehicle)
+        bp.set_attribute('fov', '30')  # Use a narrow field of view
+
+        # Location of sensor is 1.6 meters from center of vehicle, 1 meter above ground
+        location = carla.Location(x=1.6, z=1.0)
+
+        self.depth_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.depth_sensor.listen(lambda image: Monitor._on_depth(weak_self, image))
 
     # Function that is called at time intervals to update ai-state
@@ -85,5 +90,3 @@ class Monitor(object):
             return
 
         self.knowledge.depth_image = image
-        # cc = carla.ColorConverter.LogarithmicDepth
-        # image.save_to_disk('_out/%06d.png' % image.frame_number, cc)
