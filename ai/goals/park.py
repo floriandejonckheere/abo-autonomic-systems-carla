@@ -22,6 +22,6 @@ class Park(Goal):
 
     def actions(self):
         return [
-            # FIXME: brake softly based on speed
-            actions.Handbrake(),
+            actions.Brake(self.knowledge.location, self.knowledge.waypoint),
+            actions.Handbrake(self.knowledge.speed()),
         ]

@@ -2,11 +2,13 @@ from .action import Action
 
 
 class Handbrake(Action):
-    """Brake and apply handbrake"""
+    """Apply handbrake"""
+
+    def __init__(self, speed):
+        self.speed = speed
 
     def apply(self, control):
         control.throttle = 0.0
 
-        # FIXME: brake softly based on speed
-        control.brake = 1.0
-        control.hand_brake = True
+        # Apply handbrake if speed is low enough
+        control.hand_brake = True if self.speed < 5.0 else False
