@@ -43,24 +43,20 @@ class Navigator:
             # Otherwise, we keep driving
             return self.path[0]
 
-    # Create a list of waypoints to follow to the destination and save it
+    # Create a list of waypoints from the current location to the current destination
     def plan(self):
-        # Create a new path from the current location to the current destination
-        self.path = self.build_path(self.knowledge.location, self.knowledge.destination)
-
-    def build_path(self, source: carla.Location, destination: carla.Location) -> deque:
-        path = deque([])
+        self.path = deque([])
 
         # Waypoint on map closest to source location
-        waypoint = self.map.get_waypoint(source)
+        waypoint = self.map.get_waypoint(self.knowledge.location)
 
         distance = float('inf')
 
         # Iterate over waypoints until we are close enough to the destination,
         # or the distance is increasing again (the vehicle overshot)
-        while distance > 5.0 and len(path) < 150: # and utils.distance(waypoint.transform.location, destination) < distance:
+        while distance > 5.0 and len(self.path) < 150: # and utils.distance(waypoint.transform.location, destination) < distance:
             # Compute current waypoint distance to destination
-            distance = utils.distance(waypoint.transform.location, destination)
+            distance = utils.distance(waypoint.transform.location, self.knowledge.destination)
 
             # Draw current waypoint
             self.world.debug.draw_point(waypoint.transform.location, size=0.2, life_time=20)
@@ -77,12 +73,10 @@ class Navigator:
                     self.world.debug.draw_point(wp.transform.location, size=0.1, life_time=20, color=carla.Color(0, 255, 0))
 
                 # If there are multiple next waypoints, then select the one that is closest to destination
-                waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, destination))
+                waypoint = min(next_waypoints, key=lambda wp: utils.distance(wp.transform.location, self.knowledge.destination))
 
             # Add waypoint to path
-            path.append(waypoint.transform.location)
+            self.path.append(waypoint.transform.location)
 
         # Add destination to path
-        path.append(destination)
-
-        return path
+        self.path.append(self.knowledge.destination)

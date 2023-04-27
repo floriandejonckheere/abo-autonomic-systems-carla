@@ -29,7 +29,7 @@ class Knowledge(object):
         # Waypoint to navigate towards
         self.waypoint = carla.Location(0.0, 0.0, 0.0)
 
-        # Final destination
+        # Destination (end of waypoint path)
         self.destination = carla.Location(0.0, 0.0, 0.0)
 
         # Current location, rotation and velocity of the vehicle
@@ -60,7 +60,7 @@ class Knowledge(object):
         source = self.rotation.get_forward_vector()
         source_vector = [source.x, source.y]
 
-        # Destination vector (relative to current position of vehicle)
+        # Waypoint vector (relative to current position of vehicle)
         target_vector = [self.waypoint.x - self.location.x, self.waypoint.y - self.location.y]
 
         return utils.angle(source_vector, target_vector)
