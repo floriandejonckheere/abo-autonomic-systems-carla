@@ -61,7 +61,7 @@ class Features:
 
         self.state = autopilot.knowledge.state_machine.current_state.id.upper()
 
-        self.goals = autopilot.knowledge.plan.goals
+        self.goals = autopilot.knowledge.plan.goals if autopilot.knowledge.plan else []
 
         self.heading = 'N' if abs(self.rotation.yaw) < 89.5 else ''
         self.heading += 'S' if abs(self.rotation.yaw) > 90.5 else ''
