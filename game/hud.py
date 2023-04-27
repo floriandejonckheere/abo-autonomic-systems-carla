@@ -58,6 +58,14 @@ class HUD:
         destination = self.game.autopilot.knowledge.destination
         waypoint = self.game.autopilot.knowledge.waypoint
 
+        goals_and_actions = []
+        for goal in self.features.goals:
+            name = type(goal).__name__
+            actions = ', '.join([type(action).__name__ for action in goal.actions()])
+            actions = 'None' if not actions else actions
+
+            goals_and_actions.append(f'  {name}: {actions}')
+
         self._info_text = [
             'Server:  % 25.0f FPS' % self.server_fps,
             'Client:  % 25.0f FPS' % clock.get_fps(),
@@ -66,14 +74,9 @@ class HUD:
             'Map:     % 29s' % self.map,
             'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
-            'State:  % 30s' % self.features.state,
             u'Heading:% 26.0f\N{DEGREE SIGN} % 2s' % (self.features.rotation.yaw, self.features.heading),
             'Location:% 29s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
             'Height:  % 27.0f m' % self.features.location.z,
-            '',
-            'Goals/actions:',
-            ' → '.join(self.features.goals),
-            ' → '.join(self.features.actions),
             '',
             'Destination:% 26s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Waypoint:   % 26s' % ('(% 5.2f, % 5.2f)' % (waypoint.x, waypoint.y)),
@@ -94,6 +97,9 @@ class HUD:
             '',
             'Steer:      % 26.2f' % self.features.steer,
             self.features.steer_history,
+            '',
+            'State:  % 30s' % self.features.state,
+            *goals_and_actions,
         ]
 
     def render(self, display):

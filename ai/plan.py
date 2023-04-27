@@ -23,11 +23,9 @@ class Plan:
         control = carla.VehicleControl()
 
         # For each high-level goal, apply its actions to the vehicle control
-        for action in self.actions():
-            action.apply(control)
+        for goal in self.goals:
+            for action in goal.actions():
+                action.apply(control)
 
         # Apply control to the vehicle
         vehicle.apply_control(control)
-
-    def actions(self):
-        return [action for goal in self.goals for action in goal.actions()]
