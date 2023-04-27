@@ -54,6 +54,13 @@ class Game:
                                              color=carla.Color(r=255, g=0, b=0), life_time=20.0,
                                              persistent_lines=True)
 
+            # Render spawnpoints
+            # for i, sp in enumerate(self.world.get_map().get_spawn_points()):
+            #     print(f'SP{i}: ({sp.location.x}, {sp.location.y})')
+            #     self.world.debug.draw_string(sp.location, f'SP{i}', draw_shadow=False,
+            #                                  color=carla.Color(r=255, g=255, b=255), life_time=60.0,
+            #                                  persistent_lines=True)
+
         # Getting waypoint to spawn
         start = self.get_start_point(self.waypoints[0])
 
