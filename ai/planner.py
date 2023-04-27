@@ -30,6 +30,9 @@ class Planner(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
+        # Clear action queue
+        self.knowledge.queue.clear()
+
         # TODO: Take into account traffic lights and other cars
         # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
         # Afterwards needs to remake the path.

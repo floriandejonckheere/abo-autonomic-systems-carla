@@ -31,12 +31,9 @@ class Executor(object):
         #  parameters that can tell us which things we can do (for example going in reverse)
         control = carla.VehicleControl()
 
-        # Execute action queue in-order
+        # Execute action queue in-order (queue is cleared in Planner)
         for action in self.knowledge.queue:
             action.apply(control)
-
-        # Clear action queue
-        self.knowledge.queue.clear()
 
         # Apply control to vehicle
         self.vehicle.apply_control(control)
