@@ -45,6 +45,9 @@ class Knowledge(object):
         self.collision = False
         self.depth_image = None
 
+        # Parsed sensor data
+        self.proximity = 0.0
+
         # Execution plan
         self.plan = None
 

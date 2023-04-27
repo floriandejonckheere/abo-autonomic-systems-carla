@@ -47,11 +47,14 @@ class Features:
 
         self.depth_image = None
 
+        self.proximity = None
+
         self.throttle_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.brake_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.steer_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.speed_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.target_speed_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
+        self.proximity_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
 
     def analyze(self, autopilot):
         vehicle = autopilot.vehicle
@@ -85,12 +88,17 @@ class Features:
 
         self.depth_image = knowledge.depth_image
 
+        self.proximity = knowledge.proximity
+
         self.throttle_history.append(self.throttle)
         self.brake_history.append(self.brake)
 
         # Normalize steer from [-1, 1] to [0, 1]
         self.steer_history.append(self.steer + 1 / 2)
 
-        # Normalize speed from [0, 50] to [0, 1]
+        # Limit speed to [0, 50]
         self.speed_history.append(min(self.speed / 50, 50))
         self.target_speed_history.append(min(self.target_speed / 50, 50))
+
+        # Limit proximity to [0, 100]
+        self.proximity_history.append(min(self.proximity / 100, 100))

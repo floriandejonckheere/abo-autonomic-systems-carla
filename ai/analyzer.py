@@ -12,6 +12,8 @@ except IndexError:
 
 import carla
 
+import numpy as np
+
 
 # Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into
 # something usable
@@ -23,8 +25,17 @@ class Analyzer(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
-        # Transition to crashed state if collision has happened
+        # Detect collision and transition to crashed state
         if self.knowledge.collision:
             self.knowledge.state_machine.crash()
+
+        # Analyze depth sensor data
+        array = np.frombuffer(self.knowledge.depth_image.raw_data, dtype=np.dtype("uint8"))
+        array = np.reshape(array, (self.knowledge.depth_image.height, self.knowledge.depth_image.width, 4))
+        array = array[:, :, :3]
+        array = array[:, :, ::-1]
+
+        # Proximity to obstacle in front
+        self.knowledge.proximity = np.mean(array)
 
         return

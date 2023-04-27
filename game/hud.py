@@ -105,6 +105,9 @@ class HUD:
             'Steer:      % 26.2f' % self.features.steer,
             self.features.steer_history,
             '',
+            'Proximity: % 26.2f' % self.features.proximity,
+            self.features.proximity_history,
+            '',
             'State:  % 30s' % self.features.state,
             *goals_and_actions,
         ]
@@ -157,7 +160,6 @@ class HUD:
             if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
                 self._last_depth_image_frame_number = self.features.depth_image.frame_number
 
-                self.features.depth_image.convert(carla.ColorConverter.LogarithmicDepth)
                 array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype("uint8"))
                 array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
                 array = array[:, :, :3]
