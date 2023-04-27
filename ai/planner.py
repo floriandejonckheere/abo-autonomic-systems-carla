@@ -40,8 +40,8 @@ class Planner(object):
         #  crash state. You should use separate waypoint list for that, to not mess with the original path.
 
         state = self.knowledge.state()
-        if state == StateMachine.parked:
-            # If the vehicle is parked, apply handbrake and do nothing
+        if state == StateMachine.parked or state == StateMachine.crashed:
+            # If the vehicle is parking or has crashed, apply handbrake and do nothing
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path

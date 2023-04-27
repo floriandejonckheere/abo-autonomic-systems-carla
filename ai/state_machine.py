@@ -11,10 +11,10 @@ class StateMachine(sm.StateMachine):
     healing = sm.State()
     parked = sm.State(final=True)
 
-    drive = arrived.to(driving) | driving.to(driving) | idle.to(driving) | healing.to(driving)
-    arrive = driving.to(arrived) | arrived.to(arrived)
-    crash = driving.to(crashed)
-    heal = crashed.to(healing)
+    drive = driving.to(driving) | arrived.to(driving) | idle.to(driving) | healing.to(driving)
+    arrive = arrived.to(arrived) | driving.to(arrived)
+    crash = crashed.to(crashed) | arrived.to(crashed) | driving.to(crashed) | idle.to(crashed)
+    heal = healing.to(healing) | crashed.to(healing)
     park = driving.to(parked) | arrived.to(parked)
 
     def on_enter_state(self, event, state):

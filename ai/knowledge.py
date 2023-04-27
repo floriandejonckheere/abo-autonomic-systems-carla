@@ -40,8 +40,9 @@ class Knowledge(object):
         self.is_at_traffic_light = False
         self.traffic_light = None
 
-        # Lane invasion
+        # Sensor data
         self.lane_invasion = False
+        self.collision = False
 
         # Execution plan
         self.plan = None

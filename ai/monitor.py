@@ -20,15 +20,23 @@ class Monitor(object):
     def __init__(self, knowledge, vehicle):
         self.vehicle = vehicle
         self.knowledge = knowledge
+
         weak_self = weakref.ref(self)
 
         # Initialize knowledge values
         self.update()
 
         world = self.vehicle.get_world()
+
+        # Lane detector sensor
         bp = world.get_blueprint_library().find('sensor.other.lane_detector')
         self.lane_detector = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
         self.lane_detector.listen(lambda event: Monitor._on_invasion(weak_self, event))
+
+        # Collision sensor
+        bp = world.get_blueprint_library().find('sensor.other.collision')
+        self.collision_sensor = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
+        self.collision_sensor.listen(lambda event: Monitor._on_collision(weak_self, event))
 
     # Function that is called at time intervals to update ai-state
     def update(self):
@@ -46,4 +54,13 @@ class Monitor(object):
         self = weak_self()
         if not self:
             return
+
         self.knowledge.update(lane_invasion=event.crossed_lane_markings)
+
+    @staticmethod
+    def _on_collision(weak_self, event):
+        self = weak_self()
+        if not self:
+            return
+
+        self.knowledge.update(collision=event.other_actor.type_id)

@@ -23,4 +23,8 @@ class Analyzer(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
+        # Transition to crashed state if collision has happened
+        if self.knowledge.collision:
+            self.knowledge.state_machine.crash()
+
         return
