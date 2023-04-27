@@ -100,7 +100,7 @@ class HUD:
             '',
             'Target speed:% 20.2f km/h' % self.features.target_speed,
             'Speed:       % 20.2f km/h' % self.features.speed,
-            [self.features.speed_history, self.features.target_speed_history],
+            [self.features.target_speed_history, self.features.speed_history],
             '',
             'Steer:      % 26.2f' % self.features.steer,
             self.features.steer_history,
