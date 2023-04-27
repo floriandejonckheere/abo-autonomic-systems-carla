@@ -15,8 +15,6 @@ import carla
 
 from collections import deque
 
-import ai.utils as utils
-
 from .state_machine import StateMachine
 
 

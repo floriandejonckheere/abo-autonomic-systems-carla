@@ -3,8 +3,6 @@ import skfuzzy as fz
 
 from .action import Action
 
-import ai.utils as utils
-
 
 class Accelerate(Action):
     """Apply throttle and release brake based on distance to a waypoint"""
@@ -27,7 +25,5 @@ class Accelerate(Action):
         control.brake = 0.0
 
     def calculate_throttle(self):
-        distance = utils.distance(self.source, self.target)
-
         # Throttle is proportional to the distance
-        return fz.interp_membership(self.x_distance, self.dist_hi, distance)
+        return fz.interp_membership(self.x_distance, self.dist_hi, self.source.distance(self.target))

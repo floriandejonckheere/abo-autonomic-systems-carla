@@ -12,7 +12,6 @@ except IndexError:
 
 import carla
 
-import ai.utils as utils
 import ai.goals as goals
 
 from .state_machine import StateMachine
@@ -46,7 +45,7 @@ class Planner(object):
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
-            if self.knowledge.destination is not None and utils.distance(self.knowledge.location, self.knowledge.destination) > 5.0:
+            if self.knowledge.destination is not None and self.knowledge.location.distance(self.knowledge.destination) > 5.0:
                 self.navigator.plan()
 
             # Drive to new waypoint
