@@ -108,6 +108,11 @@ def main():
             # Limit main loop to 30 FPS
             clock.tick(30)
 
+            # Handle events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    break
+
             # Update HUD
             if args.debug:
                 hud.tick(clock)
@@ -125,6 +130,7 @@ def main():
 
             t.join()
 
+        pygame.display.quit()
         pygame.quit()
 
 
