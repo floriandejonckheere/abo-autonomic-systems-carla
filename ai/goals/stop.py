@@ -26,5 +26,7 @@ class Stop(Goal):
             return []
 
         return [
-            actions.Brake(self.knowledge.location, self.knowledge.waypoint),
+            # Brake gently
+            # FIXME: brake over a fixed distance?
+            actions.Brake(self.knowledge.location.distance(self.knowledge.waypoint)),
         ]

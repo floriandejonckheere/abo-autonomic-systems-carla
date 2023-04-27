@@ -22,6 +22,9 @@ class Park(Goal):
 
     def actions(self):
         return [
-            actions.Brake(self.knowledge.location, self.knowledge.waypoint),
+            # Brake gently
+            actions.Brake(self.knowledge.location.distance(self.knowledge.waypoint)),
+
+            # Apply handbrake when stopped
             actions.Handbrake(self.knowledge.speed()),
         ]

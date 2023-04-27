@@ -5,11 +5,10 @@ from .action import Action
 
 
 class Brake(Action):
-    """Apply brake based on distance to a waypoint"""
+    """Apply brake based on distance"""
 
-    def __init__(self, source, target):
-        self.source = source
-        self.target = target
+    def __init__(self, distance):
+        self.distance = distance
 
         # Universe variables
         self.x_distance = np.arange(0, 101, 1)
@@ -25,4 +24,4 @@ class Brake(Action):
 
     def calculate_brake(self):
         # Brake is proportional to the distance
-        return fz.interp_membership(self.x_distance, self.dist_hi, self.source.distance(self.target))
+        return fz.interp_membership(self.x_distance, self.dist_hi, self.distance)
