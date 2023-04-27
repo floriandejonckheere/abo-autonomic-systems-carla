@@ -13,10 +13,11 @@ except IndexError:
 import carla
 
 import ai.utils as utils
-import ai.actions as actions
+import ai.goals as goals
 
 from .state_machine import StateMachine
 from .navigator import Navigator
+from .plan import Plan
 
 
 # Planner is responsible for creating a plan for moving around
@@ -30,8 +31,8 @@ class Planner(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self):
-        # Clear action queue
-        self.knowledge.queue.clear()
+        # Set new, empty plan
+        self.knowledge.plan = Plan()
 
         # TODO: Take into account traffic lights and other cars
         # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
@@ -42,7 +43,7 @@ class Planner(object):
         state = self.knowledge.state()
         if state == StateMachine.parked:
             # If the vehicle is parked, apply handbrake and do nothing
-            self.knowledge.queue.append(actions.Handbrake(self.knowledge))
+            self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
             if self.knowledge.destination is not None and utils.distance(self.knowledge.location, self.knowledge.destination) > 5.0:
@@ -61,16 +62,10 @@ class Planner(object):
         if waypoint is None:
             # If there are no more waypoints, the vehicle has arrived
             self.knowledge.state_machine.arrive()
-            # TODO: add a soft braking action to the queue?
+            self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         else:
             # Otherwise, we keep driving towards the next waypoint
             self.knowledge.update(waypoint=waypoint)
 
             self.knowledge.state_machine.drive()
-
-            # Accelerate towards the next waypoint
-            self.knowledge.queue.append(actions.Accelerate(self.knowledge))
-            self.knowledge.queue.append(actions.Limit(self.knowledge))
-
-            # Steer towards the next waypoint
-            self.knowledge.queue.append(actions.Steer(self.knowledge))
+            self.knowledge.plan.goals.append(goals.Drive(self.knowledge))

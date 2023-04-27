@@ -43,8 +43,8 @@ class Knowledge(object):
         # Lane invasion
         self.lane_invasion = False
 
-        # Action queue
-        self.queue = deque([])
+        # Execution plan
+        self.plan = None
 
     def state(self):
         return self.state_machine.current_state

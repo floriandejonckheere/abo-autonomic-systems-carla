@@ -28,11 +28,4 @@ class Executor(object):
         #  additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
         #  to drive in reverse during healing and crashed states. An example is additional_vars, that could be a list with
         #  parameters that can tell us which things we can do (for example going in reverse)
-        control = carla.VehicleControl()
-
-        # Execute action queue in-order (queue is cleared in Planner)
-        for action in self.knowledge.queue:
-            action.apply(control)
-
-        # Apply control to vehicle
-        self.vehicle.apply_control(control)
+        self.knowledge.plan.execute(self.vehicle)

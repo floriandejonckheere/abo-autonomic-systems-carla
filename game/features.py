@@ -31,7 +31,7 @@ class Features:
 
         self.state = None
 
-        self.action_queue = None
+        self.goals = None
 
         self.heading = None
 
@@ -61,7 +61,7 @@ class Features:
 
         self.state = autopilot.knowledge.state_machine.current_state.id.upper()
 
-        self.action_queue = [type(a).__name__ for a in autopilot.knowledge.queue]
+        self.goals = [type(g).__name__ for g in autopilot.knowledge.plan.goals]
 
         self.heading = 'N' if abs(self.rotation.yaw) < 89.5 else ''
         self.heading += 'S' if abs(self.rotation.yaw) > 90.5 else ''
