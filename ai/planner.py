@@ -68,3 +68,6 @@ class Planner(object):
 
             self.knowledge.state_machine.drive()
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
+
+            # Stop for traffic lights
+            self.knowledge.plan.goals.append(goals.Stop(self.knowledge))

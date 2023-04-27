@@ -36,6 +36,10 @@ class Knowledge(object):
         # Current target speed
         self.target_speed = 0.0
 
+        # Traffic light information
+        self.is_at_traffic_light = False
+        self.traffic_light = None
+
         # Lane invasion
         self.lane_invasion = False
 

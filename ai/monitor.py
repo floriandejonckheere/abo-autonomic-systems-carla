@@ -16,7 +16,6 @@ import carla
 
 # Monitor is responsible for reading the data from the sensors and telling it to the knowledge
 # TODO: Implement other sensors (lidar and depth sensors mainly)
-# TODO: Use carla API to read whether car is at traffic lights and their status, update it into knowledge
 class Monitor(object):
     def __init__(self, knowledge, vehicle):
         self.vehicle = vehicle
@@ -38,6 +37,8 @@ class Monitor(object):
             rotation=self.vehicle.get_transform().rotation,
             velocity=self.vehicle.get_velocity(),
             target_speed=self.vehicle.get_speed_limit(),
+            is_at_traffic_light=self.vehicle.is_at_traffic_light(),
+            traffic_light=self.vehicle.get_traffic_light(),
         )
 
     @staticmethod
