@@ -45,9 +45,4 @@ class MilestoneThree(Scenario):
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
-        control = carla.VehicleControl()
-        control.throttle = 1.0
-        control.steer = -0.07
-        control.brake = 0.0
-        control.hand_brake = False
-        kamikaze.apply_control(control)
+        kamikaze.apply_control(carla.VehicleControl(throttle=1.0, steer=-0.07))
