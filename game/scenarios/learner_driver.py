@@ -42,6 +42,7 @@ class LearnerDriver(Scenario):
 
         bp = self.world.get_blueprint_library().find('sensor.other.collision')
         sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=learner)
+        self.actors.append(sensor)
 
         def _on_collision(self, event):
             if not self:
@@ -49,7 +50,9 @@ class LearnerDriver(Scenario):
             print('Collision with: ', event.other_actor.type_id)
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
+
             sensor.destroy()
+            self.actors.remove(sensor)
 
         sensor.listen(lambda event: _on_collision(learner, event))
 
@@ -68,8 +71,8 @@ class LearnerDriver(Scenario):
         self.learner = threading.Thread(target=learner_control)
         self.learner.start()
 
-    def teardown(self):
+    def destroy(self):
         self.learner.join()
 
-        super().teardown()
+        super().destroy()
 

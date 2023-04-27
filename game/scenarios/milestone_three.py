@@ -33,6 +33,7 @@ class MilestoneThree(Scenario):
 
         bp = self.world.get_blueprint_library().find('sensor.other.collision')
         sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
+        self.actors.append(sensor)
 
         def _on_collision(self, event):
             if not self:
@@ -40,8 +41,12 @@ class MilestoneThree(Scenario):
             print('Collision with: ', event.other_actor.type_id)
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
+
             kamikaze.destroy()
+            self.actors.remove(kamikaze)
+
             sensor.destroy()
+            self.actors.remove(sensor)
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 

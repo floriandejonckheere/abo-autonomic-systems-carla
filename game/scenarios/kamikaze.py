@@ -38,11 +38,12 @@ class Kamikaze(Scenario):
     def setup(self):
         spawn_point = carla.Transform(location=carla.Location(4.4, -40.7, 1.8431),  rotation=carla.Rotation(yaw=85))
 
-        learner = utils.try_spawn_random_vehicle_at(self.world, spawn_point)
-        self.actors.append(learner)
+        kamikaze = utils.try_spawn_random_vehicle_at(self.world, spawn_point)
+        self.actors.append(kamikaze)
 
         bp = self.world.get_blueprint_library().find('sensor.other.collision')
-        sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=learner)
+        sensor = self.world.spawn_actor(bp, carla.Transform(), attach_to=kamikaze)
+        self.actors.append(sensor)
 
         def _on_collision(self, event):
             if not self:
@@ -50,27 +51,29 @@ class Kamikaze(Scenario):
             print('Collision with: ', event.other_actor.type_id)
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
-            sensor.destroy()
 
-        sensor.listen(lambda event: _on_collision(learner, event))
+            sensor.destroy()
+            self.actors.remove(sensor)
+
+        sensor.listen(lambda event: _on_collision(kamikaze, event))
 
         def learner_control():
             # Wait for a while, then drive onto the roundabout the wrong way
             time.sleep(4)
 
             # Drive onto the roundabout the wrong way
-            learner.is_alive and learner.apply_control(carla.VehicleControl(throttle=1.0))
+            kamikaze.is_alive and kamikaze.apply_control(carla.VehicleControl(throttle=1.0))
 
             time.sleep(5)
 
             # Stop the learner
-            learner.is_alive and learner.apply_control(carla.VehicleControl(brake=1.0))
+            kamikaze.is_alive and kamikaze.apply_control(carla.VehicleControl(brake=1.0))
 
         self.learner = threading.Thread(target=learner_control)
         self.learner.start()
 
-    def teardown(self):
+    def destroy(self):
         self.learner.join()
 
-        super().teardown()
+        super().destroy()
 

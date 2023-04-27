@@ -102,7 +102,7 @@ class Game:
         for actor in self.actors:
             actor.is_alive and actor.destroy()
 
-        self.scenario.teardown()
+        self.scenario.destroy()
 
     def get_start_point(self, coord):
         points = self.world.get_map().get_spawn_points()

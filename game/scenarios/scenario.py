@@ -26,6 +26,6 @@ class Scenario:
     def setup(self):
         pass
 
-    def teardown(self):
+    def destroy(self):
         for actor in self.actors:
             actor.is_alive and actor.destroy()
