@@ -47,12 +47,12 @@ class Game:
         # First destination is second waypoint
         destination = self.waypoints[1]
 
-        if self.debug:
+        # if self.debug:
             # Render waypoints
-            for i, wp in enumerate(self.waypoints):
-                self.world.debug.draw_string(wp, str(i), draw_shadow=False,
-                                             color=carla.Color(r=255, g=0, b=0), life_time=20.0,
-                                             persistent_lines=True)
+            # for i, wp in enumerate(self.waypoints):
+            #     self.world.debug.draw_string(wp, str(i), draw_shadow=False,
+            #                                  color=carla.Color(r=255, g=0, b=0), life_time=20.0,
+            #                                  persistent_lines=True)
 
             # Render spawnpoints
             # for i, sp in enumerate(self.world.get_map().get_spawn_points()):
