@@ -36,6 +36,12 @@ Run the `ai_test.py` script to test the AI controller.
 
 ```sh
 python ai_test.py
+
+# Test a specific milestone
+python ai_test.py --milestone 1
+
+# Enable debug window
+python ai_test.py --debug
 ```
 
 Run the `ai_control.py` script to control the vehicle in the simulation using the AI controller.
