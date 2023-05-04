@@ -1,3 +1,5 @@
+from ai.carla import carla
+
 from collections import deque
 
 
@@ -46,10 +48,6 @@ class Navigator:
             # Compute current waypoint distance to destination
             distance = waypoint.transform.location.distance(self.knowledge.destination)
 
-            # Draw current waypoint
-            # self.world.debug.draw_point(waypoint.transform.location, size=0.2, life_time=20)
-            # print(f'Waypoint: ({waypoint.transform.location.x}, {waypoint.transform.location.y}) i={waypoint.is_intersection} lc={waypoint.lane_change} lt={waypoint.lane_type} d={distance}')
-
             # Get next (legal) waypoints
             next_waypoints = waypoint.next(2.0)
 
@@ -57,9 +55,6 @@ class Navigator:
             if len(next_waypoints) == 1:
                 waypoint = next_waypoints[0]
             else:
-                # for wp in next_waypoints:
-                #     self.world.debug.draw_point(wp.transform.location, size=0.1, life_time=20, color=carla.Color(0, 255, 0))
-
                 # If there are multiple next waypoints, then select the one that is closest to destination
                 waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(self.knowledge.destination))
 
@@ -68,3 +63,7 @@ class Navigator:
 
         # Add destination to path
         self.path.append(self.knowledge.destination)
+
+        # Draw path
+        for i in range(0, len(self.path)-2):
+            self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
