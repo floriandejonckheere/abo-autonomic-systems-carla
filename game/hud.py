@@ -19,7 +19,7 @@ import datetime
 
 import numpy as np
 
-from ai.analyzer import ZONES
+from ai.analyzer import DEPTH_ZONES
 
 from .features import Features
 
@@ -171,23 +171,22 @@ class HUD:
                     array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
                     array = array[:, :, :3]
                     array = array[:, :, ::-1]
+
+                    # Mark sensor zones on image
                     array = np.copy(array)
 
-                    # Mark sensor zones in red
-                    # Draw vertical lines
-                    cruise = ((50, 70), (65, 95), [255, 0, 0])
-                    zones = [cruise]
+                    for zone in DEPTH_ZONES.values():
+                        (h0, h1), (w0, w1) = zone.dimensions(array)
 
-                    for zone in ZONES.values():
                         # Draw vertical lines
-                        for h in range(zone['height'][0], zone['height'][1]):
-                            for w in (zone['width'][0], zone['width'][1]):
-                                array[h, w] = zone['color']
+                        for h in range(h0, h1):
+                            for w in (w0, w1):
+                                array[h, w] = zone.color
 
                         # Draw horizontal lines
-                        for h in (zone['height'][0], zone['height'][1]):
-                            for w in range(zone['width'][0], zone['width'][1]):
-                                array[h, w] = zone['color']
+                        for h in (h0, h1):
+                            for w in range(w0, w1):
+                                array[h, w] = zone.color
 
                     self._last_depth_image[colorspace] = pygame.surfarray.make_surface(array.swapaxes(0, 1))
 

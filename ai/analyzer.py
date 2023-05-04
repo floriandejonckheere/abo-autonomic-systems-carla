@@ -14,13 +14,11 @@ import carla
 
 import numpy as np
 
+from .zone import Zone
+
 # Depth sensor zones, normalized to a 100x100 grid
-ZONES = {
-    'cruise': {
-        'height': (50, 70),
-        'width': (65, 95),
-        'color': [255, 0, 0],
-    },
+DEPTH_ZONES = {
+    'cruise': Zone(height=(40, 60), width=(40, 60), color=(255, 0, 0)),
 }
 
 
@@ -53,8 +51,5 @@ class Analyzer(object):
         array = array[:, :, :3]
         array = array[:, :, ::-1]
 
-        # Analyze depth sensor zones
-        self.knowledge.proximity = np.mean(array[ZONES['cruise']['height'][0]:ZONES['cruise']['height'][1]])
-
         # Proximity to obstacle in front
-        # self.knowledge.proximity = np.mean(array)
+        self.knowledge.proximity = DEPTH_ZONES['cruise'].analyze(array)
