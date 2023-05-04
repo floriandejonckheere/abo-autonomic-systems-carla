@@ -44,7 +44,7 @@ class HUD:
         self.simulation_time = 0
         self.map = game.world.get_map().name
 
-        self.features = Features()
+        self.features = Features(size=(320 - 2 * 8))
 
         self._info_text = []
         self._server_clock = pygame.time.Clock()
@@ -94,21 +94,21 @@ class HUD:
             'Reverse:    % 26.2f' % self.features.reverse,
             'Hand brake: % 26s' % self.features.hand_brake,
             '',
-            'Throttle:   % 26.2f' % self.features.throttle,
-            self.features.throttle_history,
+            'Throttle:   % 26.2f' % self.features.throttle.value,
+            self.features.throttle.history,
             '',
-            'Brake:      % 26.2f' % self.features.brake,
-            self.features.brake_history,
+            'Brake:      % 26.2f' % self.features.brake.value,
+            self.features.brake.history,
             '',
-            'Target speed:% 20.2f km/h' % self.features.target_speed,
-            'Speed:       % 20.2f km/h' % self.features.speed,
-            [self.features.target_speed_history, self.features.speed_history],
+            'Target speed:% 20.2f km/h' % self.features.target_speed.value,
+            'Speed:       % 20.2f km/h' % self.features.speed.value,
+            [self.features.target_speed.history, self.features.speed.history],
             '',
-            'Steer:      % 26.2f' % self.features.steer,
-            self.features.steer_history,
+            'Steer:      % 26.2f' % self.features.steer.value,
+            self.features.steer.history,
             '',
-            'Proximity: % 26.2f' % self.features.proximity,
-            [self.features.proximity_history, self.features.proximity_left_history, self.features.proximity_right_history],
+            'Proximity: % 26.2f' % self.features.proximity.value,
+            [self.features.proximity.history, self.features.proximity_left.history, self.features.proximity_right.history],
             '',
             'State:  % 30s' % self.features.state,
             *goals_and_actions,

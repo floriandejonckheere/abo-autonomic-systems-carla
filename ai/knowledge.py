@@ -3,6 +3,7 @@ import math
 from ai.carla import carla
 
 from .state_machine import StateMachine
+from .value import Value
 
 
 # Class that holds the knowledge of the current state and serves as interaction point for all the modules
@@ -35,9 +36,9 @@ class Knowledge(object):
         self.depth_image = None
 
         # Parsed sensor data
-        self.proximity = 0.0
-        self.proximity_left = 0.0
-        self.proximity_right = 0.0
+        self.proximity = Value(0.0)
+        self.proximity_left = Value(0.0)
+        self.proximity_right = Value(0.0)
 
         # Execution plan
         self.plan = None
@@ -50,4 +51,11 @@ class Knowledge(object):
 
     # A function to receive data from monitor
     def update(self, **kwargs):
-        self.__dict__.update(kwargs)
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                if isinstance(getattr(self, key), Value):
+                    # Update historic values
+                    getattr(self, key).update(value)
+                else:
+                    # Update simple values
+                    setattr(self, key, value)
