@@ -81,7 +81,7 @@ class HUD:
             '',
             'Vehicle: % 29s' % self.features.vehicle,
             'Map:     % 29s' % self.map,
-            'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
+            'Simulation time: % 21s' % datetime.timedelta(seconds=int(self.simulation_time)),
             '',
             u'Heading:% 26.0f\N{DEGREE SIGN} % 2s' % (self.features.rotation.yaw, self.features.heading),
             'Location:% 29s' % ('(% 5.2f, % 5.2f)' % (self.features.location.x, self.features.location.y)),
