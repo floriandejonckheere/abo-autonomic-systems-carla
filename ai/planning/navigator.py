@@ -1,7 +1,5 @@
 from ai.carla import carla
 
-import numpy as np
-
 from collections import deque
 
 from .graph import Graph
@@ -53,9 +51,6 @@ class Navigator:
         ## Step 1: global route plan using topology waypoints
         topological_path = self.graph.shortest_path(source, destination)
 
-        # Add destination as final waypoint
-        topological_path.append(destination)
-
         # Draw path
         for i in range(0, len(self.path)-1):
             self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
@@ -82,9 +77,8 @@ class Navigator:
             waypoint = first
 
             # Iterate over waypoints until we are close enough to the destination,
-            # the path is longer than 300 waypoints,
-            # or the distance is increasing again (the vehicle overshot)
-            while distance > 5.0 and len(self.path) < 300 and waypoint.transform.location.distance(second.transform.location) < distance:
+            # or the path is longer than 300 waypoints (~600m)
+            while distance > 5.0 and len(self.path) < 300:
                 # Compute current waypoint distance to destination
                 distance = waypoint.transform.location.distance(second.transform.location)
 
@@ -101,6 +95,9 @@ class Navigator:
                 # Add waypoint to path
                 self.path.append(waypoint.transform.location)
 
+        # Add destination as final waypoint
+        self.path.append(self.knowledge.destination)
+
         # Draw full path
-        for i in range(0, len(self.path)-2):
+        for i in range(0, len(self.path)-1):
             self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
