@@ -1,18 +1,3 @@
-import glob
-import os
-import sys
-
-try:
-    sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-except IndexError:
-    pass
-
-import carla
-
-
 # Executor is responsible for moving the vehicle around
 # In this implementation it only needs to match the steering and speed so that we arrive at provided waypoints
 # BONUS TODO: implement different speed limits so that planner would also provide speed target speed in addition to
