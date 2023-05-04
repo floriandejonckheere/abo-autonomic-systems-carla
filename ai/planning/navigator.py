@@ -71,9 +71,8 @@ class Navigator:
         # Draw all waypoints
         for (u, v) in self.graph.topology:
             self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=20, color=carla.Color(0, 255, 0))
-
-        for node_id, wp in self.graph.node_id_to_waypoint.items():
-            self.world.debug.draw_string(wp.transform.location, str(node_id), life_time=20, color=carla.Color(255, 0, 0))
+            self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=20, color=carla.Color(0, 255, 0))
+            self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=20, color=carla.Color(0, 255, 0))
 
         ## Step 2: detailed route plan using local waypoints
 

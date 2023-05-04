@@ -1,4 +1,8 @@
+from ai.carla import carla
+
 import networkx as nx
+
+from .node import Node
 
 
 class Graph:
@@ -6,51 +10,29 @@ class Graph:
 
     def __init__(self, topology):
         self.topology = topology
-
         self.graph = nx.DiGraph()
 
-        # Map location to custom node id
-        self.location_to_node_id = {}
-
-        # Map custom node id to waypoints
-        self.node_id_to_waypoint = {}
-
-        i = 0
-
         for (u, v) in topology:
-            node_id = (u.transform.location.x, u.transform.location.y)
-            if not self.location_to_node_id.get(node_id):
-                self.location_to_node_id[node_id] = i
-                self.node_id_to_waypoint[i] = u
-                i += 1
+            # Wrap waypoints in Node objects
+            u = Node(u)
+            v = Node(v)
 
-            node_id = (v.transform.location.x, v.transform.location.y)
-            if not self.location_to_node_id.get(node_id):
-                self.location_to_node_id[node_id] = i
-                self.node_id_to_waypoint[i] = v
-                i += 1
+            self.graph.add_edge(u, v)
 
-            self.graph.add_edge(
-                self.location_to_node_id[(u.transform.location.x, u.transform.location.y)],
-                self.location_to_node_id[(v.transform.location.x, v.transform.location.y)],
-            )
-
-    # Return the topology waypoint closest to the given waypoint (on same road and lane)
-    def topological_waypoint_for(self, waypoint):
-        return next(v for (u, v) in self.topology if v.road_id == waypoint.road_id and v.lane_id == waypoint.lane_id)
+        print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
 
     # Return the shortest path between two waypoints in the graph
     def shortest_path(self, source, destination):
-        # Find the closest topological waypoints to the source and destination
-        source = self.topological_waypoint_for(source)
-        destination = self.topological_waypoint_for(destination)
+        # Find the closest topological waypoints to the source and destination (same road and lane)
+        source = next(v for (u, v) in self.topology if v.road_id == source.road_id and v.lane_id == source.lane_id)
+        destination = next(v for (u, v) in self.topology if v.road_id == destination.road_id and v.lane_id == destination.lane_id)
 
-        # Find the node ids corresponding to the source and destination
-        source_id = self.location_to_node_id[(source.transform.location.x, source.transform.location.y)]
-        destination_id = self.location_to_node_id[(destination.transform.location.x, destination.transform.location.y)]
+        # Wrap waypoints in Node objects
+        source = Node(source)
+        destination = Node(destination)
 
         # Find the shortest path between the source and destination
-        path = nx.shortest_path(self.graph, source=source_id, target=destination_id)
+        path = nx.shortest_path(self.graph, source=source, target=destination)
 
         # Return the list of waypoints corresponding to the node ids
-        return [self.node_id_to_waypoint[node_id] for node_id in path]
+        return [node.waypoint for node in path]
