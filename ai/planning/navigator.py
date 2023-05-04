@@ -83,9 +83,9 @@ class Navigator:
             waypoint = first
 
             # Iterate over waypoints until we are close enough to the destination,
-            # the path is longer than 150 waypoints,
+            # the path is longer than 300 waypoints,
             # or the distance is increasing again (the vehicle overshot)
-            while distance > 5.0 and len(self.path) < 150 and waypoint.transform.location.distance(second.transform.location) < distance:
+            while distance > 5.0 and len(self.path) < 300 and waypoint.transform.location.distance(second.transform.location) < distance:
                 # Compute current waypoint distance to destination
                 distance = waypoint.transform.location.distance(second.transform.location)
 
