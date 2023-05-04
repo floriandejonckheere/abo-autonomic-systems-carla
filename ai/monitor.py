@@ -40,6 +40,13 @@ class Monitor(object):
         self.depth_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.depth_sensor.listen(lambda image: Monitor._on_depth(weak_self, image))
 
+        # LIDAR sensor
+        bp = world.get_blueprint_library().find('sensor.lidar.ray_cast')
+        bp.set_attribute('sensor_tick', '0.2')
+
+        self.lidar_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
+        self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
+
     # Function that is called at time intervals to update ai-state
     def update(self):
         self.knowledge.update(
@@ -55,6 +62,7 @@ class Monitor(object):
         self.lane_detector.destroy()
         self.collision_sensor.destroy()
         self.depth_sensor.destroy()
+        self.lidar_sensor.destroy()
 
     @staticmethod
     def _on_invasion(weak_self, event):
@@ -82,3 +90,11 @@ class Monitor(object):
         image.convert(carla.ColorConverter.LogarithmicDepth)
 
         self.knowledge.depth_image = image
+
+    @staticmethod
+    def _on_lidar(weak_self, image):
+        self = weak_self()
+        if not self:
+            return
+
+        self.knowledge.lidar_image = image
