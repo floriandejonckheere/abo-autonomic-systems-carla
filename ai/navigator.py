@@ -10,6 +10,9 @@ class Navigator:
         # List of waypoints to follow
         self.path = deque()
 
+        # List of waypoints already visited
+        self.visited = deque()
+
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update(self):
         # If there are no more waypoints, we have arrived
@@ -18,7 +21,7 @@ class Navigator:
 
         # If we are close enough to the next waypoint, remove it from the list
         if self.knowledge.location.distance(self.path[0]) < 5.0:
-            self.path.popleft()
+            self.visited.append(self.path.popleft())
 
         if len(self.path) == 0:
             # If there are no more waypoints, we have arrived
@@ -30,6 +33,7 @@ class Navigator:
     # Create a list of waypoints from the current location to the current destination
     def plan(self):
         self.path = deque()
+        self.visited = deque()
 
         # Waypoint on map closest to source location
         waypoint = self.map.get_waypoint(self.knowledge.location)
