@@ -12,12 +12,38 @@ class Graph:
         self.topology = topology
         self.graph = nx.DiGraph()
 
+        # Dictionary of parallel edges based on road id
+        parallel = {}
+
         for (u, v) in topology:
             # Wrap waypoints in Node objects
             u = Node(u)
             v = Node(v)
 
+            # Add edge to graph
             self.graph.add_edge(u, v)
+
+            # Register parallel edges
+            if not parallel.get((u.road_id, v.road_id)):
+                parallel[(u.road_id, v.road_id)] = []
+
+            parallel[(u.road_id, v.road_id)].append((u, v))
+
+        # Add lane changes for parallel edges
+        for edges in parallel.values():
+            if len(edges) == 1:
+                continue
+
+            # Assume there are only two parallel edges (maximum two lanes per road)
+            u, v = edges[0]
+            u_, v_ = edges[1]
+
+            # Add lane change edges (if allowed)
+            if not u.lane_change.name == 'None':
+                self.graph.add_edge(u, v_)
+
+            if not u_.lane_change.name == 'None':
+                self.graph.add_edge(u_, v)
 
         print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
 
