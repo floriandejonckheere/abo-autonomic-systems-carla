@@ -20,4 +20,7 @@ class Node:
         return self.id
 
     def __getattr__(self, name):
-        getattr(self.waypoint, name)
+        if not hasattr(self.waypoint, name):
+            raise AttributeError(f"'{name}' not in delegate.")
+
+        return getattr(self.waypoint, name)
