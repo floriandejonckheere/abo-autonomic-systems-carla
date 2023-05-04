@@ -6,7 +6,7 @@ from .node import Node
 
 
 class Graph:
-    """Topological waypoint graph of the map."""
+    """Weighted directed graph of the topological waypoints on the map."""
 
     def __init__(self, topology):
         self.topology = topology
@@ -21,7 +21,7 @@ class Graph:
             v = Node(v)
 
             # Add edge to graph
-            self.graph.add_edge(u, v)
+            self.graph.add_edge(u, v, weight=u.transform.location.distance(v.transform.location))
 
             # Register parallel edges
             if not parallel.get((u.road_id, v.road_id)):
@@ -40,10 +40,10 @@ class Graph:
 
             # Add lane change edges (if allowed)
             if not u.lane_change.name == 'None':
-                self.graph.add_edge(u, v_)
+                self.graph.add_edge(u, v_, weight=u.transform.location.distance(v_.transform.location))
 
             if not u_.lane_change.name == 'None':
-                self.graph.add_edge(u_, v)
+                self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
 
         print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
 
@@ -58,7 +58,7 @@ class Graph:
         destination = Node(destination)
 
         # Find the shortest path between the source and destination
-        path = nx.shortest_path(self.graph, source=source, target=destination)
+        path = nx.dijkstra_path(self.graph, source=source, target=destination)
 
         # Return the list of waypoints corresponding to the node ids
         return [node.waypoint for node in path]
