@@ -1,8 +1,8 @@
-import networkx as nx
-
 from ai.carla import carla
 
 from collections import deque
+
+from .graph import Graph
 
 
 class Navigator:
@@ -18,32 +18,7 @@ class Navigator:
         self.visited = deque()
 
         # Create graph of the map topology
-        self.topology = self.map.get_topology()
-        self.graph = nx.DiGraph()
-
-        # Build graph
-        self.location_to_node_id = {}
-        self.node_id_to_waypoint = {}
-
-        i = 0
-
-        for (u, v) in self.topology:
-            node_id = (u.transform.location.x, u.transform.location.y)
-            if not self.location_to_node_id.get(node_id):
-                self.location_to_node_id[node_id] = i
-                self.node_id_to_waypoint[i] = u
-                i += 1
-
-            node_id = (v.transform.location.x, v.transform.location.y)
-            if not self.location_to_node_id.get(node_id):
-                self.location_to_node_id[node_id] = i
-                self.node_id_to_waypoint[i] = v
-                i += 1
-
-            self.graph.add_edge(
-                self.location_to_node_id[(u.transform.location.x, u.transform.location.y)],
-                self.location_to_node_id[(v.transform.location.x, v.transform.location.y)],
-            )
+        self.graph = Graph(self.map.get_topology())
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update(self):
@@ -74,19 +49,12 @@ class Navigator:
         destination = self.map.get_waypoint(self.knowledge.destination)
 
         ## Step 1: global route plan using topology waypoints
-        # Topology waypoint closest to source (end of road waypoint on same road as source, in the same lane)
-        source_wp = next(v for (u, v) in self.topology if v.road_id == source.road_id and v.lane_id == source.lane_id)
+        source_wp = self.graph.topological_waypoint_for(source)
+        destination_wp = self.graph.topological_waypoint_for(destination)
 
-        # Topology waypoint closest to destination (begin of road waypoint on same road as destination, in the same lane)
-        destination_wp = next(u for (u, v) in self.topology if u.road_id == destination.road_id and u.lane_id == destination.lane_id)
-
-        source_id = self.location_to_node_id[(source_wp.transform.location.x, source_wp.transform.location.y)]
-        destination_id = self.location_to_node_id[(destination_wp.transform.location.x, destination_wp.transform.location.y)]
-
-        path = nx.shortest_path(self.graph, source=source_id, target=destination_id)
-
-        for node_id in path:
-            self.path.append(self.node_id_to_waypoint[node_id].transform.location)
+        # Calculate shortest path
+        for waypoint in self.graph.shortest_path(source_wp, destination_wp):
+            self.path.append(waypoint.transform.location)
 
         # Add destination as final waypoint
         self.path.append(self.knowledge.destination)
@@ -104,11 +72,10 @@ class Navigator:
         self.world.debug.draw_string(destination.transform.location + carla.Location(z=1), str(destination.road_id), life_time=20, color=carla.Color(0, 255, 0))
 
         # Draw all waypoints
-        for (u, v) in self.topology:
+        for (u, v) in self.graph.topology:
             self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=20, color=carla.Color(0, 255, 0))
 
-        for node_id in self.graph.nodes:
-            wp = self.node_id_to_waypoint[node_id]
+        for node_id, wp in self.graph.node_id_to_waypoint.items():
             self.world.debug.draw_string(wp.transform.location, str(node_id), life_time=20, color=carla.Color(255, 0, 0))
 
         return
