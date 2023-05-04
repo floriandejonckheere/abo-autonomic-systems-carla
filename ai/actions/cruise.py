@@ -5,10 +5,11 @@ from .action import Action
 
 
 class Cruise(Action):
-    """Stop-and-go based on proximity"""
+    """Stop-and-go based on proximity and speed"""
 
-    def __init__(self, proximity):
+    def __init__(self, proximity, speed):
         self.proximity = proximity
+        self.speed = speed
 
         # Universe variables
         self.x_proximity = np.arange(0, 1000, 1)
@@ -18,12 +19,13 @@ class Cruise(Action):
         self.prox_hi = fz.smf(self.x_proximity, 40, 80)
 
     def apply(self, control):
-        # Set brake
-        control.brake = self.calculate_brake()
+        # Set throttle and brake
+        control.throttle *= self.calculate_throttle()
+        control.brake *= self.calculate_brake()
 
-        # If brake is not applied, set throttle
-        if control.brake > 0.05:
-            control.throttle = 0.0
+    def calculate_throttle(self):
+        # Throttle is inverse proportional to the distance
+        return fz.interp_membership(self.x_proximity, self.prox_hi, self.proximity)
 
     def calculate_brake(self):
         # Brake is proportional to the distance
