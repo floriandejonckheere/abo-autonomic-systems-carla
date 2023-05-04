@@ -45,8 +45,6 @@ class Navigator:
                 self.location_to_node_id[(v.transform.location.x, v.transform.location.y)],
             )
 
-        # self.graph.add_edges_from([(u.transform.location, v.transform.location) for (u, v) in self.topology])
-
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update(self):
         # If there are no more waypoints, we have arrived
@@ -85,21 +83,17 @@ class Navigator:
         source_id = self.location_to_node_id[(source_wp.transform.location.x, source_wp.transform.location.y)]
         destination_id = self.location_to_node_id[(destination_wp.transform.location.x, destination_wp.transform.location.y)]
 
-        print(source_id, destination_id)
-
         path = nx.shortest_path(self.graph, source=source_id, target=destination_id)
-
-        print(path)
 
         for node_id in path:
             self.path.append(self.node_id_to_waypoint[node_id].transform.location)
 
-        # Add destination
+        # Add destination as final waypoint
         self.path.append(destination.transform.location)
 
         # Draw path
         for i in range(0, len(self.path)-1):
-            self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=60, color=carla.Color(255, 0, 0))
+            self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
 
         # Draw source
         self.world.debug.draw_string(self.knowledge.location, 'S', life_time=20, color=carla.Color(255, 255, 0))
@@ -112,22 +106,16 @@ class Navigator:
         # Draw all waypoints
         for (u, v) in self.topology:
             self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=20, color=carla.Color(0, 255, 0))
-        #     self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=20, color=carla.Color(255, 0, 0))
-        #     self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=20, color=carla.Color(255, 0, 0))
 
         for node_id in self.graph.nodes:
             wp = self.node_id_to_waypoint[node_id]
             self.world.debug.draw_string(wp.transform.location, str(node_id), life_time=20, color=carla.Color(255, 0, 0))
 
+        return
+
         ## Step 2: detailed route plan using local waypoints
         distance = float('inf')
         waypoint = source
-
-
-
-        return
-
-
 
         # Iterate over waypoints until we are close enough to the destination,
         # or the distance is increasing again (the vehicle overshot)
