@@ -77,8 +77,8 @@ class Navigator:
         # Topology waypoint closest to source (end of road waypoint on same road as source, in the same lane)
         source_wp = next(v for (u, v) in self.topology if v.road_id == source.road_id and v.lane_id == source.lane_id)
 
-        # Topology waypoint closest to destination (end of road waypoint on same road as destination, in the same lane)
-        destination_wp = next(v for (u, v) in self.topology if v.road_id == destination.road_id and v.lane_id == destination.lane_id)
+        # Topology waypoint closest to destination (begin of road waypoint on same road as destination, in the same lane)
+        destination_wp = next(u for (u, v) in self.topology if u.road_id == destination.road_id and u.lane_id == destination.lane_id)
 
         source_id = self.location_to_node_id[(source_wp.transform.location.x, source_wp.transform.location.y)]
         destination_id = self.location_to_node_id[(destination_wp.transform.location.x, destination_wp.transform.location.y)]
@@ -89,7 +89,7 @@ class Navigator:
             self.path.append(self.node_id_to_waypoint[node_id].transform.location)
 
         # Add destination as final waypoint
-        self.path.append(destination.transform.location)
+        self.path.append(self.knowledge.destination)
 
         # Draw path
         for i in range(0, len(self.path)-1):
