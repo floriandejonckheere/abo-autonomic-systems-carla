@@ -1,8 +1,7 @@
 import ai.goals as goals
 
 from .state_machine import StateMachine
-from .navigator import Navigator
-from .plan import Plan
+from .planning import Navigator, Plan
 
 
 # Planner is responsible for creating a plan for moving around
