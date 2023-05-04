@@ -42,6 +42,9 @@ class Navigator:
 
         distance = float('inf')
 
+        # Draw destination
+        self.world.debug.draw_point(self.knowledge.destination, size=0.5, life_time=20, color=carla.Color(0, 255, 0))
+
         # Iterate over waypoints until we are close enough to the destination,
         # or the distance is increasing again (the vehicle overshot)
         while distance > 5.0 and len(self.path) < 150: # and waypoint.transform.location.distance(destination) < distance:
