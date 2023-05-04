@@ -26,6 +26,9 @@ class Analyzer(object):
         # Analyze depth sensor data
         self.analyze_depth_image()
 
+        # Analyze LIDAR sensor data
+        self.analyze_lidar_image()
+
     def detect_collision(self):
         if self.knowledge.collision:
             self.knowledge.state_machine.crash()
@@ -44,3 +47,6 @@ class Analyzer(object):
         self.knowledge.proximity_right = DEPTH_ZONES['right'].analyze(array)
 
         self.knowledge.proximity = np.mean(array)
+
+    def analyze_lidar_image(self):
+        pass
