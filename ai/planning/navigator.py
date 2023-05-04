@@ -78,7 +78,10 @@ class Navigator:
 
             # Iterate over waypoints until we are close enough to the destination,
             # or the path is longer than 300 waypoints (~600m)
-            while distance > 5.0 and len(self.path) < 300:
+            while distance > 5.0:
+                if len(self.path) > 300:
+                    raise Exception(f'Could not find path from {first} to {second} after 300 waypoints')
+
                 # Compute current waypoint distance to destination
                 distance = waypoint.transform.location.distance(second.transform.location)
 
