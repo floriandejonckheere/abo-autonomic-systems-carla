@@ -12,8 +12,8 @@ class Limit(Action):
         self.target_speed = target_speed
 
         # Universe variables
-        self.x_speed = np.arange(0, 101, 1)
-        self.x_target_speed = np.arange(0, 101, 1)
+        self.x_speed = np.arange(0, 1000, 1)
+        self.x_target_speed = np.arange(0, 1000, 1)
 
         # Fuzzy membership functions
         self.speed_hi = fz.smf(self.x_speed, 3, 5)

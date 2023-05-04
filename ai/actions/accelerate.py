@@ -11,7 +11,7 @@ class Accelerate(Action):
         self.distance = distance
 
         # Universe variables
-        self.x_distance = np.arange(0, 101, 1)
+        self.x_distance = np.arange(0, 1000, 1)
 
         # Fuzzy membership functions
         self.dist_lo = fz.zmf(self.x_distance, 0.2, 3)
