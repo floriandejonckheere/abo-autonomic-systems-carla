@@ -49,8 +49,8 @@ class HUD:
 
         self._font_mono = pygame.font.Font(pygame.font.match_font('consolas'), 14)
 
-        self._last_depth_image = None
         self._last_depth_image_frame_number = 0
+        self._last_depth_image = {}
 
     def on_world_tick(self, timestamp):
         self._server_clock.tick()
@@ -158,14 +158,20 @@ class HUD:
         # Render depth image
         if self.features.depth_image is not None:
             if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
+                # Render image only if it has changed
                 self._last_depth_image_frame_number = self.features.depth_image.frame_number
 
-                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype("uint8"))
-                array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
-                array = array[:, :, :3]
-                array = array[:, :, ::-1]
-                surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+                for colorspace in (carla.ColorConverter.Raw, carla.ColorConverter.LogarithmicDepth):
+                    # Convert image to color space
+                    self.features.depth_image.convert(colorspace)
 
-                self._last_depth_image = surface
+                    array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype("uint8"))
+                    array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
+                    array = array[:, :, :3]
+                    array = array[:, :, ::-1]
+                    surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
 
-            display.blit(self._last_depth_image, (320, 0))
+                    self._last_depth_image[colorspace] = surface
+
+            for i, surface in enumerate(self._last_depth_image.values()):
+                display.blit(surface, (320, i * self.features.depth_image.height))
