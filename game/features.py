@@ -48,6 +48,8 @@ class Features:
         self.depth_image = None
 
         self.proximity = None
+        self.proximity_left = None
+        self.proximity_right = None
 
         self.throttle_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.brake_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
@@ -55,6 +57,8 @@ class Features:
         self.speed_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.target_speed_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
         self.proximity_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
+        self.proximity_left_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
+        self.proximity_right_history = collections.deque(HISTORY_SIZE * [0.0], HISTORY_SIZE)
 
     def analyze(self, autopilot):
         vehicle = autopilot.vehicle
@@ -89,6 +93,8 @@ class Features:
         self.depth_image = knowledge.depth_image
 
         self.proximity = knowledge.proximity
+        self.proximity_left = knowledge.proximity_left
+        self.proximity_right = knowledge.proximity_right
 
         self.throttle_history.append(self.throttle)
         self.brake_history.append(self.brake)
@@ -102,3 +108,5 @@ class Features:
 
         # Limit proximity to [0, 100]
         self.proximity_history.append(min(self.proximity / 100, 100))
+        self.proximity_left_history.append(min(knowledge.proximity_left / 100, 100))
+        self.proximity_right_history.append(min(knowledge.proximity_right / 100, 100))

@@ -108,7 +108,7 @@ class HUD:
             self.features.steer_history,
             '',
             'Proximity: % 26.2f' % self.features.proximity,
-            self.features.proximity_history,
+            [self.features.proximity_history, self.features.proximity_left_history, self.features.proximity_right_history],
             '',
             'State:  % 30s' % self.features.state,
             *goals_and_actions,
@@ -131,7 +131,7 @@ class HUD:
                         # Two-dimensional list
                         for i, series in enumerate(item):
                             points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(series)]
-                            pygame.draw.lines(display, COLORS[i], False, points, 2)
+                            pygame.draw.lines(display, COLORS[i], False, points, 1)
                     else:
                         # One-dimensional list
                         points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]

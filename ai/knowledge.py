@@ -47,6 +47,8 @@ class Knowledge(object):
 
         # Parsed sensor data
         self.proximity = 0.0
+        self.proximity_left = 0.0
+        self.proximity_right = 0.0
 
         # Execution plan
         self.plan = None

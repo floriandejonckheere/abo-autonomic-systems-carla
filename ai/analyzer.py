@@ -18,7 +18,9 @@ from .zone import Zone
 
 # Depth sensor zones, normalized to a 100x100 grid
 DEPTH_ZONES = {
-    'cruise': Zone(height=(40, 60), width=(40, 60), color=(255, 0, 0)),
+    'front': Zone(height=(40, 60), width=(40, 60), color=(255, 0, 0)),
+    'left': Zone(height=(20, 80), width=(0, 20), color=(0, 255, 0)),
+    'right': Zone(height=(20, 80), width=(80, 100), color=(0, 255, 0)),
 }
 
 
@@ -51,5 +53,9 @@ class Analyzer(object):
         array = array[:, :, :3]
         array = array[:, :, ::-1]
 
-        # Proximity to obstacle in front
-        self.knowledge.proximity = DEPTH_ZONES['cruise'].analyze(array)
+        # Proximity to obstacle in front (cruise control)
+        self.knowledge.proximity = DEPTH_ZONES['front'].analyze(array)
+
+        # Proximity to obstacle on left (collision avoidance)
+        self.knowledge.proximity_left = DEPTH_ZONES['left'].analyze(array)
+        self.knowledge.proximity_right = DEPTH_ZONES['right'].analyze(array)
