@@ -58,7 +58,4 @@ class Graph:
         destination = Node(destination)
 
         # Find the shortest path between the source and destination
-        path = nx.dijkstra_path(self.graph, source=source, target=destination)
-
-        # Return the list of waypoints corresponding to the node ids
-        return [node.waypoint for node in path]
+        return nx.dijkstra_path(self.graph, source=source, target=destination)
