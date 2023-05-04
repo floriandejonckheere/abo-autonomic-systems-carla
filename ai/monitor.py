@@ -46,8 +46,8 @@ class Monitor(object):
         bp.set_attribute('image_size_y', '120')
         bp.set_attribute('fov', '60')
 
-        # Location of sensor is 1.6 meters from center of vehicle, 1 meter above ground
-        location = carla.Location(x=1.6, z=1.0)
+        # Location of sensor is front of vehicle, 1 meter above ground
+        location = carla.Location(x=self.vehicle.bounding_box.extent.x, z=1.0)
 
         self.depth_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.depth_sensor.listen(lambda image: Monitor._on_depth(weak_self, image))
