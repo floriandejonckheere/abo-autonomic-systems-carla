@@ -9,7 +9,10 @@ class Graph:
 
         self.graph = nx.DiGraph()
 
+        # Map location to custom node id
         self.location_to_node_id = {}
+
+        # Map custom node id to waypoints
         self.node_id_to_waypoint = {}
 
         i = 0
@@ -38,9 +41,16 @@ class Graph:
 
     # Return the shortest path between two waypoints in the graph
     def shortest_path(self, source, destination):
+        # Find the closest topological waypoints to the source and destination
+        source = self.topological_waypoint_for(source)
+        destination = self.topological_waypoint_for(destination)
+
+        # Find the node ids corresponding to the source and destination
         source_id = self.location_to_node_id[(source.transform.location.x, source.transform.location.y)]
         destination_id = self.location_to_node_id[(destination.transform.location.x, destination.transform.location.y)]
 
+        # Find the shortest path between the source and destination
         path = nx.shortest_path(self.graph, source=source_id, target=destination_id)
 
+        # Return the list of waypoints corresponding to the node ids
         return [self.node_id_to_waypoint[node_id] for node_id in path]

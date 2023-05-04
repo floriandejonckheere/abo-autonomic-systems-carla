@@ -51,11 +51,7 @@ class Navigator:
         destination = self.map.get_waypoint(self.knowledge.destination)
 
         ## Step 1: global route plan using topology waypoints
-        source_wp = self.graph.topological_waypoint_for(source)
-        destination_wp = self.graph.topological_waypoint_for(destination)
-
-        # Calculate shortest topological path
-        topological_path = self.graph.shortest_path(source_wp, destination_wp)
+        topological_path = self.graph.shortest_path(source, destination)
 
         # Add destination as final waypoint
         topological_path.append(destination)
