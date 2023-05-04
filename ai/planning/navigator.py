@@ -1,5 +1,7 @@
 from ai.carla import carla
 
+import numpy as np
+
 from collections import deque
 
 from .graph import Graph
@@ -52,12 +54,11 @@ class Navigator:
         source_wp = self.graph.topological_waypoint_for(source)
         destination_wp = self.graph.topological_waypoint_for(destination)
 
-        # Calculate shortest path
-        for waypoint in self.graph.shortest_path(source_wp, destination_wp):
-            self.path.append(waypoint.transform.location)
+        # Calculate shortest topological path
+        topological_path = self.graph.shortest_path(source_wp, destination_wp)
 
         # Add destination as final waypoint
-        self.path.append(self.knowledge.destination)
+        topological_path.append(destination)
 
         # Draw path
         for i in range(0, len(self.path)-1):
@@ -78,34 +79,33 @@ class Navigator:
         for node_id, wp in self.graph.node_id_to_waypoint.items():
             self.world.debug.draw_string(wp.transform.location, str(node_id), life_time=20, color=carla.Color(255, 0, 0))
 
-        return
-
         ## Step 2: detailed route plan using local waypoints
-        distance = float('inf')
-        waypoint = source
 
-        # Iterate over waypoints until we are close enough to the destination,
-        # or the distance is increasing again (the vehicle overshot)
-        while distance > 5.0 and len(self.path) < 150: # and waypoint.transform.location.distance(destination) < distance:
-            # Compute current waypoint distance to destination
-            distance = waypoint.transform.location.distance(self.knowledge.destination)
+        # For each pair of waypoints in the topological path, compute a detailed route
+        for first, second in zip(topological_path, topological_path[1:]):
+            distance = float('inf')
+            waypoint = first
 
-            # Get next (legal) waypoints
-            next_waypoints = waypoint.next(2.0)
+            # Iterate over waypoints until we are close enough to the destination,
+            # the path is longer than 150 waypoints,
+            # or the distance is increasing again (the vehicle overshot)
+            while distance > 5.0 and len(self.path) < 150 and waypoint.transform.location.distance(second.transform.location) < distance:
+                # Compute current waypoint distance to destination
+                distance = waypoint.transform.location.distance(second.transform.location)
 
-            # If there is only one next waypoint, then select it
-            if len(next_waypoints) == 1:
-                waypoint = next_waypoints[0]
-            else:
-                # If there are multiple next waypoints, then select the one that is closest to destination
-                waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(self.knowledge.destination))
+                # Get next (legal) waypoints
+                next_waypoints = waypoint.next(2.0)
 
-            # Add waypoint to path
-            self.path.append(waypoint.transform.location)
+                # If there is only one next waypoint, then select it
+                if len(next_waypoints) == 1:
+                    waypoint = next_waypoints[0]
+                else:
+                    # If there are multiple next waypoints, then select the one that is closest to destination
+                    waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(second.transform.location))
 
-        # Add destination to path
-        self.path.append(self.knowledge.destination)
+                # Add waypoint to path
+                self.path.append(waypoint.transform.location)
 
-        # Draw path
+        # Draw full path
         for i in range(0, len(self.path)-2):
             self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
