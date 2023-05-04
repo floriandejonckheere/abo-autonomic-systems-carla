@@ -11,6 +11,7 @@ except IndexError:
     pass
 
 import weakref
+
 import carla
 
 
@@ -40,10 +41,10 @@ class Monitor(object):
 
         # Depth sensor
         bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '0.1')
+        bp.set_attribute('sensor_tick', '0.2')
         bp.set_attribute('image_size_x', '160')
         bp.set_attribute('image_size_y', '120')
-        bp.set_attribute('fov', '30')  # Use a narrow field of view
+        bp.set_attribute('fov', '60')
 
         # Location of sensor is 1.6 meters from center of vehicle, 1 meter above ground
         location = carla.Location(x=1.6, z=1.0)
@@ -88,8 +89,5 @@ class Monitor(object):
         self = weak_self()
         if not self:
             return
-
-        # Convert to logarithmic grayscale
-        image.convert(carla.ColorConverter.LogarithmicDepth)
 
         self.knowledge.depth_image = image

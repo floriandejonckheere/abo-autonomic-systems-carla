@@ -19,6 +19,8 @@ import datetime
 
 import numpy as np
 
+from ai.analyzer import ZONES
+
 from .features import Features
 
 COLORS = [
@@ -169,9 +171,25 @@ class HUD:
                     array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
                     array = array[:, :, :3]
                     array = array[:, :, ::-1]
-                    surface = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+                    array = np.copy(array)
 
-                    self._last_depth_image[colorspace] = surface
+                    # Mark sensor zones in red
+                    # Draw vertical lines
+                    cruise = ((50, 70), (65, 95), [255, 0, 0])
+                    zones = [cruise]
+
+                    for zone in ZONES.values():
+                        # Draw vertical lines
+                        for h in range(zone['height'][0], zone['height'][1]):
+                            for w in (zone['width'][0], zone['width'][1]):
+                                array[h, w] = zone['color']
+
+                        # Draw horizontal lines
+                        for h in (zone['height'][0], zone['height'][1]):
+                            for w in range(zone['width'][0], zone['width'][1]):
+                                array[h, w] = zone['color']
+
+                    self._last_depth_image[colorspace] = pygame.surfarray.make_surface(array.swapaxes(0, 1))
 
             for i, surface in enumerate(self._last_depth_image.values()):
                 display.blit(surface, (320, i * self.features.depth_image.height))
