@@ -12,7 +12,7 @@ class StateMachine(sm.StateMachine):
     parked = sm.State(final=True)
 
     drive = driving.to(driving) | arrived.to(driving) | idle.to(driving) | healing.to(driving)
-    arrive = arrived.to(arrived) | driving.to(arrived)
+    arrive = arrived.to(arrived) | driving.to(arrived) | idle.to(arrived)
     crash = crashed.to(crashed) | arrived.to(crashed) | driving.to(crashed) | idle.to(crashed)
     heal = healing.to(healing) | crashed.to(healing)
     park = driving.to(parked) | arrived.to(parked)

@@ -17,6 +17,7 @@ stateDiagram-v2
     Healing --> Driving: drive
 
     Driving --> Arrived: arrive
+    Idle --> Arrived: arrive
 
 %%    Arrived --> Crashed: crash
 %%    Driving --> Crashed: crash
