@@ -45,9 +45,6 @@ class Analyzer(object):
             self.knowledge.state_machine.crash()
 
     def analyze_depth_image(self):
-        # Convert to logarithmic grayscale
-        self.knowledge.depth_image.convert(carla.ColorConverter.LogarithmicDepth)
-
         array = np.frombuffer(self.knowledge.depth_image.raw_data, dtype=np.dtype("uint8"))
         array = np.reshape(array, (self.knowledge.depth_image.height, self.knowledge.depth_image.width, 4))
         array = array[:, :, :3]
@@ -59,3 +56,5 @@ class Analyzer(object):
         # Proximity to obstacle on left (collision avoidance)
         self.knowledge.proximity_left = DEPTH_ZONES['left'].analyze(array)
         self.knowledge.proximity_right = DEPTH_ZONES['right'].analyze(array)
+
+        self.knowledge.proximity = np.mean(array)

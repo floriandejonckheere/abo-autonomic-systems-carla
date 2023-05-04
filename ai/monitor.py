@@ -90,4 +90,7 @@ class Monitor(object):
         if not self:
             return
 
+        # Convert to logarithmic grayscale
+        image.convert(carla.ColorConverter.LogarithmicDepth)
+
         self.knowledge.depth_image = image
