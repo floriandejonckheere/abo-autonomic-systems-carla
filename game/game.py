@@ -13,7 +13,7 @@ except IndexError:
 import carla
 
 from ai.autopilot import Autopilot
-from ai.event_broker import event_broker
+from ai.events import event_broker
 
 import game.utils as utils
 

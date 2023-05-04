@@ -1,4 +1,4 @@
-class EventBroker:
+class Broker:
     """Event broker for publishing and subscribing to events."""
 
     def __init__(self):
@@ -18,7 +18,3 @@ class EventBroker:
     def unsubscribe(self, topic, callback):
         if topic in self.topics:
             self.topics[topic].remove(callback)
-
-
-# Singleton instance
-event_broker = EventBroker()
