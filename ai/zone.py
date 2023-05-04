@@ -17,12 +17,12 @@ class Zone:
         return np.mean(array[h0:h1, w0:w1])
 
     def dimensions(self, array):
-        print(self.height, self.width, array.shape)
+        height, width, _ = array.shape
 
         return (
-            int(self.height[0] * (array.shape[0] / 100)),
-            int(self.height[1] * (array.shape[0] / 100))
+            max(0, min(height - 1, int(self.height[0] * (height / 100)))),
+            max(0, min(height - 1, int(self.height[1] * (height / 100)))),
         ), (
-            int(self.width[0] * (array.shape[1] / 100)),
-            int(self.width[1] * (array.shape[1] / 100))
+            max(0, min(width - 1, int(self.width[0] * (width / 100)))),
+            max(0, min(width - 1, int(self.width[1] * (width / 100)))),
         )
