@@ -10,3 +10,4 @@ from .learner_driver import LearnerDriver
 from .traffic_lights import TrafficLights
 from .stop_and_go import StopAndGo
 from .jaywalker import Jaywalker
+from .speed_limits import SpeedLimits
