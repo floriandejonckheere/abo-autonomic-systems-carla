@@ -6,9 +6,11 @@ from .graph import Graph
 
 
 class Navigator:
-    def __init__(self, knowledge, world):
+    def __init__(self, knowledge, world, debug):
         self.knowledge = knowledge
         self.world = world
+        self.debug = debug
+
         self.map = world.get_map()
 
         # List of waypoints to follow

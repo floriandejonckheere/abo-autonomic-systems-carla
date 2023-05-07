@@ -58,7 +58,7 @@ class Game:
         self.scenario.setup()
 
         # Set up autopilot
-        self.autopilot = Autopilot(vehicle)
+        self.autopilot = Autopilot(vehicle, self.debug)
         self.autopilot.set_destination(destination)
 
         # Set up callback for destination arrival

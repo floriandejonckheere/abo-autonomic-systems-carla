@@ -15,8 +15,9 @@ DEPTH_ZONES = {
 # TODO: During the update step parse the data inside knowledge into information that could be used by planner to plan
 #  the route
 class Analyzer(object):
-    def __init__(self, knowledge):
+    def __init__(self, knowledge, debug):
         self.knowledge = knowledge
+        self.debug = debug
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):

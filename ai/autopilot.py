@@ -9,16 +9,17 @@ from .knowledge import *
 
 # Manager script
 class Autopilot(object):
-    def __init__(self, vehicle):
+    def __init__(self, vehicle, debug):
         # Vehicle (CARLA actor)
         self.vehicle = vehicle
+        self.debug = debug
 
         # MAPE-K modules
         self.knowledge = Knowledge()
-        self.monitor = Monitor(self.knowledge, self.vehicle)
-        self.analyzer = Analyzer(self.knowledge)
-        self.planner = Planner(self.knowledge, self.vehicle)
-        self.executor = Executor(self.knowledge, self.vehicle)
+        self.monitor = Monitor(self.knowledge, self.vehicle, debug)
+        self.analyzer = Analyzer(self.knowledge, debug)
+        self.planner = Planner(self.knowledge, self.vehicle, debug)
+        self.executor = Executor(self.knowledge, self.vehicle, debug)
 
         # Time of last update (in milliseconds)
         self.last_time = int(round(time.time() * 1000))

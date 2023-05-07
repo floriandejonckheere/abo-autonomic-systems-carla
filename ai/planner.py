@@ -8,10 +8,12 @@ from .planning import Navigator, Plan
 # In our case it creates a list of waypoints to follow so that vehicle arrives at destination
 # Alternatively this can also provide a list of waypoints to try avoid crashing or 'uncrash' itself
 class Planner(object):
-    def __init__(self, knowledge, vehicle):
+    def __init__(self, knowledge, vehicle, debug):
         self.knowledge = knowledge
+        self.vehicle = vehicle
+        self.debug = debug
 
-        self.navigator = Navigator(knowledge, vehicle.get_world())
+        self.navigator = Navigator(knowledge, vehicle.get_world(), debug)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
