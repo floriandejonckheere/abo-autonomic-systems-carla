@@ -51,7 +51,7 @@ class Graph:
     def shortest_path(self, source, destination):
         # Find the closest topological waypoints to the source and destination (same road and lane)
         source = next(v for (u, v) in self.topology if v.road_id == source.road_id and v.lane_id == source.lane_id)
-        destination = next(v for (u, v) in self.topology if v.road_id == destination.road_id and v.lane_id == destination.lane_id)
+        destination = next(u for (u, v) in self.topology if v.road_id == destination.road_id and v.lane_id == destination.lane_id)
 
         # Wrap waypoints in Node objects
         source = Node(source)

@@ -42,11 +42,20 @@ class Navigator:
 
     # Create a list of waypoints from the current location to the current destination
     def plan(self):
-        self.path = deque()
-        self.visited = deque()
+        # Determine starting location
+        if len(self.visited) == 0:
+            # If we have not visited any waypoints yet, start from waypoint closest to current location
+            location = self.knowledge.location
+        else:
+            # Otherwise, start from the last visited waypoint
+            location = self.visited.pop()
+
+        # Clear path and visited lists
+        self.path.clear()
+        self.visited.clear()
 
         # Waypoint on map closest to source location
-        source = self.map.get_waypoint(self.knowledge.location)
+        source = self.map.get_waypoint(location)
 
         # Waypoint on map closest to destination location
         destination = self.map.get_waypoint(self.knowledge.destination)
