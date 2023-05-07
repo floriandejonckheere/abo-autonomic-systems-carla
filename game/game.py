@@ -69,7 +69,7 @@ class Game:
         self.autopilot.set_destination(destination)
 
         # Set up callback for destination arrival
-        event_broker.subscribe('state_changed', self.state_changed)
+        self.autopilot.knowledge.state_machine.add_observer(self)
 
     def tick(self):
         # Update autopilot
@@ -106,9 +106,9 @@ class Game:
         start_point = points[index]
         return self.world.get_map().get_waypoint(start_point.location)
 
-    def state_changed(self, event):
+    def after_transition(self, event, source, target):
         # Handle only arrived state change
-        if event['state'] is not 'arrived':
+        if target is not self.autopilot.knowledge.state_machine.arrived:
             return
 
         pos = self.autopilot.vehicle.get_transform().location
