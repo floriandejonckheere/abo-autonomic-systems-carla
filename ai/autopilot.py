@@ -35,7 +35,7 @@ class Autopilot(object):
         self.planner.update(dt)
         self.executor.update(dt)
 
-        return self.knowledge.state()
+        return self.knowledge.state_machine.current_state
 
     def destroy(self):
         self.monitor.destroy()

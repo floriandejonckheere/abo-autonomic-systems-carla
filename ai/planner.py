@@ -24,7 +24,7 @@ class Planner(object):
         # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
         #  crash state. You should use separate waypoint list for that, to not mess with the original path.
 
-        state = self.knowledge.state()
+        state = self.knowledge.state_machine.current_state
         if state == StateMachine.parked or state == StateMachine.crashed:
             # If the vehicle is parking or has crashed, apply handbrake and do nothing
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
@@ -45,13 +45,17 @@ class Planner(object):
 
         if waypoint is None:
             # If there are no more waypoints, the vehicle has arrived
-            self.knowledge.state_machine.arrive()
+            if not self.knowledge.state_machine.arrived.is_active:
+                self.knowledge.state_machine.arrive()
+
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         else:
             # Otherwise, we keep driving towards the next waypoint
             self.knowledge.update(waypoint=waypoint)
 
-            self.knowledge.state_machine.drive()
+            if not self.knowledge.state_machine.driving.is_active:
+                self.knowledge.state_machine.drive()
+
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
 
             # Stop for traffic lights

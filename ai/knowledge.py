@@ -44,9 +44,6 @@ class Knowledge(object):
         # Execution plan
         self.plan = None
 
-    def state(self):
-        return self.state_machine.current_state
-
     def speed(self):
         return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 

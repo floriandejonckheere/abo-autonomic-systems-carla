@@ -11,15 +11,11 @@ class StateMachine(sm.StateMachine):
     healing = sm.State()
     parked = sm.State(final=True)
 
-    drive = driving.to(driving) | arrived.to(driving) | idle.to(driving) | healing.to(driving)
-    arrive = arrived.to(arrived) | driving.to(arrived) | idle.to(arrived)
-    crash = crashed.to(crashed) | arrived.to(crashed) | driving.to(crashed) | idle.to(crashed)
-    heal = healing.to(healing) | crashed.to(healing)
+    drive = arrived.to(driving) | idle.to(driving) | healing.to(driving)
+    arrive = driving.to(arrived) | idle.to(arrived)
+    crash = arrived.to(crashed) | driving.to(crashed) | idle.to(crashed)
+    heal = crashed.to(healing)
     park = driving.to(parked) | arrived.to(parked)
 
     def on_enter_state(self, event, state):
-        # Ignore epsilon transitions
-        if self.current_state == state:
-            return
-
         event_broker.publish('state_changed', state=state.id, event=event)
