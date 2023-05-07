@@ -1,10 +1,10 @@
 from ai.carla import carla
 
 from ai.autopilot import Autopilot
-from ai.events import event_broker
 
 import game.utils as utils
 import game.scenarios as scenarios
+
 
 class Game:
     def __init__(self, world, debug, scenario):
