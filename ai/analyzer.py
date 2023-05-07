@@ -31,7 +31,7 @@ class Analyzer(object):
         self.analyze_lidar_image()
 
     def detect_collision(self):
-        if self.knowledge.collision and not self.knowledge.crashed.is_active:
+        if self.knowledge.collision and not self.knowledge.state_machine_crashed.is_active:
             self.knowledge.state_machine.crash()
 
     def analyze_depth_image(self):
