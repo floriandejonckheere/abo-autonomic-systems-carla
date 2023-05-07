@@ -6,9 +6,10 @@ from .graph import Graph
 
 
 class Navigator:
-    def __init__(self, knowledge, world, debug):
+    def __init__(self, knowledge, world, debug, detailed = False):
         self.knowledge = knowledge
         self.world = world
+        self.detailed = detailed
         self.debug = debug
 
         self.map = world.get_map()
@@ -50,43 +51,36 @@ class Navigator:
         # Waypoint on map closest to destination location
         destination = self.map.get_waypoint(self.knowledge.destination)
 
-        ## Step 1: global route plan using topology waypoints
+        # Step 1: global route plan using topology waypoints
         topological_path = self.graph.shortest_path(source, destination)
 
-        # Draw path
-        for i in range(0, len(self.path)-1):
-            self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(255, 0, 0))
-
-        # Draw source
-        self.world.debug.draw_string(self.knowledge.location, 'S', life_time=20, color=carla.Color(255, 255, 0))
-        self.world.debug.draw_string(source.transform.location, str(source.road_id), life_time=20, color=carla.Color(255, 255, 0))
-
-        # Draw destination
-        self.world.debug.draw_string(self.knowledge.destination, 'D', life_time=20, color=carla.Color(0, 255, 0))
-        self.world.debug.draw_string(destination.transform.location + carla.Location(z=1), str(destination.road_id), life_time=20, color=carla.Color(0, 255, 0))
-
-        # Draw all waypoints
-        # for (u, v) in self.graph.graph.edges:
-        #     self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=30, color=carla.Color(0, 255, 0))
-        #     self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
-        #     self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
-
-        for waypoint in topological_path:
-            self.path.append(waypoint.transform.location)
+        # Step 2: detailed route plan using local waypoints
+        # FIXME: remove detailed switch once navigation bug is fixed
+        if self.detailed:
+            self.enhance(topological_path)
+        else:
+            for waypoint in topological_path:
+                self.path.append(waypoint.transform.location)
 
         # Add destination as final waypoint
         self.path.append(self.knowledge.destination)
 
-        # Draw full path
-        for i in range(1, len(self.path)):
-            self.world.debug.draw_line(self.path[i-1], self.path[i], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
+        if self.debug:
+            # Draw source and destination
+            self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
+            self.world.debug.draw_string(self.knowledge.destination, 'Destination', life_time=20, color=carla.Color(0, 255, 0))
 
-        return
+            # Draw planned route (red line)
+            for i in range(0, len(self.path)-1):
+                self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
 
-        # FIXME: let detailed route plan use lane changes
+            # Draw all waypoints
+            for (u, v) in self.graph.graph.edges:
+                self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=30, color=carla.Color(0, 255, 0))
+                self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
+                self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
-        ## Step 2: detailed route plan using local waypoints
-
+    def enhance(self, topological_path):
         # For each segment in the topological path, compute a detailed route
         for segment_start, segment_end in zip(topological_path, topological_path[1:]):
             # Compute a detailed route for the current lane and the other lane (if it exists),
@@ -140,10 +134,3 @@ class Navigator:
 
             # Add segment path to full path
             self.path.extend(segment_path)
-
-        # Add destination as final waypoint
-        self.path.append(self.knowledge.destination)
-
-        # Draw full path
-        for i in range(0, len(self.path)-1):
-            self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
