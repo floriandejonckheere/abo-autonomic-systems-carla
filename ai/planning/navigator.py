@@ -87,9 +87,9 @@ class Navigator:
             for i in range(0, len(self.path)-1):
                 self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
 
-            # Draw all waypoints in 50m radius (green lines)
+            # Draw all waypoints in 75m radius (green lines)
             for (u, v) in self.graph.graph.edges:
-                if u.transform.location.distance(self.knowledge.location) < 50.0 or v.transform.location.distance(self.knowledge.location) < 50.0:
+                if u.transform.location.distance(self.knowledge.location) < 75.0 or v.transform.location.distance(self.knowledge.location) < 75.0:
                     self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=30, color=carla.Color(0, 255, 0))
                     self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
                     self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
