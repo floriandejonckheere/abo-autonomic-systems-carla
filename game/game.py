@@ -50,10 +50,10 @@ class Game:
         # Spawn vehicle
         vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)
 
-        vehicle and self.actors.append(vehicle)
-
         if vehicle is None:
             raise Exception("Could not spawn vehicle")
+
+        self.actors.append(vehicle)
 
         # Set up scenario
         self.scenario.setup()
