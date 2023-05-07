@@ -49,7 +49,8 @@ class Game:
 
         # Spawn vehicle
         vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)
-        self.actors.append(vehicle)
+
+        vehicle and self.actors.append(vehicle)
 
         if vehicle is None:
             raise Exception("Could not spawn vehicle")
@@ -82,8 +83,9 @@ class Game:
         for actor in self.actors:
             actor.is_alive and actor.destroy()
 
-        self.autopilot.destroy()
-        self.scenario.destroy()
+        self.autopilot and self.autopilot.destroy()
+
+        self.scenario and self.scenario.destroy()
 
     def get_start_point(self, coord):
         points = self.world.get_map().get_spawn_points()

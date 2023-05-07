@@ -71,10 +71,14 @@ def main():
         client.set_timeout(20.0)
         world = client.get_world()
 
-        actors = len(world.get_actors())
+        # Actors that were not properly cleaned up
+        actors = [a for a in world.get_actors() if a.type_id.startswith('vehicle') or a.type_id.startswith('sensor')]
 
-        if actors > 64:
-            print(f'WARNING: {actors} actors in the world, did you forget to clean up any?')
+        if actors:
+            print(f'WARNING: {len(actors)} additional actors in the world, cleaning up...')
+
+        for actor in actors:
+            actor.destroy()
 
         if args.debug:
             # Set pygame window position
@@ -142,7 +146,7 @@ def main():
 
             game.destroy()
 
-            t.join()
+            t and t.join()
 
         pygame.display.quit()
         pygame.quit()
