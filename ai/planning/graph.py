@@ -39,10 +39,10 @@ class Graph:
             u_, v_ = edges[1]
 
             # Add lane change edges (if allowed)
-            if not u.lane_change.name == 'None':
+            if not u.lane_change.name == 'None' and not u.is_intersection:
                 self.graph.add_edge(u, v_, weight=u.transform.location.distance(v_.transform.location))
 
-            if not u_.lane_change.name == 'None':
+            if not u_.lane_change.name == 'None' and not u_.is_intersection:
                 self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
 
         print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
