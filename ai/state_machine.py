@@ -18,4 +18,8 @@ class StateMachine(sm.StateMachine):
     park = driving.to(parked) | arrived.to(parked)
 
     def on_enter_state(self, event, state):
+        # Ignore epsilon transitions
+        if self.current_state == state:
+            return
+
         event_broker.publish('state_changed', state=state.id, event=event)
