@@ -8,7 +8,7 @@ class Node:
         self.waypoint = waypoint
 
         # Generate unique id for the node using a linear combination of the coordinates
-        self.id = 1_000_000 * int(100 * waypoint.transform.location.x) + int(100 * waypoint.transform.location.y)
+        self.id = 1_000 * int(100 * waypoint.transform.location.x) + int(100 * waypoint.transform.location.y)
 
     def __eq__(self, other) -> bool:
         return self.id == other.id
