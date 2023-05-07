@@ -42,6 +42,9 @@ python ai_test.py --scenario MilestoneOne
 
 # Enable debug window
 python ai_test.py --debug
+
+# Let spectator camera follow the vehicle
+python ai_test.py --follow
 ```
 
 Run the `ai_control.py` script to control the vehicle in the simulation using the AI controller.

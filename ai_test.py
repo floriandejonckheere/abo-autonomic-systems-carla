@@ -44,13 +44,17 @@ def main():
         metavar='S',
         default='MilestoneOne',
         type=str,
-        help='Scenario (default: MilestoneOne)'
-    )
+        help='Scenario (default: MilestoneOne)')
     argparser.add_argument(
         '-d', '--debug',
         default=False,
         action='store_true',
         help='Enable debug view (default: false)')
+    argparser.add_argument(
+        '-f', '--follow',
+        default=False,
+        action='store_true',
+        help='Follow the vehicle with the camera (default: false)')
     argparser.add_argument(
         '--res',
         metavar='WIDTHxHEIGHT',
@@ -123,13 +127,27 @@ def main():
 
         # Main loop
         while True:
-            # Limit main loop to 30 FPS
-            clock.tick(30)
+            # Limit main loop to 60 FPS
+            clock.tick(60)
 
             # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     break
+
+            # Update spectator camera
+            if args.follow:
+                transform = game.autopilot.vehicle.get_transform()
+
+                vector = transform.get_forward_vector()
+                vector += carla.Vector3D(x=6*vector.x, y=6*vector.y, z=-5)
+
+                world.get_spectator().set_transform(
+                    carla.Transform(
+                        transform.location - vector,
+                        carla.Rotation(pitch=-20, yaw=transform.rotation.yaw),
+                    )
+                )
 
             # Update HUD
             if args.debug:
