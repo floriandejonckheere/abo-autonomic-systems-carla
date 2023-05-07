@@ -1,4 +1,7 @@
+import numpy as np
+
 from .pid_controller import PIDController
+
 
 class Controller:
     """Control multiple continuous variables using PID control."""
@@ -14,4 +17,4 @@ class Controller:
         dt /= 1000.0
 
         # Apply PID control
-        control.throttle = self.throttle_controller.control(control.throttle, self.vehicle.get_control().throttle, dt)
+        control.throttle = np.clip(self.throttle_controller.control(control.throttle, self.vehicle.get_control().throttle, dt), 0.0, 1.0)
