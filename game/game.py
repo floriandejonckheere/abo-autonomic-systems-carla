@@ -1,22 +1,9 @@
-import glob
-import os
-import sys
-
-try:
-    sys.path.append(glob.glob('../**/*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64'))[0])
-except IndexError:
-    pass
-
-import carla
+from ai.carla import carla
 
 from ai.autopilot import Autopilot
 from ai.events import event_broker
 
 import game.utils as utils
-
 import game.scenarios as scenarios
 
 class Game:
