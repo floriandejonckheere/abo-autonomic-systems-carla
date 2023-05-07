@@ -7,13 +7,8 @@ class Plan:
     def __init__(self):
         self.goals = []
 
-    def execute(self, vehicle):
-        control = carla.VehicleControl()
-
+    def execute(self, control):
         # For each high-level goal, apply its actions to the vehicle control
         for goal in self.goals:
             for action in goal.actions():
                 action.apply(control)
-
-        # Apply control to the vehicle
-        vehicle.apply_control(control)
