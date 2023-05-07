@@ -9,8 +9,8 @@ class Controller:
     def __init__(self, vehicle):
         self.vehicle = vehicle
 
-        # Instatiate PID controllers for continuous variables
-        self.throttle_controller = PIDController(K_p=1.0, K_i=0.0, K_d=0.0)
+        # Instantiate PID controllers for continuous variables
+        self.throttle_controller = PIDController(K_p=0.5, K_i=2.0, K_d=0.0)
 
     def control(self, control, dt):
         # Convert dt to seconds

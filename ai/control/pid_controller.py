@@ -26,7 +26,7 @@ class PIDController:
         # Compute derivative term
         d = self.K_d * (self.e_T[-1] - self.e_T[-2]) / dt
 
-        print(f'ref={reference:.2f} -> out={output:.2f}: out={(p + i):.2f} (e={e_t:.2f} p={p:.2f}, i={i:.2f}, d={d:.2f})')
+        # print(f'ref={reference:.2f} -> out={output:.2f}: out={(p + i):.2f} (e={e_t:.2f} p={p:.2f}, i={i:.2f}, d={d:.2f})')
 
         # Return control signal
-        return p + i
+        return p + i + d
