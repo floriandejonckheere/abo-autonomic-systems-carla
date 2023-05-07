@@ -13,7 +13,7 @@ class Monitor(object):
         weak_self = weakref.ref(self)
 
         # Initialize knowledge values
-        self.update()
+        self.update(None)
 
         world = self.vehicle.get_world()
 
@@ -48,7 +48,7 @@ class Monitor(object):
         self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
 
     # Function that is called at time intervals to update ai-state
-    def update(self):
+    def update(self, dt):
         self.knowledge.update(
             location=self.vehicle.get_transform().location,
             rotation=self.vehicle.get_transform().rotation,

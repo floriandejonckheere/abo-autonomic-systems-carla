@@ -1,3 +1,5 @@
+import time
+
 from .monitor import *
 from .analyzer import *
 from .planner import *
@@ -18,12 +20,20 @@ class Autopilot(object):
         self.planner = Planner(self.knowledge, self.vehicle)
         self.executor = Executor(self.knowledge, self.vehicle)
 
+        # Time of last update (in milliseconds)
+        self.last_time = int(round(time.time() * 1000))
+
     # Update all the modules and return the current status
     def update(self):
-        self.monitor.update()
-        self.analyzer.update()
-        self.planner.update()
-        self.executor.update()
+        # Calculate delta time since last update (in milliseconds)
+        ctime = int(round(time.time() * 1000))
+        dt = ctime - self.last_time
+        self.last_time = ctime
+
+        self.monitor.update(dt)
+        self.analyzer.update(dt)
+        self.planner.update(dt)
+        self.executor.update(dt)
 
         return self.knowledge.state()
 

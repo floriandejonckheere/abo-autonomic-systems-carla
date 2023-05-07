@@ -19,7 +19,7 @@ class Analyzer(object):
         self.knowledge = knowledge
 
     # Function that is called at time intervals to update ai-state
-    def update(self):
+    def update(self, dt):
         # Detect collision and transition to crashed state
         self.detect_collision()
 

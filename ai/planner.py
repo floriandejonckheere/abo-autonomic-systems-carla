@@ -14,7 +14,7 @@ class Planner(object):
         self.navigator = Navigator(knowledge, vehicle.get_world())
 
     # Function that is called at time intervals to update ai-state
-    def update(self):
+    def update(self, dt):
         # Set new, empty plan
         self.knowledge.plan = Plan()
 
