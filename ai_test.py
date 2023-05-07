@@ -48,9 +48,8 @@ def main():
     )
     argparser.add_argument(
         '-d', '--debug',
-        metavar='D',
         default=False,
-        type=bool,
+        action='store_true',
         help='Enable debug view (default: false)')
     argparser.add_argument(
         '--res',
