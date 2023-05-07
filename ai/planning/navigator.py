@@ -96,7 +96,7 @@ class Navigator:
 
     def enhance(self, topological_path):
         # For each segment in the topological path, compute a detailed route
-        for segment_start, segment_end in zip(topological_path, topological_path[1:]):
+        for segment_start, segment_end in zip(topological_path[:-1], topological_path[1:]):
             # Compute a detailed route for the current lane and the other lane (if it exists),
             # and select the one that ends up closest to the destination
             waypoints = [segment_start, segment_start.get_left_lane(), segment_start.get_right_lane()]
