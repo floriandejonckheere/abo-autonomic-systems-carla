@@ -6,7 +6,7 @@ from .graph import Graph
 
 
 class Navigator:
-    def __init__(self, knowledge, world, debug, detailed = False):
+    def __init__(self, knowledge, world, debug, detailed=False):
         self.knowledge = knowledge
         self.world = world
         self.detailed = detailed
