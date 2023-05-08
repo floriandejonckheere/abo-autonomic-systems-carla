@@ -76,8 +76,8 @@ class Navigator:
 
         if self.debug:
             # Print waypoints
-            for waypoint in self.path:
-                print(waypoint)
+            # for waypoint in self.path:
+            #     print(waypoint)
 
             # Draw source and destination
             self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
@@ -95,56 +95,26 @@ class Navigator:
                     self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
     def enhance(self, topological_path):
-        # For each segment in the topological path, calculate a detailed route
+        # For each segment in the topological path, calculate a detailed route using a recursive backtracking algorithm
         for segment_start, segment_end in zip(topological_path[:-1], topological_path[1:]):
-            # Calculate a detailed route for the current lane and the other lane (if it exists),
-            # and select the one that ends up closest to the destination
-            waypoints = [segment_start, segment_start.get_left_lane(), segment_start.get_right_lane()]
-            waypoints = [wp for wp in waypoints if wp is not None]
+            waypoint = segment_start
+            distance = float('inf')
 
-            print(f'{segment_start.road_id} -> {segment_end.road_id}, {segment_start.lane_id} -> {segment_end.lane_id}')
+            # Iterate over waypoints until we are close enough to the destination,
+            # or the path is longer than 150 waypoints (~300m)
+            while distance > 5.0 and len(self.path) < 150:
+                # Compute current waypoint distance to destination
+                distance = waypoint.transform.location.distance(segment_end.transform.location)
 
-            # Final segment path
-            segment_path = None
+                # Get next (legal) waypoints
+                next_waypoints = waypoint.next(2.0)
 
-            for candidate in waypoints:
-                distance = float('inf')
-                waypoint = candidate
+                # If there is only one next waypoint, then select it
+                if len(next_waypoints) == 1:
+                    waypoint = next_waypoints[0]
+                else:
+                    # If there are multiple next waypoints, then select the one that is closest to destination
+                    waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(segment_end.transform.location))
 
-                # Initialize empty path for candidate
-                path = []
-
-                # Iterate over waypoints until we are close enough to the destination,
-                # or the path is longer than 300 waypoints (~600m)
-                while distance > 5.0:
-                    if len(path) > 100:
-                        # If the path is getting too long, then stop
-                        break
-
-                    # Compute current waypoint distance to segment end
-                    distance = waypoint.transform.location.distance(segment_end.transform.location)
-
-                    # Get next (legal) waypoints
-                    next_waypoints = waypoint.next(2.0)
-
-                    if len(next_waypoints) == 0:
-                        # If there are no next waypoints, then stop
-                        break
-                    elif len(next_waypoints) == 1:
-                        # If there is only one next waypoint, then select it
-                        waypoint = next_waypoints[0]
-                    else:
-                        # If there are multiple next waypoints, then select the one that is closest to destination
-                        waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(segment_end.transform.location))
-
-                    # Add waypoint to candidate path
-                    path.append(waypoint.transform.location)
-
-                # Candidate satisfies the distance requirement, so it can be used
-                segment_path = path
-
-            if segment_path is None:
-                raise Exception(f'Could not find path from {segment_start} to {segment_end}')
-
-            # Add segment path to full path
-            self.path.extend(segment_path)
+                # Add waypoint to path
+                self.path.append(waypoint.transform.location)
