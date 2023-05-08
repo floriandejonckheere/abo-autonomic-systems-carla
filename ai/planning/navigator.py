@@ -6,7 +6,7 @@ from .graph import Graph
 
 
 class Navigator:
-    def __init__(self, knowledge, world, debug, detailed=False):
+    def __init__(self, knowledge, world, debug, detailed=True):
         self.knowledge = knowledge
         self.world = world
         self.detailed = detailed
@@ -95,9 +95,9 @@ class Navigator:
                     self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
     def enhance(self, topological_path):
-        # For each segment in the topological path, compute a detailed route
+        # For each segment in the topological path, calculate a detailed route
         for segment_start, segment_end in zip(topological_path[:-1], topological_path[1:]):
-            # Compute a detailed route for the current lane and the other lane (if it exists),
+            # Calculate a detailed route for the current lane and the other lane (if it exists),
             # and select the one that ends up closest to the destination
             waypoints = [segment_start, segment_start.get_left_lane(), segment_start.get_right_lane()]
             waypoints = [wp for wp in waypoints if wp is not None]
