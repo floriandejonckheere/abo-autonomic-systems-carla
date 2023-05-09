@@ -118,12 +118,12 @@ class HUD:
                     if isinstance(item[0], list) or isinstance(item[0], collections.deque):
                         # Two-dimensional list
                         for i, series in enumerate(item):
-                            points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(series)]
-                            pygame.draw.lines(display, COLORS[i], False, points, 1)
+                            array = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(series)]
+                            pygame.draw.lines(display, COLORS[i], False, array, 1)
                     else:
                         # One-dimensional list
-                        points = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]
-                        pygame.draw.lines(display, (136, 255, 0), False, points, 2)
+                        array = [(x + 8, v_offset + 8 + (1.0 - y) * 30) for x, y in enumerate(item)]
+                        pygame.draw.lines(display, (136, 255, 0), False, array, 2)
                 item = None
                 v_offset += 18
             elif isinstance(item, tuple):
@@ -151,7 +151,7 @@ class HUD:
             if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
                 self._last_depth_image_frame_number = self.features.depth_image.frame_number
 
-                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype("uint8"))
+                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype('uint8'))
                 array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
                 array = array[:, :, :3]
                 array = array[:, :, ::-1]
@@ -175,3 +175,25 @@ class HUD:
                 self._last_depth_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
 
             display.blit(self._last_depth_image, (320, 0))
+
+        # Render LIDAR image
+        if self.features.lidar_image is not None:
+            dim = (160, 120)
+
+            array = np.frombuffer(self.features.lidar_image.raw_data, dtype=np.dtype('f4'))
+            array = np.reshape(array, (int(array.shape[0] / 3), 3))
+
+            lidar_data = np.array(array[:, :2])
+            lidar_data *= min(dim) / 100.0
+            lidar_data += (0.5 * dim[0], 0.5 * dim[1])
+            lidar_data = np.fabs(lidar_data)
+            lidar_data = lidar_data.astype(np.int32)
+            lidar_data = np.reshape(lidar_data, (-1, 2))
+
+            lidar_img_size = (dim[0], dim[1], 3)
+            lidar_img = np.zeros(lidar_img_size)
+            lidar_img[tuple(lidar_data.T)] = (255, 255, 255)
+
+            surface = pygame.surfarray.make_surface(lidar_img)
+
+            display.blit(surface, (320, 120))
