@@ -2,6 +2,8 @@ import weakref
 
 from ai.carla import carla
 
+import numpy as np
+
 
 # Monitor is responsible for reading the data from the sensors and telling it to the knowledge
 # TODO: Implement other sensors (lidar and depth sensors mainly)
@@ -28,19 +30,6 @@ class Monitor(object):
         self.collision_sensor = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
         self.collision_sensor.listen(lambda event: Monitor._on_collision(weak_self, event))
 
-        # Depth sensor
-        bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '0.01')
-        bp.set_attribute('image_size_x', '160')
-        bp.set_attribute('image_size_y', '120')
-        bp.set_attribute('fov', '25')
-
-        # Location of sensor is front of vehicle, 1 meter above ground
-        location = carla.Location(x=self.vehicle.bounding_box.extent.x, z=1.0)
-
-        self.depth_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
-        self.depth_sensor.listen(lambda image: Monitor._on_depth(weak_self, image))
-
         # LIDAR sensor
         bp = world.get_blueprint_library().find('sensor.lidar.ray_cast')
         bp.set_attribute('sensor_tick', '0.1')
@@ -50,6 +39,19 @@ class Monitor(object):
 
         self.lidar_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
+
+        # Proximity sensor
+        bp = world.get_blueprint_library().find('sensor.camera.depth')
+        bp.set_attribute('sensor_tick', '0.01')
+        bp.set_attribute('image_size_x', '160')
+        bp.set_attribute('image_size_y', '120')
+        bp.set_attribute('fov', '25')
+
+        # Location of sensor is front of vehicle, 1 meter above ground
+        location = carla.Location(x=self.vehicle.bounding_box.extent.x, z=1.0)
+
+        self.proximity = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
+        self.proximity.listen(lambda image: Monitor._on_proximity(weak_self, image))
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -65,8 +67,9 @@ class Monitor(object):
     def destroy(self):
         self.lane_detector.destroy()
         self.collision_sensor.destroy()
-        self.depth_sensor.destroy()
         self.lidar_sensor.destroy()
+
+        self.proximity.destroy()
 
     @staticmethod
     def _on_invasion(weak_self, event):
@@ -85,20 +88,20 @@ class Monitor(object):
         self.knowledge.update(collision=event.other_actor.type_id)
 
     @staticmethod
-    def _on_depth(weak_self, image):
-        self = weak_self()
-        if not self:
-            return
-
-        # Convert to logarithmic grayscale
-        image.convert(carla.ColorConverter.Depth)
-
-        self.knowledge.depth_image = image
-
-    @staticmethod
     def _on_lidar(weak_self, image):
         self = weak_self()
         if not self:
             return
 
         self.knowledge.lidar_image = image
+
+    @staticmethod
+    def _on_proximity(weak_self, image):
+        self = weak_self()
+        if not self:
+            return
+
+        # Convert to grayscale
+        image.convert(carla.ColorConverter.Depth)
+
+        self.knowledge.proximity_image = image

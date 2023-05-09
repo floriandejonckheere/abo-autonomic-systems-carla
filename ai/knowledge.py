@@ -33,8 +33,9 @@ class Knowledge(object):
         # Sensor data
         self.lane_invasion = False
         self.collision = False
-        self.depth_image = None
         self.lidar_image = None
+
+        self.proximity_image = None
 
         # Parsed sensor data
         self.proximity = Value(0.0)

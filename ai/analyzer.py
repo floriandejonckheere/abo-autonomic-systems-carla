@@ -25,19 +25,22 @@ class Analyzer(object):
         # Detect collision and transition to crashed state
         self.detect_collision()
 
-        # Analyze depth sensor data
-        self.analyze_depth_image()
-
         # Analyze LIDAR sensor data
         self.analyze_lidar_image()
+
+        # Analyze proximity sensor data
+        self.analyze_proximity_data()
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:
             self.knowledge.state_machine.crash()
 
-    def analyze_depth_image(self):
-        array = np.frombuffer(self.knowledge.depth_image.raw_data, dtype=np.dtype("uint8"))
-        array = np.reshape(array, (self.knowledge.depth_image.height, self.knowledge.depth_image.width, 4))
+    def analyze_lidar_image(self):
+        pass
+
+    def analyze_proximity_data(self):
+        array = np.frombuffer(self.knowledge.proximity_image.raw_data, dtype=np.dtype("uint8"))
+        array = np.reshape(array, (self.knowledge.proximity_image.height, self.knowledge.proximity_image.width, 4))
         array = array[:, :, :3]
         array = array[:, :, ::-1]
 
@@ -49,6 +52,3 @@ class Analyzer(object):
         self.knowledge.proximity_right = DEPTH_ZONES['right'].analyze(array)
 
         self.knowledge.proximity = np.mean(array)
-
-    def analyze_lidar_image(self):
-        pass

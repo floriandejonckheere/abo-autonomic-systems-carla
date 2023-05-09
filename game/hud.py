@@ -39,8 +39,8 @@ class HUD:
 
         self._font_mono = pygame.font.Font(pygame.font.match_font('consolas'), 14)
 
-        self._last_depth_image_frame_number = 0
-        self._last_depth_image = None
+        self._last_proximity_image_frame_number = 0
+        self._last_proximity_image = None
 
     def on_world_tick(self, timestamp):
         self._server_clock.tick()
@@ -146,13 +146,13 @@ class HUD:
             v_offset += 18
 
         # Render depth image
-        if self.features.depth_image is not None:
+        if self.features.proximity_image is not None:
             # Render image only if it has changed
-            if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
-                self._last_depth_image_frame_number = self.features.depth_image.frame_number
+            if self.features.proximity_image.frame_number > self._last_proximity_image_frame_number:
+                self._last_proximity_image_frame_number = self.features.proximity_image.frame_number
 
-                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype('uint8'))
-                array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
+                array = np.frombuffer(self.features.proximity_image.raw_data, dtype=np.dtype('uint8'))
+                array = np.reshape(array, (self.features.proximity_image.height, self.features.proximity_image.width, 4))
                 array = array[:, :, :3]
                 array = array[:, :, ::-1]
 
@@ -172,9 +172,9 @@ class HUD:
                         for w in range(w0, w1):
                             array[h, w] = zone.color
 
-                self._last_depth_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+                self._last_proximity_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
 
-            display.blit(self._last_depth_image, (320, 0))
+            display.blit(self._last_proximity_image, (320, 0))
 
         # Render LIDAR image
         if self.features.lidar_image is not None:

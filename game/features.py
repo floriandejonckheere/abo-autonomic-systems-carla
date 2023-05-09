@@ -30,8 +30,8 @@ class Features:
         self.hand_brake = None
         self.reverse = None
 
-        self.depth_image = None
         self.lidar_image = None
+        self.proximity_image = None
 
         self.proximity = Value(size=size)
         self.proximity_left = Value(size=size)
@@ -69,8 +69,8 @@ class Features:
         # Normalize steer from [-1, 1] to [0, 1]
         self.steer.update(control.steer + 1 / 2)
 
-        self.depth_image = knowledge.depth_image
         self.lidar_image = knowledge.lidar_image
+        self.proximity_image = knowledge.proximity_image
 
         self.proximity.update(knowledge.proximity, ceiling=100)
         self.proximity_left.update(knowledge.proximity_left, ceiling=100)
