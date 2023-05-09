@@ -1,7 +1,14 @@
+import time
+
 import statemachine as sm
 
 
 class StateMachine(sm.StateMachine):
+    def __init__(self):
+        super().__init__()
+
+        self.history = []
+
     idle = sm.State(initial=True)
     arrived = sm.State()
     driving = sm.State()
@@ -14,3 +21,6 @@ class StateMachine(sm.StateMachine):
     crash = arrived.to(crashed) | driving.to(crashed) | idle.to(crashed)
     heal = driving.to(healing)
     park = driving.to(parked) | arrived.to(parked)
+
+    def on_transition(self, event, state):
+        self.history.append((state, time.time()))

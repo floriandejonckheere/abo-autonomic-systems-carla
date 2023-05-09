@@ -68,6 +68,6 @@ class Analyzer(object):
                 self.knowledge.state_machine.drive()
         else:
             # Avoid collision if proximity is too low
-            if self.knowledge.proximity_left < 30 or self.knowledge.proximity_right < 30 and not self.knowledge.state_machine.healing.is_active:
+            if self.knowledge.proximity < 20 or self.knowledge.proximity_left < 30 or self.knowledge.proximity_right < 30:
                 self.healing_since = time.time()
                 self.knowledge.state_machine.heal()
