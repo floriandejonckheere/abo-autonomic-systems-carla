@@ -40,7 +40,7 @@ class Steer(Action):
         target_vector /= np.linalg.norm(target_vector)
 
         # Calculate dot product between vectors
-        dot_product = np.dot(source_vector, target_vector)
+        dot_product = np.clip(np.dot(source_vector, target_vector), 0, 1)
 
         # Calculate cross product between vectors
         cross_product = np.cross(source_vector, target_vector)
