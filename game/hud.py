@@ -178,7 +178,7 @@ class HUD:
 
         # Render LIDAR image
         if self.features.lidar_image is not None:
-            dim = (160, 120)
+            dim = (320, 240)
 
             array = np.frombuffer(self.features.lidar_image.raw_data, dtype=np.dtype('f4'))
             array = np.reshape(array, (int(array.shape[0] / 3), 3))
