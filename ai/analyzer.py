@@ -39,16 +39,17 @@ class Analyzer(object):
         pass
 
     def analyze_proximity_data(self):
-        array = np.frombuffer(self.knowledge.proximity_image.raw_data, dtype=np.dtype("uint8"))
-        array = np.reshape(array, (self.knowledge.proximity_image.height, self.knowledge.proximity_image.width, 4))
+        # Proximity to obstacle in front (cruise control)
+        self.knowledge.proximity = DEPTH_ZONES['front'].analyze(self.convert_proximity_image(self.knowledge.proximity_image))
+
+        # Proximity to obstacle on left and right (collision avoidance)
+        self.knowledge.proximity_left = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_left))
+        self.knowledge.proximity_right = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_right))
+
+    def convert_proximity_image(self, image):
+        array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
+        array = np.reshape(array, (image.height, image.width, 4))
         array = array[:, :, :3]
         array = array[:, :, ::-1]
 
-        # Proximity to obstacle in front (cruise control)
-        self.knowledge.proximity = DEPTH_ZONES['front'].analyze(array)
-
-        # Proximity to obstacle on left (collision avoidance)
-        self.knowledge.proximity_left = DEPTH_ZONES['left'].analyze(array)
-        self.knowledge.proximity_right = DEPTH_ZONES['right'].analyze(array)
-
-        self.knowledge.proximity = np.mean(array)
+        return array

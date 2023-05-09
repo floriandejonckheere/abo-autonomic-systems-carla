@@ -32,6 +32,8 @@ class Features:
 
         self.lidar_image = None
         self.proximity_image = None
+        self.proximity_image_left = None
+        self.proximity_image_right = None
 
         self.proximity = Value(size=size)
         self.proximity_left = Value(size=size)
@@ -71,6 +73,8 @@ class Features:
 
         self.lidar_image = knowledge.lidar_image
         self.proximity_image = knowledge.proximity_image
+        self.proximity_image_left = knowledge.proximity_image_left
+        self.proximity_image_right = knowledge.proximity_image_right
 
         self.proximity.update(knowledge.proximity, ceiling=100)
         self.proximity_left.update(knowledge.proximity_left, ceiling=100)

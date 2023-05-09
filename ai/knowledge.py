@@ -36,6 +36,8 @@ class Knowledge(object):
         self.lidar_image = None
 
         self.proximity_image = None
+        self.proximity_image_left = None
+        self.proximity_image_right = None
 
         # Parsed sensor data
         self.proximity = Value(0.0)

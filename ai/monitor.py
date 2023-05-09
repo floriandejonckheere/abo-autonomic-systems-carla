@@ -40,7 +40,7 @@ class Monitor(object):
         self.lidar_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
 
-        # Proximity sensor
+        # Proximity sensors
         bp = world.get_blueprint_library().find('sensor.camera.depth')
         bp.set_attribute('sensor_tick', '0.01')
         bp.set_attribute('image_size_x', '160')
@@ -52,6 +52,14 @@ class Monitor(object):
 
         self.proximity = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.proximity.listen(lambda image: Monitor._on_proximity(weak_self, image))
+
+        bp.set_attribute('fov', '10')
+
+        self.proximity_left = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=-45.0)), attach_to=self.vehicle)
+        self.proximity_left.listen(lambda image: Monitor._on_proximity(weak_self, image, 'left'))
+
+        self.proximity_right = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=45.0)), attach_to=self.vehicle)
+        self.proximity_right.listen(lambda image: Monitor._on_proximity(weak_self, image, 'right'))
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -70,6 +78,8 @@ class Monitor(object):
         self.lidar_sensor.destroy()
 
         self.proximity.destroy()
+        self.proximity_left.destroy()
+        self.proximity_right.destroy()
 
     @staticmethod
     def _on_invasion(weak_self, event):
@@ -96,12 +106,17 @@ class Monitor(object):
         self.knowledge.lidar_image = image
 
     @staticmethod
-    def _on_proximity(weak_self, image):
+    def _on_proximity(weak_self, image, orientation='front'):
         self = weak_self()
         if not self:
             return
 
         # Convert to grayscale
-        image.convert(carla.ColorConverter.Depth)
+        image.convert(carla.ColorConverter.LogarithmicDepth)
 
-        self.knowledge.proximity_image = image
+        if orientation == 'front':
+            self.knowledge.proximity_image = image
+        elif orientation == 'left':
+            self.knowledge.proximity_image_left = image
+        elif orientation == 'right':
+            self.knowledge.proximity_image_right = image
