@@ -4,7 +4,7 @@ from .zone import Zone
 
 # Depth sensor zones, normalized to a 100x100 grid
 DEPTH_ZONES = {
-    'front': Zone(height=(40, 60), width=(40, 60), color=(255, 0, 0)),
+    'front': Zone(height=(60, 80), width=(40, 60), color=(255, 0, 0)),
     'left': Zone(height=(20, 80), width=(0, 20), color=(0, 255, 0)),
     'right': Zone(height=(20, 80), width=(80, 100), color=(0, 255, 0)),
 }
