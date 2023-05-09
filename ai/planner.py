@@ -40,6 +40,9 @@ class Planner(object):
             self.drive()
         elif state == StateMachine.driving:
             self.drive()
+        elif state == StateMachine.healing:
+            # Swerve to avoid obstacles
+            self.knowledge.plan.goals.append(goals.Swerve(self.knowledge))
 
     def drive(self):
         # Update plan based on current knowledge
@@ -60,9 +63,6 @@ class Planner(object):
 
             # Drive to waypoint
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
-
-            # Swerve to avoid obstacles
-            self.knowledge.plan.goals.append(goals.Swerve(self.knowledge))
 
             # Stop for traffic lights
             self.knowledge.plan.goals.append(goals.Stop(self.knowledge))

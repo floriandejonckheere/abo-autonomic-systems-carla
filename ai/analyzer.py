@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 from .zone import Zone
@@ -20,6 +22,8 @@ class Analyzer(object):
         self.vehicle = vehicle
         self.debug = debug
 
+        self.healing_since = None
+
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
         # Detect collision and transition to crashed state
@@ -30,6 +34,9 @@ class Analyzer(object):
 
         # Analyze proximity sensor data
         self.analyze_proximity_data()
+
+        # Avoid collisions and transition to healing state
+        self.avoid_collision()
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:
@@ -53,3 +60,14 @@ class Analyzer(object):
         array = array[:, :, ::-1]
 
         return array
+
+    def avoid_collision(self):
+        if self.knowledge.state_machine.healing.is_active:
+            # Go back to driving if healing timeout has passed
+            if time.time() - self.healing_since > 5.0:
+                self.knowledge.state_machine.drive()
+        else:
+            # Avoid collision if proximity is too low
+            if self.knowledge.proximity_left < 30 or self.knowledge.proximity_right < 30 and not self.knowledge.state_machine.healing.is_active:
+                self.healing_since = time.time()
+                self.knowledge.state_machine.heal()

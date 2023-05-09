@@ -3,7 +3,7 @@ from ai.carla import carla
 import random
 
 
-def try_spawn_random_vehicle_at(world, transform, recursion=0, filter='vehicle.*'):
+def try_spawn_random_vehicle_at(world, transform, recursion=0, filter='vehicle.nissan.patrol'):
     blueprints = world.get_blueprint_library().filter(filter)
     blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
     blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
