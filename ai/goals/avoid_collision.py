@@ -27,4 +27,7 @@ class AvoidCollision(Goal):
                 actions.Brake(3.0),
             ]
         else:
-            return []
+            return [
+                # No obstacle in sight, wait until healing timeout expires
+                actions.Brake(0.0),
+            ]
