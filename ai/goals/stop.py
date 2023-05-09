@@ -14,7 +14,6 @@ class Stop(Goal):
             return []
 
         return [
-            # Brake gently
-            # FIXME: brake over a fixed distance?
-            actions.Brake(self.knowledge.location.distance(self.knowledge.waypoint)),
+            # Brake to stop at the traffic light
+            actions.Brake(self.knowledge.location.distance(self.knowledge.traffic_light.get_transform().location)),
         ]
