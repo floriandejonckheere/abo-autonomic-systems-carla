@@ -58,7 +58,11 @@ class Planner(object):
             if not self.knowledge.state_machine.driving.is_active:
                 self.knowledge.state_machine.drive()
 
+            # Drive to waypoint
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
+
+            # Swerve to avoid obstacles
+            self.knowledge.plan.goals.append(goals.Swerve(self.knowledge))
 
             # Stop for traffic lights
             self.knowledge.plan.goals.append(goals.Stop(self.knowledge))
