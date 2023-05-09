@@ -30,10 +30,10 @@ class Monitor(object):
 
         # Depth sensor
         bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '0.2')
+        bp.set_attribute('sensor_tick', '0.01')
         bp.set_attribute('image_size_x', '160')
         bp.set_attribute('image_size_y', '120')
-        bp.set_attribute('fov', '60')
+        bp.set_attribute('fov', '25')
 
         # Location of sensor is front of vehicle, 1 meter above ground
         location = carla.Location(x=self.vehicle.bounding_box.extent.x, z=1.0)
@@ -91,7 +91,7 @@ class Monitor(object):
             return
 
         # Convert to logarithmic grayscale
-        image.convert(carla.ColorConverter.LogarithmicDepth)
+        image.convert(carla.ColorConverter.Depth)
 
         self.knowledge.depth_image = image
 

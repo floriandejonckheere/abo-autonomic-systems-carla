@@ -15,13 +15,13 @@ class Cruise(Action):
         self.x_proximity = np.arange(0, 1000, 1)
 
         # Fuzzy membership functions
-        self.prox_lo = fz.zmf(self.x_proximity, 40, 80)
-        self.prox_hi = fz.smf(self.x_proximity, 40, 80)
+        self.prox_lo = fz.zmf(self.x_proximity, 0, 40)
+        self.prox_hi = fz.smf(self.x_proximity, 20, 40)
 
     def apply(self, control):
         # Set throttle and brake
         control.throttle *= self.calculate_throttle()
-        control.brake *= self.calculate_brake()
+        control.brake = max(control.brake, self.calculate_brake())
 
     def calculate_throttle(self):
         # Throttle is inverse proportional to the distance
