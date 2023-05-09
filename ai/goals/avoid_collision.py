@@ -9,22 +9,22 @@ class AvoidCollision(Goal):
     """Avoid collision with an obstacle"""
 
     def actions(self):
-        if self.knowledge.proximity < 20:
+        if self.knowledge.obstacle:
             return [
                 # Emergency brake to avoid the obstacle
                 actions.EmergencyBrake(),
             ]
-        if self.knowledge.proximity_left < 30:
+        if self.knowledge.obstacle_left:
             return [
                 # Steer right and brake to avoid the obstacle
                 actions.Swerve(0.7),
-                actions.Brake(5.0),
+                actions.Brake(3.0),
             ]
-        elif self.knowledge.proximity_right < 30:
+        elif self.knowledge.obstacle_right:
             return [
                 # Steer left and brake to avoid the obstacle
                 actions.Swerve(-0.7),
-                actions.Brake(5.0),
+                actions.Brake(3.0),
             ]
         else:
             return []

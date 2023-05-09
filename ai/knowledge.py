@@ -44,6 +44,10 @@ class Knowledge(object):
         self.proximity_left = Value(0.0)
         self.proximity_right = Value(0.0)
 
+        self.obstacle = False
+        self.obstacle_left = False
+        self.obstacle_right = False
+
         # Execution plan
         self.plan = None
 
