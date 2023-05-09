@@ -43,7 +43,7 @@ class Monitor(object):
 
         # LIDAR sensor
         bp = world.get_blueprint_library().find('sensor.lidar.ray_cast')
-        bp.set_attribute('sensor_tick', '0.2')
+        bp.set_attribute('sensor_tick', '0.1')
 
         # Location of sensor is on top of vehicle
         location = carla.Location(z=2.5)
