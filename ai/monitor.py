@@ -45,6 +45,9 @@ class Monitor(object):
         bp = world.get_blueprint_library().find('sensor.lidar.ray_cast')
         bp.set_attribute('sensor_tick', '0.2')
 
+        # Location of sensor is on top of vehicle
+        location = carla.Location(z=2.5)
+
         self.lidar_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
 
