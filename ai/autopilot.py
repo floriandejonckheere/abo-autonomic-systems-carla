@@ -17,7 +17,7 @@ class Autopilot(object):
         # MAPE-K modules
         self.knowledge = Knowledge()
         self.monitor = Monitor(self.knowledge, self.vehicle, debug)
-        self.analyzer = Analyzer(self.knowledge, debug)
+        self.analyzer = Analyzer(self.knowledge, self.vehicle, debug)
         self.planner = Planner(self.knowledge, self.vehicle, debug)
         self.executor = Executor(self.knowledge, self.vehicle, debug)
 
