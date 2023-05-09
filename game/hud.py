@@ -196,4 +196,4 @@ class HUD:
 
             surface = pygame.surfarray.make_surface(lidar_img)
 
-            display.blit(surface, (320, 120))
+            display.blit(surface, (320, 240))
