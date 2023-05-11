@@ -27,11 +27,12 @@ class MilestoneThree(Scenario):
             if not self:
                 return
             print('Collision with: ', event.other_actor.type_id)
+
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
 
-            kamikaze.destroy()
             sensor.destroy()
+            kamikaze.destroy()
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
