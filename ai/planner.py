@@ -27,9 +27,13 @@ class Planner(object):
         #  crash state. You should use separate waypoint list for that, to not mess with the original path.
 
         state = self.knowledge.state_machine.current_state
-        if state == StateMachine.parked or state == StateMachine.crashed:
-            # If the vehicle is parking or has crashed, apply handbrake and do nothing
-            self.knowledge.plan.goals.append(goals.Park(self.knowledge))
+
+        if state == StateMachine.driving:
+            # Drive to waypoint
+            self.drive()
+        elif state == StateMachine.healing:
+            # Avoid collision with an obstacle
+            self.knowledge.plan.goals.append(goals.AvoidCollision(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
             if self.knowledge.destination is not None and self.knowledge.location.distance(self.knowledge.destination) > 5.0:
@@ -38,11 +42,9 @@ class Planner(object):
             # Drive to new waypoint
             # FIXME: vehicle will end up in an infinite loop if the destination is not changed from outside
             self.drive()
-        elif state == StateMachine.driving:
-            self.drive()
-        elif state == StateMachine.healing:
-            # Avoid collision with an obstacle
-            self.knowledge.plan.goals.append(goals.AvoidCollision(self.knowledge))
+        elif state == StateMachine.parked or state == StateMachine.crashed:
+            # If the vehicle is parking or has crashed, apply handbrake and do nothing
+            self.knowledge.plan.goals.append(goals.Park(self.knowledge))
 
     def drive(self):
         # Update plan based on current knowledge
