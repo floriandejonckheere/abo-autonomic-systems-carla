@@ -68,8 +68,8 @@ class Monitor(object):
         bp.set_attribute('image_size_y', '120')
 
         # Location of sensor is on top of vehicle, looking down
-        location = carla.Location(z=5)
-        rotation = carla.Rotation(pitch=-90)
+        location = carla.Location(z=7.5)
+        rotation = carla.Rotation(pitch=-90, yaw=-90)
 
         self.rgb_camera = world.spawn_actor(bp, carla.Transform(location, rotation), attach_to=self.vehicle)
         self.rgb_camera.listen(lambda image: self.knowledge.update(rgb_image=image))
