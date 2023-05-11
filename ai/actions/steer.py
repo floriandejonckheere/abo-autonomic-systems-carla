@@ -7,9 +7,10 @@ from .action import Action
 class Steer(Action):
     """Steer based on the angle to a waypoint"""
 
-    def __init__(self, source, target):
+    def __init__(self, source, target, bounds=(-0.7, 0.7)):
         self.source = source
         self.target = target
+        self.bounds = bounds
 
         # Universe variables
         self.x_angle = np.arange(-180, 180, 1)
@@ -29,7 +30,7 @@ class Steer(Action):
         steer = (steer - 0.5) * 2
 
         # Limit to 70% of the maximum steering angle
-        return 0.7 * steer
+        return np.clip(steer, *self.bounds)
 
     def angle_to_waypoint(self):
         # Normalize source and target vectors
