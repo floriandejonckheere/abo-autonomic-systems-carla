@@ -47,12 +47,6 @@ python ai_test.py --debug
 python ai_test.py --follow
 ```
 
-Run the `ai_control.py` script to control the vehicle in the simulation using the AI controller.
-
-```sh
-python ai_control.py
-```
-
 ## Troubleshooting
 
 When running any Python script:
