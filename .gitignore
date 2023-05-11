@@ -178,3 +178,8 @@ spawn_npc.py
 synchronous_mode.py
 tutorial.py
 vehicle_gallery.py
+CarlaUE4.sh
+HDMaps/
+ImportAssets.sh
+Manifest_DebugFiles_Linux.txt
+VERSION
