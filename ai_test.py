@@ -155,6 +155,11 @@ def main():
                         image.save_to_disk('_out/%08d' % image.frame_number)
                         print(f'LIDAR image saved to out/lidar/{image.frame_number}.ply')
 
+                        # Save RGB image
+                        image = game.autopilot.knowledge.rgb_image
+                        image.save_to_disk('_out/%08d' % image.frame_number)
+                        print(f'RGB image saved to out/rgb/{image.frame_number}.png')
+
             # Update spectator camera
             if args.follow:
                 transform = game.autopilot.vehicle.get_transform()
