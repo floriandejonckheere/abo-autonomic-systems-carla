@@ -21,6 +21,8 @@ except IndexError:
 import carla
 import pygame
 
+from pygame.locals import K_l
+
 import random
 import argparse
 import threading
@@ -146,6 +148,12 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     break
+                elif event.type == pygame.KEYUP:
+                    if event.key == K_l:
+                        # Save LIDAR image
+                        image = game.autopilot.knowledge.lidar_image
+                        image.save_to_disk('_out/%08d' % image.frame_number)
+                        print(f'LIDAR image saved to out/lidar/{image.frame_number}.ply')
 
             # Update spectator camera
             if args.follow:
