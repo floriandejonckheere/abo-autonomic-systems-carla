@@ -40,6 +40,7 @@ class Knowledge(object):
         self.lane_invasion = []
         self.collision = False
         self.lidar_image = None
+        self.rgb_image = None
 
         self.proximity_image = None
         self.proximity_image_left = None

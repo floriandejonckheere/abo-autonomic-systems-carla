@@ -34,6 +34,8 @@ class Features:
         self.reverse = None
 
         self.lidar_image = None
+        self.rgb_image = None
+
         self.proximity_image = None
         self.proximity_image_left = None
         self.proximity_image_right = None
@@ -78,6 +80,8 @@ class Features:
         self.steer.update(control.steer + 1 / 2)
 
         self.lidar_image = knowledge.lidar_image
+        self.rgb_image = knowledge.rgb_image
+
         self.proximity_image = knowledge.proximity_image
         self.proximity_image_left = knowledge.proximity_image_left
         self.proximity_image_right = knowledge.proximity_image_right

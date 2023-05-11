@@ -61,6 +61,19 @@ class Monitor(object):
         self.proximity_right = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=45.0)), attach_to=self.vehicle)
         self.proximity_right.listen(lambda image: Monitor._on_proximity(weak_self, image, 'right'))
 
+        # RGB camera (top-down)
+        bp = world.get_blueprint_library().find('sensor.camera.rgb')
+        bp.set_attribute('sensor_tick', '0.1')
+        bp.set_attribute('image_size_x', '160')
+        bp.set_attribute('image_size_y', '120')
+
+        # Location of sensor is on top of vehicle, looking down
+        location = carla.Location(z=5)
+        rotation = carla.Rotation(pitch=-90)
+
+        self.rgb_camera = world.spawn_actor(bp, carla.Transform(location, rotation), attach_to=self.vehicle)
+        self.rgb_camera.listen(lambda image: self.knowledge.update(rgb_image=image))
+
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
         self.knowledge.update(
