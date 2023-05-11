@@ -24,6 +24,9 @@ class Analyzer(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
+        # Save location history
+        self.save_location()
+
         # Detect collision and transition to crashed state
         self.detect_collision()
 
@@ -35,6 +38,20 @@ class Analyzer(object):
 
         # Avoid collisions and transition to healing state
         self.avoid_collision()
+
+    def save_location(self):
+        # Save location history every second
+        if not self.knowledge.last_location_at or time.time() - self.knowledge.last_location_at > 1.0:
+            # Save location only if vehicle is driving
+            if not self.knowledge.state_machine.driving.is_active:
+                return
+
+            # Save location if vehicle has moved more than 2 meters
+            if len(self.knowledge.location_history) != 0 and self.knowledge.location_history[-1].distance(self.vehicle.get_transform().location) < 2.0:
+                return
+
+            self.knowledge.last_location_at = time.time()
+            self.knowledge.location_history.append(self.vehicle.get_transform().location)
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:

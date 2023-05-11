@@ -1,5 +1,7 @@
 import math
 
+from collections import deque
+
 from ai.carla import carla
 
 from .state_machine import StateMachine
@@ -22,6 +24,10 @@ class Knowledge(object):
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
+
+        # Location history (used for crash recovery)
+        self.location_history = deque(maxlen=5)
+        self.last_location_at = None
 
         # Current target speed
         self.target_speed = 0.0
