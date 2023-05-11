@@ -67,7 +67,7 @@ class Monitor(object):
         bp.set_attribute('image_size_x', '160')
         bp.set_attribute('image_size_y', '120')
 
-        # Location of sensor is on top of vehicle, looking down
+        # Location of sensor is above vehicle, looking down
         location = carla.Location(z=7.5)
         rotation = carla.Rotation(pitch=-90, yaw=-90)
 
