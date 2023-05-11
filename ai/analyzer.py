@@ -64,6 +64,10 @@ class Analyzer(object):
         return array
 
     def avoid_collision(self):
+        # Do not avoid collision if already crashed
+        if self.knowledge.state_machine.crashed.is_active:
+            return
+
         if self.knowledge.state_machine.healing.is_active:
             last_event, timestamp = self.knowledge.state_machine.history[-1]
 
