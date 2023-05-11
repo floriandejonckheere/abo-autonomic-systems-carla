@@ -1,5 +1,3 @@
-from ai.carla import carla
-
 from .goal import Goal
 
 import ai.actions as actions
@@ -7,6 +5,8 @@ import ai.actions as actions
 
 class AvoidCollision(Goal):
     """Avoid collision with an obstacle"""
+
+    # TODO: swerve gently based on proximity to obstacle
 
     def actions(self):
         if self.knowledge.obstacle:
