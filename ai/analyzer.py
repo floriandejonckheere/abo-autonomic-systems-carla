@@ -41,17 +41,17 @@ class Analyzer(object):
 
     def save_location(self):
         # Save location history every second
-        if not self.knowledge.last_location_at or time.time() - self.knowledge.last_location_at > 1.0:
+        if not self.knowledge.last_location_at or time.time() - self.knowledge.last_location_at > 0.5:
             # Save location only if vehicle is driving
             if not self.knowledge.state_machine.driving.is_active:
                 return
 
             # Save location if vehicle has moved more than 2 meters
-            if len(self.knowledge.location_history) != 0 and self.knowledge.location_history[-1].distance(self.vehicle.get_transform().location) < 2.0:
+            if len(self.knowledge.location_history) != 0 and self.knowledge.location_history[-1].distance(self.knowledge.location) < 1.0:
                 return
 
             self.knowledge.last_location_at = time.time()
-            self.knowledge.location_history.append(self.vehicle.get_transform().location)
+            self.knowledge.location_history.append(self.knowledge.location)
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:

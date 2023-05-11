@@ -51,7 +51,7 @@ class Planner(object):
         elif state == StateMachine.crashed:
             last_event, timestamp = self.knowledge.state_machine.history[-1]
 
-            if time.time() - timestamp < 5.0:
+            if time.time() - timestamp < 3.0:
                 # If the vehicle has crashed, apply handbrake and do nothing
                 # TODO: emergency brake instead
                 self.knowledge.plan.goals.append(goals.Park(self.knowledge))

@@ -26,7 +26,7 @@ class Knowledge(object):
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
 
         # Location history (used for crash recovery)
-        self.location_history = deque(maxlen=5)
+        self.location_history = deque(maxlen=3)
         self.last_location_at = None
 
         # Current target speed
