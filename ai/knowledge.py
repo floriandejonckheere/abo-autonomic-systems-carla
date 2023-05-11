@@ -31,7 +31,7 @@ class Knowledge(object):
         self.traffic_light = None
 
         # Sensor data
-        self.lane_invasion = False
+        self.lane_invasion = []
         self.collision = False
         self.lidar_image = None
 
