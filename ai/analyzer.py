@@ -54,7 +54,7 @@ class Analyzer(object):
             self.knowledge.location_history.append(self.knowledge.location)
 
     def detect_collision(self):
-        if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:
+        if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active and not self.knowledge.state_machine.recovering.is_active:
             # Clear collision state
             self.knowledge.collision = False
 
