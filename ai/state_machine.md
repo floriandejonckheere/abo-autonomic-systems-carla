@@ -12,18 +12,19 @@ title: Vehicle state machine
 stateDiagram-v2
     [*] --> Idle
 
-    Idle --> Driving: drive
     Arrived --> Driving: drive
+    Idle --> Driving: drive
     Healing --> Driving: drive
 
     Driving --> Arrived: arrive
     Idle --> Arrived: arrive
 
-%%    Arrived --> Crashed: crash
-%%    Driving --> Crashed: crash
-%%    Idle --> Crashed: crash
+    Arrived --> Crashed: crash
+    Driving --> Crashed: crash
+    Idle --> Crashed: crash
+    Healing --> Crashed: crash
 
-%%    Crashed --> Healing: heal
+    Driving --> Healing: heal
 
     Driving --> Parked: park
     Arrived --> Parked: park
