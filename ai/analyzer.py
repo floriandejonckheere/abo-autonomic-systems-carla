@@ -2,15 +2,6 @@ import time
 
 import numpy as np
 
-from .zone import Zone
-
-# Depth sensor zones, normalized to a 100x100 grid
-DEPTH_ZONES = {
-    'front': Zone(height=(60, 80), width=(40, 60), color=(255, 0, 0)),
-    'left': Zone(height=(20, 80), width=(0, 20), color=(0, 255, 0)),
-    'right': Zone(height=(20, 80), width=(80, 100), color=(0, 255, 0)),
-}
-
 
 # Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into
 # something usable
@@ -66,7 +57,7 @@ class Analyzer(object):
 
     def analyze_proximity_data(self):
         # Proximity to obstacle in front (cruise control)
-        self.knowledge.proximity = DEPTH_ZONES['front'].analyze(self.convert_proximity_image(self.knowledge.proximity_image))
+        self.knowledge.proximity = np.mean(self.convert_proximity_image(self.knowledge.proximity_image))
         self.knowledge.obstacle = self.knowledge.proximity < 20
 
         # Proximity to obstacle on left and right (collision avoidance)

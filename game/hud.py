@@ -7,8 +7,6 @@ import datetime
 
 import numpy as np
 
-from ai.analyzer import DEPTH_ZONES
-
 from .features import Features
 
 COLORS = [
@@ -167,22 +165,6 @@ class HUD:
                 array = np.reshape(array, (self.features.proximity_image.height, self.features.proximity_image.width, 4))
                 array = array[:, :, :3]
                 array = array[:, :, ::-1]
-
-                # Mark sensor zones on image
-                array = np.copy(array)
-
-                for zone in DEPTH_ZONES.values():
-                    (h0, h1), (w0, w1) = zone.dimensions(array)
-
-                    # Draw vertical lines
-                    for h in range(h0, h1):
-                        for w in (w0, w1):
-                            array[h, w] = zone.color
-
-                    # Draw horizontal lines
-                    for h in (h0, h1):
-                        for w in range(w0, w1):
-                            array[h, w] = zone.color
 
                 self._last_proximity_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
             display.blit(self._last_proximity_image, (320, 0))
