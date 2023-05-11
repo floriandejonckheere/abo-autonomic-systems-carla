@@ -59,8 +59,8 @@ def main():
     argparser.add_argument(
         '--res',
         metavar='WIDTHxHEIGHT',
-        default='640x800',
-        help='window resolution (default: 640x800)')
+        default='640x840',
+        help='window resolution (default: 640x840)')
     argparser.add_argument(
         '--seed',
         metavar='S',

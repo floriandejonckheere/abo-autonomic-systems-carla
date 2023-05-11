@@ -14,13 +14,15 @@ class StateMachine(sm.StateMachine):
     driving = sm.State()
     crashed = sm.State()
     healing = sm.State()
+    recovering = sm.State()
     parked = sm.State(final=True)
 
-    drive = arrived.to(driving) | idle.to(driving) | healing.to(driving)
+    drive = arrived.to(driving) | idle.to(driving) | healing.to(driving) | recovering.to(driving)
     arrive = driving.to(arrived) | idle.to(arrived)
     crash = arrived.to(crashed) | driving.to(crashed) | idle.to(crashed) | healing.to(crashed)
     heal = driving.to(healing)
     park = driving.to(parked) | arrived.to(parked)
+    recover = crashed.to(recovering)
 
     def on_transition(self, event, state):
         self.history.append((state, time.time()))

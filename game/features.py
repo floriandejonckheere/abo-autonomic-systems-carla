@@ -16,6 +16,8 @@ class Features:
         self.location = None
 
         self.state = None
+
+        self.collision = None
         self.lane_invasion = []
 
         self.goals = None
@@ -51,6 +53,8 @@ class Features:
         self.location = transform.location
 
         self.state = knowledge.state_machine.current_state.id.upper()
+
+        self.collision = knowledge.collision
         self.lane_invasion = knowledge.lane_invasion
 
         self.goals = knowledge.plan.goals if knowledge.plan else []

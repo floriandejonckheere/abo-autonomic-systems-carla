@@ -1,3 +1,5 @@
+import time
+
 import ai.goals as goals
 
 from .state_machine import StateMachine
@@ -42,9 +44,21 @@ class Planner(object):
             # Drive to new waypoint
             # FIXME: vehicle will end up in an infinite loop if the destination is not changed from outside
             self.drive()
-        elif state == StateMachine.parked or state == StateMachine.crashed:
-            # If the vehicle is parking or has crashed, apply handbrake and do nothing
+        elif state == StateMachine.parked:
+            # If the vehicle is parking, apply handbrake and do nothing
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
+        elif state == StateMachine.crashed:
+            last_event, timestamp = self.knowledge.state_machine.history[-1]
+
+            if time.time() - timestamp < 5.0:
+                # If the vehicle has crashed, apply handbrake and do nothing
+                self.knowledge.plan.goals.append(goals.Park(self.knowledge))
+            else:
+                # Recover from crash if timeout has passed
+                self.knowledge.state_machine.recover()
+        elif state == StateMachine.recovering:
+            # Recover from crash
+            self.drive()
         else:
             raise RuntimeError(f'Invalid state: {state}')
 
