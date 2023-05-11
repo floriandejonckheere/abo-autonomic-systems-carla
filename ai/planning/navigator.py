@@ -6,6 +6,8 @@ from .graph import Graph
 
 
 class Navigator:
+    """Create and keep track of a route plan based on the current location and destination."""
+
     def __init__(self, knowledge, world, debug, detailed=False):
         self.knowledge = knowledge
         self.world = world
