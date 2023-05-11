@@ -1,5 +1,3 @@
-from ai.carla import carla
-
 import random
 
 

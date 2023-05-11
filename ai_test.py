@@ -21,6 +21,7 @@ except IndexError:
 import carla
 import pygame
 
+import random
 import argparse
 import threading
 
@@ -60,8 +61,19 @@ def main():
         metavar='WIDTHxHEIGHT',
         default='640x800',
         help='window resolution (default: 640x800)')
+    argparser.add_argument(
+        '--seed',
+        metavar='S',
+        default=None,
+        type=int,
+        help='Seed for the random number generator')
     args = argparser.parse_args()
     args.width, args.height = [int(x) for x in args.res.split('x')]
+
+    # Initialize RNG
+    seed = args.seed if args.seed is not None else random.randrange(sys.maxsize)
+    print(f'Using random seed {seed}')
+    random.seed(seed)
 
     # Initialize game
     pygame.init()
