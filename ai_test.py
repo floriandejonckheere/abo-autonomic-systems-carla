@@ -154,13 +154,16 @@ def main():
                     if event.key == K_l:
                         # Save LIDAR image
                         image = game.autopilot.knowledge.lidar_image
-                        image.save_to_disk('_out/%08d' % image.frame_number)
-                        print(f'LIDAR image saved to out/lidar/{image.frame_number}.ply')
+                        frame = image.frame_number
+                        file = '_out/%s/%08d' % (args.scenario, frame)
+                        image.save_to_disk(file)
+                        print(f'LIDAR image saved to {file}.ply')
 
                         # Save RGB image
                         image = game.autopilot.knowledge.rgb_image
-                        image.save_to_disk('_out/%08d' % image.frame_number)
-                        print(f'RGB image saved to out/rgb/{image.frame_number}.png')
+                        file = '_out/%s/%08d' % (args.scenario, frame)
+                        image.save_to_disk(file)
+                        print(f'RGB image saved to {file}.png')
 
             # Update spectator camera
             if args.follow:
