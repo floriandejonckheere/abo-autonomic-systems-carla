@@ -31,18 +31,14 @@ class RecoveryNavigator(Navigator):
         self.path.reverse()
 
         if self.debug:
-            # Print waypoints
-            for waypoint in self.path:
-                print(waypoint)
-
-            # Print crash site and recovery destination
-            self.world.debug.draw_string(self.path[0], 'Last location', life_time=20, color=carla.Color(255, 255, 0))
-            self.world.debug.draw_string(self.path[-1], 'Recovery', life_time=20, color=carla.Color(255, 255, 0))
+            # Draw last location and recovery destination
+            self.world.debug.draw_string(self.path[0], 'Location', life_time=10, color=carla.Color(255, 255, 0))
+            self.world.debug.draw_string(self.path[-1], 'Recovery', life_time=10, color=carla.Color(255, 255, 0))
 
             # Draw waypoints
             for waypoint in self.path:
-                self.world.debug.draw_point(waypoint, size=0.2, life_time=20, color=carla.Color(255, 0, 0))
+                self.world.debug.draw_point(waypoint, size=0.2, life_time=10, color=carla.Color(255, 0, 0))
 
             # Draw planned route (blue lines)
             for i in range(0, len(self.path)-1):
-                self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=20, color=carla.Color(0, 0, 255))
+                self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=10, color=carla.Color(0, 0, 255))
