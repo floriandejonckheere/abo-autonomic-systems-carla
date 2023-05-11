@@ -85,8 +85,8 @@ class Analyzer(object):
         return array
 
     def avoid_collision(self):
-        # Do not avoid collision if already crashed
-        if self.knowledge.state_machine.crashed.is_active:
+        # Do not avoid collision if already crashed or recovering
+        if self.knowledge.state_machine.crashed.is_active or self.knowledge.state_machine.recovering.is_active:
             return
 
         if self.knowledge.state_machine.healing.is_active:

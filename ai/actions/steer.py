@@ -29,7 +29,7 @@ class Steer(Action):
         # Rescale to [-1, 1]
         steer = (steer - 0.5) * 2
 
-        # Limit to 70% of the maximum steering angle
+        # Limit to bounds
         return np.clip(steer, *self.bounds)
 
     def angle_to_waypoint(self):

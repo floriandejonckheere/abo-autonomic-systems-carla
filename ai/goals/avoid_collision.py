@@ -6,8 +6,6 @@ import ai.actions as actions
 class AvoidCollision(Goal):
     """Avoid collision with an obstacle"""
 
-    # TODO: swerve gently based on proximity to obstacle
-
     def actions(self):
         if self.knowledge.obstacle:
             return [
@@ -17,13 +15,13 @@ class AvoidCollision(Goal):
         if self.knowledge.obstacle_left:
             return [
                 # Steer right and brake to avoid the obstacle on the left
-                actions.Swerve(0.7),
+                actions.Swerve(actions.Swerve.Right, self.knowledge.proximity_left),
                 actions.Brake(3.0),
             ]
         elif self.knowledge.obstacle_right:
             return [
                 # Steer left and brake to avoid the obstacle on the right
-                actions.Swerve(-0.7),
+                actions.Swerve(actions.Swerve.Left, self.knowledge.proximity_right),
                 actions.Brake(3.0),
             ]
         else:
