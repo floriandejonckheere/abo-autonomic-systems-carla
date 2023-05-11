@@ -22,8 +22,6 @@ class Analyzer(object):
         self.vehicle = vehicle
         self.debug = debug
 
-        self.healing_since = None
-
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
         # Detect collision and transition to crashed state
@@ -67,11 +65,12 @@ class Analyzer(object):
 
     def avoid_collision(self):
         if self.knowledge.state_machine.healing.is_active:
+            last_event, timestamp = self.knowledge.state_machine.history[-1]
+
             # Go back to driving if healing timeout has passed
-            if time.time() - self.healing_since > 5.0:
+            if time.time() - timestamp > 5.0:
                 self.knowledge.state_machine.drive()
         else:
             # Avoid collision if proximity is too low
             if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
-                self.healing_since = time.time()
                 self.knowledge.state_machine.heal()
