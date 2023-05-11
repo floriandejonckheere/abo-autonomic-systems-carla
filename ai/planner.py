@@ -45,6 +45,8 @@ class Planner(object):
         elif state == StateMachine.parked or state == StateMachine.crashed:
             # If the vehicle is parking or has crashed, apply handbrake and do nothing
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
+        else:
+            raise RuntimeError(f'Invalid state: {state}')
 
     def drive(self):
         # Update plan based on current knowledge
