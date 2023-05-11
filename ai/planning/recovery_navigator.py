@@ -30,6 +30,9 @@ class RecoveryNavigator(Navigator):
         self.path = self.knowledge.location_history.copy()
         self.path.reverse()
 
+        # FIXME: if the vehicle has reversed past the previous waypoint, it will not be reverted in the navigator
+        # FIXME: when creating the recovery path, check if visited waypoints are nearby and add them to the original path
+
         if self.debug:
             # Draw last location and recovery destination
             self.world.debug.draw_string(self.path[0], 'Location', life_time=10, color=carla.Color(255, 255, 0))

@@ -89,7 +89,6 @@ class Planner(object):
 
         if waypoint is None:
             # If there are no more waypoints, the vehicle has recovered
-            # FIXME: if the vehicle has reversed past the previous waypoint, it will not be reverted in the navigator
             self.knowledge.state_machine.drive()
         else:
             # Otherwise, we keep reversing towards the previous waypoint
