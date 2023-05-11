@@ -3,10 +3,7 @@ import time
 import numpy as np
 
 
-# Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into
-# something usable
-# TODO: During the update step parse the data inside knowledge into information that could be used by planner to plan
-#  the route
+# Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into something usable
 class Analyzer(object):
     def __init__(self, knowledge, vehicle, debug):
         self.knowledge = knowledge

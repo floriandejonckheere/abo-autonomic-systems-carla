@@ -2,11 +2,8 @@ import weakref
 
 from ai.carla import carla
 
-import numpy as np
-
 
 # Monitor is responsible for reading the data from the sensors and telling it to the knowledge
-# TODO: Implement other sensors (lidar and depth sensors mainly)
 class Monitor(object):
     def __init__(self, knowledge, vehicle, debug):
         self.vehicle = vehicle

@@ -16,10 +16,6 @@ class Executor(object):
 
     # Update the executor at some intervals to steer the car in desired direction
     def update(self, dt):
-        # TODO: Take into account that exiting the crash site could also be done in reverse, so there might need to be
-        #  additional data passed between planner and executor, or there needs to be some way to tell this that it is ok
-        #  to drive in reverse during healing and crashed states. An example is additional_vars, that could be a list with
-        #  parameters that can tell us which things we can do (for example going in reverse)
         control = carla.VehicleControl()
 
         # Apply plan (determine reference points)

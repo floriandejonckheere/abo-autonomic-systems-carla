@@ -23,12 +23,6 @@ class Planner(object):
         # Set new, empty plan
         self.knowledge.plan = Plan()
 
-        # TODO: Take into account traffic lights and other cars
-        # TODO: Implement crash handling. Probably needs to be done by following waypoint list to exit the crash site.
-        # Afterwards needs to remake the path.
-        # TODO: implement function for crash handling, should provide map of waypoints to move towards to for exiting
-        #  crash state. You should use separate waypoint list for that, to not mess with the original path.
-
         state = self.knowledge.state_machine.current_state
 
         if state == StateMachine.driving:
