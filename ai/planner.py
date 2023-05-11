@@ -87,8 +87,8 @@ class Planner(object):
             # Drive to waypoint
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
 
-            # Stop for traffic lights
-            self.knowledge.plan.goals.append(goals.Stop(self.knowledge))
+            # Wait for traffic lights
+            self.knowledge.plan.goals.append(goals.Wait(self.knowledge))
 
     def recover(self):
         # Update plan based on current knowledge
