@@ -46,9 +46,8 @@ class Planner(object):
             last_event, timestamp = self.knowledge.state_machine.history[-1]
 
             if time.time() - timestamp < 3.0:
-                # If the vehicle has crashed, apply handbrake and do nothing
-                # TODO: emergency brake instead
-                self.knowledge.plan.goals.append(goals.Park(self.knowledge))
+                # If the vehicle has crashed, stop and do nothing
+                self.knowledge.plan.goals.append(goals.Stop(self.knowledge))
             else:
                 # Create a recovery plan (reverse according to the location history)
                 self.recovery_navigator.plan()
