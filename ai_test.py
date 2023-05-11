@@ -21,7 +21,7 @@ except IndexError:
 import carla
 import pygame
 
-from pygame.locals import K_l
+from pygame.locals import K_ESCAPE, K_l, K_q
 
 import random
 import argparse
@@ -149,6 +149,8 @@ def main():
                 if event.type == pygame.QUIT:
                     break
                 elif event.type == pygame.KEYUP:
+                    if event.key == K_q or event.key == K_ESCAPE:
+                        return
                     if event.key == K_l:
                         # Save LIDAR image
                         image = game.autopilot.knowledge.lidar_image
