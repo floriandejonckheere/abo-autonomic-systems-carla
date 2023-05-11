@@ -3,7 +3,7 @@ import time
 import ai.goals as goals
 
 from .state_machine import StateMachine
-from .planning import Navigator, Plan
+from .planning import Navigator, Plan, RecoveryNavigator
 
 
 # Planner is responsible for creating a plan for moving around
@@ -16,6 +16,7 @@ class Planner(object):
         self.debug = debug
 
         self.navigator = Navigator(knowledge, vehicle.get_world(), debug)
+        self.recovery_navigator = RecoveryNavigator(knowledge, vehicle.get_world(), debug)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -52,13 +53,17 @@ class Planner(object):
 
             if time.time() - timestamp < 5.0:
                 # If the vehicle has crashed, apply handbrake and do nothing
+                # TODO: emergency brake instead
                 self.knowledge.plan.goals.append(goals.Park(self.knowledge))
             else:
-                # Recover from crash if timeout has passed
+                # Create a recovery plan (reverse according to the location history)
+                self.recovery_navigator.plan()
+
+                # Transition to recovering state
                 self.knowledge.state_machine.recover()
         elif state == StateMachine.recovering:
             # Recover from crash
-            self.drive()
+            self.recover()
         else:
             raise RuntimeError(f'Invalid state: {state}')
 
@@ -84,3 +89,18 @@ class Planner(object):
 
             # Stop for traffic lights
             self.knowledge.plan.goals.append(goals.Stop(self.knowledge))
+
+    def recover(self):
+        # Update plan based on current knowledge
+        waypoint = self.recovery_navigator.update()
+
+        if waypoint is None:
+            # If there are no more waypoints, the vehicle has recovered
+            # FIXME: if the vehicle has reversed past the previous waypoint, it will not be reverted in the navigator
+            self.knowledge.state_machine.drive()
+        else:
+            # Otherwise, we keep reversing towards the previous waypoint
+            self.knowledge.update(waypoint=waypoint)
+
+            # Reverse to waypoint
+            self.knowledge.plan.goals.append(goals.Reverse(self.knowledge))
