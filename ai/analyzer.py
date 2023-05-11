@@ -38,6 +38,10 @@ class Analyzer(object):
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active:
+            # Clear collision state
+            self.knowledge.collision = False
+
+            # Transition to crashed state
             self.knowledge.state_machine.crash()
 
     def analyze_lidar_image(self):
