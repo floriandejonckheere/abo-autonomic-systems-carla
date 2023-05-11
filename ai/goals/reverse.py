@@ -24,5 +24,5 @@ class Reverse(Goal):
             actions.Limit(self.knowledge.speed(), 10),
 
             # Steer (gently) towards a waypoint
-            actions.Steer(self.knowledge.rotation.get_forward_vector(), target, bounds=(-0.1, 0.1)),
+            actions.Steer(self.knowledge.rotation.get_forward_vector(), target, bounds=(-0.3, 0.3)),
         ]
