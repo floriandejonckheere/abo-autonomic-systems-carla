@@ -1,5 +1,7 @@
 import time
 
+from collections import deque
+
 import statemachine as sm
 
 
@@ -7,7 +9,8 @@ class StateMachine(sm.StateMachine):
     def __init__(self):
         super().__init__()
 
-        self.history = []
+        # History of state transitions
+        self.history = deque(maxlen=10)
 
     idle = sm.State(initial=True)
     arrived = sm.State()
