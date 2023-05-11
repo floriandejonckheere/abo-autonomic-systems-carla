@@ -23,12 +23,12 @@ class Monitor(object):
         # Lane detector sensor
         bp = world.get_blueprint_library().find('sensor.other.lane_detector')
         self.lane_detector = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
-        self.lane_detector.listen(lambda event: Monitor._on_invasion(weak_self, event))
+        self.lane_detector.listen(lambda event: self.knowledge.update(lane_invasion=event.crossed_lane_markings))
 
         # Collision sensor
         bp = world.get_blueprint_library().find('sensor.other.collision')
         self.collision_sensor = world.spawn_actor(bp, carla.Transform(), attach_to=self.vehicle)
-        self.collision_sensor.listen(lambda event: Monitor._on_collision(weak_self, event))
+        self.collision_sensor.listen(lambda event: self.knowledge.update(collision=event.other_actor.type_id))
 
         # LIDAR sensor
         bp = world.get_blueprint_library().find('sensor.lidar.ray_cast')
@@ -38,7 +38,7 @@ class Monitor(object):
         location = carla.Location(z=2.5)
 
         self.lidar_sensor = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
-        self.lidar_sensor.listen(lambda image: Monitor._on_lidar(weak_self, image))
+        self.lidar_sensor.listen(lambda image: self.knowledge.update(lidar_image=image))
 
         # Proximity sensors
         bp = world.get_blueprint_library().find('sensor.camera.depth')
@@ -93,30 +93,6 @@ class Monitor(object):
         self.proximity.destroy()
         self.proximity_left.destroy()
         self.proximity_right.destroy()
-
-    @staticmethod
-    def _on_invasion(weak_self, event):
-        self = weak_self()
-        if not self:
-            return
-
-        self.knowledge.update(lane_invasion=event.crossed_lane_markings)
-
-    @staticmethod
-    def _on_collision(weak_self, event):
-        self = weak_self()
-        if not self:
-            return
-
-        self.knowledge.update(collision=event.other_actor.type_id)
-
-    @staticmethod
-    def _on_lidar(weak_self, image):
-        self = weak_self()
-        if not self:
-            return
-
-        self.knowledge.lidar_image = image
 
     @staticmethod
     def _on_proximity(weak_self, image, orientation='front'):
