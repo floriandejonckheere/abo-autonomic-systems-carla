@@ -70,8 +70,11 @@ class Navigator:
         # # Add destination as final waypoint
         topological_path.append(self.knowledge.destination)
 
+        # If the destination waypoint is too far from the actual destination, interpolate exactly
+        exact = destination.transform.location.distance(self.knowledge.destination) > 5.0
+
         # Step 2: detailed route plan using local waypoints
-        self.enhance(topological_path)
+        self.enhance(topological_path, exact)
 
         # if self.debug:
         #     # Print waypoints
@@ -95,7 +98,7 @@ class Navigator:
         #             self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
     # Create a detailed path by interpolating the topological path
-    def enhance(self, topological_path):
+    def enhance(self, topological_path, exact):
         x = [waypoint.x for waypoint in topological_path]
         y = [waypoint.y for waypoint in topological_path]
         z = [waypoint.z for waypoint in topological_path]
@@ -120,11 +123,15 @@ class Navigator:
         interpolated = interpolator(linear_distances)
 
         # Create a list of waypoints from the interpolated coordinates
-        for xi, yi, zi in interpolated:
+        for i, (xi, yi, zi) in enumerate(interpolated):
             location = carla.Location(x=xi, y=yi, z=zi)
 
-            # Find the closest waypoint on the map
-            waypoint = self.map.get_waypoint(location)
+            if exact and i > len(interpolated) - 10:
+                # Exactly interpolate the last 10 meters of the path (don't stick to only waypoints)
+                self.path.append(location)
+            else:
+                # Find the closest waypoint on the map
+                waypoint = self.map.get_waypoint(location)
 
-            # Add it to the path
-            self.path.append(waypoint.transform.location)
+                # Add it to the path
+                self.path.append(waypoint.transform.location)
