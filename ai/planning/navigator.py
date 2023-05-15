@@ -2,13 +2,15 @@ from ai.carla import carla
 
 from collections import deque
 
+import numpy as np
+
 from .graph import Graph
 
 
 class Navigator:
     """Create and keep track of a route plan based on the current location and destination."""
 
-    def __init__(self, knowledge, world, debug, detailed=False):
+    def __init__(self, knowledge, world, debug, detailed=True):
         self.knowledge = knowledge
         self.world = world
         self.detailed = detailed
@@ -97,29 +99,15 @@ class Navigator:
         #             self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
     def enhance(self, topological_path):
-        # For each segment in the topological path, calculate a detailed route using a recursive backtracking algorithm
-        for segment_start, segment_end in zip(topological_path[:-1], topological_path[1:]):
-            waypoint = segment_start
-            distance = float('inf')
+        # Piecewise linear interpolation of the topological path
+        for start, end in zip(topological_path[:-1], topological_path[1:]):
+            # Linearly interpolate between the start and end of the segment
+            x = np.linspace(start.transform.location.x, end.transform.location.x, 10)
+            y = np.linspace(start.transform.location.y, end.transform.location.y, 10)
 
-            # Iterate over waypoints until we are close enough to the destination,
-            # or the path is longer than 150 waypoints (~300m)
-            while distance > 5.0:
-                if len(self.path) > 150:
-                    raise Exception('Could not find a path to the waypoint in less than 150 steps')
+            for x, y in zip(x, y):
+                # Find the closest waypoint on the map
+                waypoint = self.map.get_waypoint(carla.Location(x=x, y=y, z=start.transform.location.z))
 
-                # Compute current waypoint distance to destination
-                distance = waypoint.transform.location.distance(segment_end.transform.location)
-
-                # Get next (legal) waypoints
-                next_waypoints = waypoint.next(2.0)
-
-                # If there is only one next waypoint, then select it
-                if len(next_waypoints) == 1:
-                    waypoint = next_waypoints[0]
-                else:
-                    # If there are multiple next waypoints, then select the one that is closest to destination
-                    waypoint = min(next_waypoints, key=lambda wp: wp.transform.location.distance(segment_end.transform.location))
-
-                # Add waypoint to path
+                # Add it to the path
                 self.path.append(waypoint.transform.location)
