@@ -90,6 +90,7 @@ class Navigator:
         #
         #     # Draw planned route (red lines)
         #     for i in range(0, len(self.path)-1):
+        #         self.world.debug.draw_string(self.path[i], str(i), life_time=30, color=carla.Color(255, 0, 0))
         #         self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
         #
         #     # Draw all waypoints in 75m radius (green lines)
@@ -99,7 +100,7 @@ class Navigator:
         #             self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
         #             self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
-    # Create a detailed path by interpolating the topological path with a cubic spline
+    # Create a detailed path by interpolating the topological path
     def enhance(self, topological_path):
         x = [waypoint.x for waypoint in topological_path]
         y = [waypoint.y for waypoint in topological_path]
@@ -115,8 +116,8 @@ class Navigator:
         # Cumulative sum of distances
         distances = np.cumsum(distances)
 
-        # Create cubic spline interpolator for Cartesian coordinates
-        interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='cubic', axis=0)
+        # Create spline interpolator for Cartesian coordinates
+        interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='slinear', axis=0)
 
         # Linearly space the distances between interpolated waypoints (2 meter)
         linear_distances = np.arange(0.0, distances[-1], 2.0)
