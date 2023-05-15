@@ -11,10 +11,9 @@ from .graph import Graph
 class Navigator:
     """Create and keep track of a route plan based on the current location and destination."""
 
-    def __init__(self, knowledge, world, debug, detailed=True):
+    def __init__(self, knowledge, world, debug):
         self.knowledge = knowledge
         self.world = world
-        self.detailed = detailed
         self.debug = debug
 
         self.map = world.get_map()
@@ -72,12 +71,7 @@ class Navigator:
         topological_path.append(self.knowledge.destination)
 
         # Step 2: detailed route plan using local waypoints
-        # FIXME: remove detailed switch once navigation bug is fixed
-        if self.detailed:
-            self.enhance(topological_path)
-        else:
-            for waypoint in topological_path:
-                self.path.append(waypoint.transform.location)
+        self.enhance(topological_path)
 
         # if self.debug:
         #     # Print waypoints
