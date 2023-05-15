@@ -3,6 +3,7 @@ from ai.carla import carla
 from collections import deque
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 from .graph import Graph
 
@@ -65,7 +66,10 @@ class Navigator:
         destination = self.map.get_waypoint(self.knowledge.destination)
 
         # Step 1: global route plan using topology waypoints
-        topological_path = self.graph.shortest_path(source, destination)
+        topological_path = [wp.transform.location for wp in self.graph.shortest_path(source, destination)]
+
+        # # Add destination as final waypoint
+        topological_path.append(self.knowledge.destination)
 
         # Step 2: detailed route plan using local waypoints
         # FIXME: remove detailed switch once navigation bug is fixed
@@ -74,9 +78,6 @@ class Navigator:
         else:
             for waypoint in topological_path:
                 self.path.append(waypoint.transform.location)
-
-        # Add destination as final waypoint
-        self.path.append(self.knowledge.destination)
 
         # if self.debug:
         #     # Print waypoints
@@ -98,16 +99,41 @@ class Navigator:
         #             self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
         #             self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
+    # Create a detailed path by interpolating the topological path with a cubic spline
     def enhance(self, topological_path):
-        # Piecewise linear interpolation of the topological path
+        x = [waypoint.x for waypoint in topological_path]
+        y = [waypoint.y for waypoint in topological_path]
+        z = [waypoint.z for waypoint in topological_path]
+
+        # List of distances between waypoints
+        distances = [0.0]
+
+        # Calculate Euclidean distance between subsequent waypoints
         for start, end in zip(topological_path[:-1], topological_path[1:]):
-            # Linearly interpolate between the start and end of the segment
-            x = np.linspace(start.transform.location.x, end.transform.location.x, 10)
-            y = np.linspace(start.transform.location.y, end.transform.location.y, 10)
+            distances.append(start.distance(end))
 
-            for x, y in zip(x, y):
-                # Find the closest waypoint on the map
-                waypoint = self.map.get_waypoint(carla.Location(x=x, y=y, z=start.transform.location.z))
+        # Cumulative sum of distances
+        distances = np.cumsum(distances)
 
-                # Add it to the path
-                self.path.append(waypoint.transform.location)
+        # Create cubic spline interpolators for Cartesian coordinates
+        interpolator_x = interp1d(distances, x, kind='cubic')
+        interpolator_y = interp1d(distances, y, kind='cubic')
+        interpolator_z = interp1d(distances, z, kind='cubic')
+
+        # Linearly space the distances between interpolated waypoints
+        dt = np.arange(0.0, distances[-1], 2.0)
+
+        # Interpolate coordinates
+        interpolated_x = interpolator_x(dt)
+        interpolated_y = interpolator_y(dt)
+        interpolated_z = interpolator_z(dt)
+
+        # Create a list of waypoints from the interpolated coordinates
+        for xi, yi, zi in zip(interpolated_x, interpolated_y, interpolated_z):
+            location = carla.Location(x=xi, y=yi, z=zi)
+
+            # Find the closest waypoint on the map
+            waypoint = self.map.get_waypoint(location)
+
+            # Add it to the path
+            self.path.append(waypoint.transform.location)
