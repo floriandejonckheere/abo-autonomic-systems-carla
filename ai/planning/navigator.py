@@ -115,21 +115,17 @@ class Navigator:
         # Cumulative sum of distances
         distances = np.cumsum(distances)
 
-        # Create cubic spline interpolators for Cartesian coordinates
-        interpolator_x = interp1d(distances, x, kind='cubic')
-        interpolator_y = interp1d(distances, y, kind='cubic')
-        interpolator_z = interp1d(distances, z, kind='cubic')
+        # Create cubic spline interpolator for Cartesian coordinates
+        interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='cubic', axis=0)
 
-        # Linearly space the distances between interpolated waypoints
-        dt = np.arange(0.0, distances[-1], 2.0)
+        # Linearly space the distances between interpolated waypoints (2 meter)
+        linear_distances = np.arange(0.0, distances[-1], 2.0)
 
         # Interpolate coordinates
-        interpolated_x = interpolator_x(dt)
-        interpolated_y = interpolator_y(dt)
-        interpolated_z = interpolator_z(dt)
+        interpolated = interpolator(linear_distances)
 
         # Create a list of waypoints from the interpolated coordinates
-        for xi, yi, zi in zip(interpolated_x, interpolated_y, interpolated_z):
+        for xi, yi, zi in interpolated:
             location = carla.Location(x=xi, y=yi, z=zi)
 
             # Find the closest waypoint on the map
