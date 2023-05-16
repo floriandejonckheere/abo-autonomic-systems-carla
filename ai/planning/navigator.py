@@ -76,6 +76,9 @@ class Navigator:
         # Step 2: detailed route plan using local waypoints
         self.enhance(topological_path, exact)
 
+        # Step 3: add final destination
+        self.path.append(self.knowledge.destination)
+
         # if self.debug:
         #     # Print waypoints
         #     # for waypoint in self.path:

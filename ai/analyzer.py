@@ -12,6 +12,10 @@ class Analyzer(object):
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
+        # Stop analyzing if vehicle is parked
+        if self.knowledge.state_machine.parked.is_active:
+            return
+
         # Save location history
         self.save_location()
 
