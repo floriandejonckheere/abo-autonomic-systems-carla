@@ -40,6 +40,9 @@ class LIDAR:
         # Remove ground points
         data = data[data[:, 2] > 0.5]
 
+        if len(data) == 0:
+            return
+
         # Cluster points based on density
         db = DBSCAN(eps=1.5, min_samples=10)
         db.fit(data)
