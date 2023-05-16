@@ -76,26 +76,26 @@ class Navigator:
         # Step 2: detailed route plan using local waypoints
         self.enhance(topological_path, exact)
 
-        # if self.debug:
-        #     # Print waypoints
-        #     # for waypoint in self.path:
-        #     #     print(waypoint)
-        #
-        #     # Draw source and destination
-        #     self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
-        #     self.world.debug.draw_string(self.knowledge.destination, 'Destination', life_time=20, color=carla.Color(0, 255, 0))
-        #
-        #     # Draw planned route (red lines)
-        #     for i in range(0, len(self.path)-1):
-        #         self.world.debug.draw_string(self.path[i], str(i), life_time=30, color=carla.Color(255, 0, 0))
-        #         self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
-        #
-        #     # Draw all waypoints in 75m radius (green lines)
-        #     for (u, v) in self.graph.graph.edges:
-        #         if u.transform.location.distance(self.knowledge.location) < 75.0 or v.transform.location.distance(self.knowledge.location) < 75.0:
-        #             self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=30, color=carla.Color(0, 255, 0))
-        #             self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
-        #             self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
+        if self.debug:
+            # Print waypoints
+            # for waypoint in self.path:
+            #     print(waypoint)
+
+            # Draw source and destination
+            self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
+            self.world.debug.draw_string(self.knowledge.destination, 'Destination', life_time=20, color=carla.Color(0, 255, 0))
+
+            # Draw planned route (red lines)
+            for i in range(0, len(self.path)-1):
+                self.world.debug.draw_string(self.path[i], str(i), life_time=30, color=carla.Color(255, 0, 0))
+                self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
+
+            # Draw all waypoints in 75m radius (green lines)
+            # for (u, v) in self.graph.graph.edges:
+            #     if u.transform.location.distance(self.knowledge.location) < 75.0 or v.transform.location.distance(self.knowledge.location) < 75.0:
+            #         self.world.debug.draw_line(u.transform.location, v.transform.location, thickness=0.1, life_time=30, color=carla.Color(0, 255, 0))
+            #         self.world.debug.draw_string(u.transform.location, str(u.road_id), life_time=30, color=carla.Color(0, 255, 0))
+            #         self.world.debug.draw_string(v.transform.location + carla.Location(z=0.5), str(v.road_id), life_time=30, color=carla.Color(0, 255, 0))
 
     # Create a detailed path by interpolating the topological path
     def enhance(self, topological_path, exact):
@@ -114,13 +114,15 @@ class Navigator:
         distances = np.cumsum(distances)
 
         # Create spline interpolator for Cartesian coordinates
-        interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='slinear', axis=0)
+        interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='cubic', axis=0)
 
         # Linearly space the distances between interpolated waypoints (2 meter)
         linear_distances = np.arange(0.0, distances[-1], 2.0)
 
         # Interpolate coordinates
         interpolated = interpolator(linear_distances)
+
+        previous_waypoint = None
 
         # Create a list of waypoints from the interpolated coordinates
         for i, (xi, yi, zi) in enumerate(interpolated):
@@ -132,6 +134,15 @@ class Navigator:
             else:
                 # Find the closest waypoint on the map
                 waypoint = self.map.get_waypoint(location)
+
+                if previous_waypoint:
+                    print(f'{i}: {previous_waypoint.road_id}/{previous_waypoint.lane_id} -> {waypoint.road_id}/{waypoint.lane_id}')
+
+                # If waypoint is not on the same road as the previous waypoints, continue on the previous road
+                if previous_waypoint and waypoint.road_id == previous_waypoint.road_id and np.sign(waypoint.lane_id) != np.sign(previous_waypoint.lane_id):
+                    waypoint = previous_waypoint.next(2.0)[0]
+
+                previous_waypoint = waypoint
 
                 # Add it to the path
                 self.path.append(waypoint.transform.location)
