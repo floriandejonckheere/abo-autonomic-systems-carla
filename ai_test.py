@@ -77,6 +77,10 @@ def main():
     print(f'Using random seed {seed}')
     random.seed(seed)
 
+    # Write seed to file
+    with open('seed.txt', 'a') as f:
+        f.write(f'{seed}\n')
+
     # Initialize game
     pygame.init()
     pygame.font.init()
