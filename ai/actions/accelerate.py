@@ -76,4 +76,4 @@ class Accelerate(Action):
         control.throttle = np.clip(self.fuzzy_simulation.output['throttle'], 0, 1)
         control.brake = np.clip(self.fuzzy_simulation.output['brake'], 0, 1)
 
-        print(f'd={self.distance:.2f} ds={self.target_speed - self.speed:.2f} t={control.throttle:.2f} b={control.brake:.2f}')
+        # print(f'd={self.distance:.2f} ds={self.target_speed - self.speed:.2f} t={control.throttle:.2f} b={control.brake:.2f}')
