@@ -36,7 +36,7 @@ class Analyzer(object):
         self.avoid_collision()
 
     def save_location(self):
-        # Save location history every second
+        # Save location history periodically
         if not self.knowledge.last_location_at or time.time() - self.knowledge.last_location_at > 0.5:
             # Save location only if vehicle is driving
             if not self.knowledge.state_machine.driving.is_active:
