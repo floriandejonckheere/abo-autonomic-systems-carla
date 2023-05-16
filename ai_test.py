@@ -69,6 +69,11 @@ def main():
         default=None,
         type=int,
         help='Seed for the random number generator')
+    argparser.add_argument(
+        '--profile',
+        default=False,
+        action='store_true',
+        help='Enable profiling (default: false)')
     args = argparser.parse_args()
     args.width, args.height = [int(x) for x in args.res.split('x')]
 
@@ -116,7 +121,7 @@ def main():
             args.scenario = {1: "MilestoneOne", 2: "MilestoneTwo", 3: "MilestoneThree", 4: "MilestoneFour"}[args.milestone_number]
 
         # Initialize game context
-        game = Game(world, args.debug, args.scenario)
+        game = Game(world, args.debug, args.profile, args.scenario)
 
         # Initialize HUD
         hud = HUD(game, args.width, args.height)

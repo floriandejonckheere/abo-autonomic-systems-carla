@@ -9,9 +9,10 @@ import game.scenarios as scenarios
 
 
 class Game:
-    def __init__(self, world, debug, scenario):
+    def __init__(self, world, debug, profile, scenario):
         self.world = world
         self.debug = debug
+        self.profile = profile
         self.scenario = scenario
 
         self.autopilot = None
@@ -67,7 +68,7 @@ class Game:
         self.scenario.setup()
 
         # Set up autopilot
-        self.autopilot = Autopilot(vehicle, self.debug)
+        self.autopilot = Autopilot(vehicle, self.debug, self.profile)
         self.autopilot.set_destination(second)
 
         # Set up callback for destination arrival

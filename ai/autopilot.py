@@ -9,10 +9,11 @@ from .knowledge import *
 
 # Manager script
 class Autopilot(object):
-    def __init__(self, vehicle, debug):
+    def __init__(self, vehicle, debug, profile):
         # Vehicle (CARLA actor)
         self.vehicle = vehicle
         self.debug = debug
+        self.profile = profile
 
         # MAPE-K modules
         self.knowledge = Knowledge()
@@ -31,10 +32,20 @@ class Autopilot(object):
         dt = ctime - self.last_time
         self.last_time = ctime
 
-        self.monitor.update(dt)
-        self.analyzer.update(dt)
-        self.planner.update(dt)
-        self.executor.update(dt)
+        if self.profile:
+            # Update all modules and measure elapsed time
+            mtime = self.measure(lambda: self.monitor.update(dt))
+            atime = self.measure(lambda: self.analyzer.update(dt))
+            ptime = self.measure(lambda: self.planner.update(dt))
+            etime = self.measure(lambda: self.executor.update(dt))
+
+            print(f'Monitor: {mtime}ms, Analyzer: {atime}ms, Planner: {ptime}ms, Executor: {etime}ms')
+        else:
+            # Update all modules
+            self.monitor.update(dt)
+            self.analyzer.update(dt)
+            self.planner.update(dt)
+            self.executor.update(dt)
 
         return self.knowledge.state_machine.current_state
 
@@ -45,3 +56,10 @@ class Autopilot(object):
     def set_destination(self, destination: carla.Location):
         # Set destination in knowledge, so that planner can plan the route
         self.knowledge.update(destination=destination)
+
+    def measure(self, func):
+        start = int(round(time.time() * 1000))
+        func()
+        end = int(round(time.time() * 1000))
+
+        return end - start
