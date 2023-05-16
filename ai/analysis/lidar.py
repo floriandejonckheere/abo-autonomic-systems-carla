@@ -16,7 +16,24 @@ COLORS = [
     carla.Color(0, 0, 0),
 ]
 
+
 class LIDAR:
+    """
+    Simple LIDAR sensor analyzer
+
+    This analyzer is responsible for analyzing LIDAR sensor data and detecting obstacles.
+    It uses DBSCAN clustering algorithm to group points into clusters and then computes
+    the bounding box for each cluster. The bounding box is then used to determine the
+    obstacle's position and size.
+
+    The LIDAR sensor data needs to be processed in order to be usable. The data is
+    first converted to a numpy array and then reshaped to a 2D array with 3 columns
+    for the three dimensions. In order for the coordinates to be projected onto the
+    CARLA simulator, the axes need to be flipped and the Z-axis offset needs to be
+    applied (position of the LIDAR sensor relative to the vehicle).
+    """
+
+
     def __init__(self, knowledge, vehicle, debug):
         self.knowledge = knowledge
         self.vehicle = vehicle
@@ -37,7 +54,7 @@ class LIDAR:
         # Decimate data
         data = data[::1]
 
-        # Remove ground points
+        # Select only data above ground level (0.5 meters with offset of 2.5m)
         data = data[data[:, 2] > 0.5]
 
         if len(data) == 0:
