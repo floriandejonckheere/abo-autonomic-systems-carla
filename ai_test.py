@@ -21,7 +21,7 @@ except IndexError:
 import carla
 import pygame
 
-from pygame.locals import K_ESCAPE, K_b, K_l, K_q
+from pygame.locals import K_ESCAPE, K_l, K_q
 
 import random
 import argparse
@@ -160,10 +160,6 @@ def main():
                 elif event.type == pygame.KEYUP:
                     if event.key == K_q or event.key == K_ESCAPE:
                         return
-                    elif event.key == K_b:
-                        # FIXME: remove this before submission
-                        print('Drawing bounding boxes')
-                        game.autopilot.knowledge.draw_lines = True
                     elif event.key == K_l:
                         # Save LIDAR image
                         image = game.autopilot.knowledge.lidar_image

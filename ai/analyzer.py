@@ -12,6 +12,7 @@ class Analyzer(object):
         self.vehicle = vehicle
         self.debug = debug
 
+        # LIDAR analyzer
         self.lidar = LIDAR(knowledge, vehicle, debug)
 
     # Function that is called at time intervals to update ai-state

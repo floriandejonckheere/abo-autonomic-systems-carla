@@ -58,9 +58,6 @@ class Knowledge(object):
         # Execution plan
         self.plan = None
 
-        # FIXME: remove this before submission
-        self.draw_lines = False
-
     def speed(self):
         return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 
