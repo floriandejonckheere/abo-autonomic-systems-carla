@@ -19,9 +19,8 @@ class Reverse(Goal):
             # Put the vehicle in reverse gear
             actions.Shift(reverse=True),
 
-            # Accelerate (gently) towards a waypoint
-            actions.Accelerate(self.knowledge.location.distance(self.knowledge.waypoint)),
-            actions.Limit(self.knowledge.speed(), 10),
+            # Accelerate (gently) towards the destination
+            actions.Accelerate(self.knowledge.location.distance(self.knowledge.destination), self.knowledge.speed(), self.knowledge.target_speed),
 
             # Steer (gently) towards a waypoint
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target, bounds=(-0.3, 0.3)),

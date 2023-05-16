@@ -19,9 +19,8 @@ class Drive(Goal):
             # Put the vehicle in forward gear
             actions.Shift(reverse=False),
 
-            # Accelerate towards a waypoint
-            actions.Accelerate(self.knowledge.location.distance(self.knowledge.waypoint)),
-            actions.Limit(self.knowledge.speed(), self.knowledge.target_speed),
+            # Accelerate towards the destination
+            actions.Accelerate(self.knowledge.location.distance(self.knowledge.destination), self.knowledge.speed(), self.knowledge.target_speed),
 
             # Steer towards a waypoint
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target),
