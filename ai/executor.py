@@ -1,6 +1,6 @@
 from ai.carla import carla
 
-from .control.controller import Controller
+from .control.integrator import Integrator
 
 
 # Executor is responsible for moving the vehicle around
@@ -11,8 +11,7 @@ class Executor(object):
         self.knowledge = knowledge
         self.debug = debug
 
-        # Vehicle controller
-        self.controller = Controller(vehicle)
+        self.integrator = Integrator(vehicle)
 
     # Update the executor at some intervals to steer the car in desired direction
     def update(self, dt):
@@ -21,8 +20,8 @@ class Executor(object):
         # Apply plan (determine reference points)
         self.knowledge.plan.apply(control)
 
-        # Apply PID control
-        self.controller.control(control, dt)
+        # Smoothen control values
+        self.integrator.integrate(control, dt)
 
         # Apply control to the vehicle
         self.vehicle.apply_control(control)
