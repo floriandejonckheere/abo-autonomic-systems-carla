@@ -1,3 +1,5 @@
+from .analysis.lidar import LIDAR
+
 import time
 
 import numpy as np
@@ -9,6 +11,8 @@ class Analyzer(object):
         self.knowledge = knowledge
         self.vehicle = vehicle
         self.debug = debug
+
+        self.lidar = LIDAR(knowledge, vehicle, debug)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -54,7 +58,7 @@ class Analyzer(object):
             self.knowledge.state_machine.crash()
 
     def analyze_lidar_image(self):
-        pass
+        self.lidar.analyze(self.knowledge.lidar_image)
 
     def analyze_proximity_data(self):
         # Proximity to obstacle in front (cruise control)
