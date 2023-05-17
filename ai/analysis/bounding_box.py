@@ -13,42 +13,47 @@ class BoundingBox:
         self.y_max = y_max
         self.z_max = z_max
 
-    def render(self, world, color=carla.Color(255, 0, 0)):
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_min, self.z_min),
-                carla.Location(self.x_min, self.y_min, self.z_max), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_max, self.z_min),
-                carla.Location(self.x_min, self.y_max, self.z_max), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_max, self.y_min, self.z_min),
-                carla.Location(self.x_max, self.y_min, self.z_max), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_max, self.y_max, self.z_min),
-                carla.Location(self.x_max, self.y_max, self.z_max), life_time=1, color=color)
+    def render(self, vehicle, color=carla.Color(255, 0, 0)):
+        debug = vehicle.get_world().debug
 
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_min, self.z_min),
-                carla.Location(self.x_max, self.y_min, self.z_min), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_min, self.z_max),
-                carla.Location(self.x_max, self.y_min, self.z_max), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_max, self.z_min),
-                carla.Location(self.x_max, self.y_max, self.z_min), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_max, self.z_max),
-                carla.Location(self.x_max, self.y_max, self.z_max), life_time=1, color=color)
+        # Translate coordinates to vehicle location
+        location = vehicle.get_location()
 
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_min, self.z_min),
-                carla.Location(self.x_min, self.y_max, self.z_min), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_min, self.y_min, self.z_max),
-                carla.Location(self.x_min, self.y_max, self.z_max), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_max, self.y_min, self.z_min),
-                carla.Location(self.x_max, self.y_max, self.z_min), life_time=1, color=color)
-            world.debug.draw_line(
-                carla.Location(self.x_max, self.y_min, self.z_max),
-                carla.Location(self.x_max, self.y_max, self.z_max), life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_min, self.z_min) + location,
+            carla.Location(self.x_min, self.y_min, self.z_max) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_max, self.z_min) + location,
+            carla.Location(self.x_min, self.y_max, self.z_max) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_max, self.y_min, self.z_min) + location,
+            carla.Location(self.x_max, self.y_min, self.z_max) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_max, self.y_max, self.z_min) + location,
+            carla.Location(self.x_max, self.y_max, self.z_max) + location, life_time=1, color=color)
+
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_min, self.z_min) + location,
+            carla.Location(self.x_max, self.y_min, self.z_min) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_min, self.z_max) + location,
+            carla.Location(self.x_max, self.y_min, self.z_max) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_max, self.z_min) + location,
+            carla.Location(self.x_max, self.y_max, self.z_min) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_max, self.z_max) + location,
+            carla.Location(self.x_max, self.y_max, self.z_max) + location, life_time=1, color=color)
+
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_min, self.z_min) + location,
+            carla.Location(self.x_min, self.y_max, self.z_min) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_min, self.y_min, self.z_max) + location,
+            carla.Location(self.x_min, self.y_max, self.z_max) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_max, self.y_min, self.z_min) + location,
+            carla.Location(self.x_max, self.y_max, self.z_min) + location, life_time=1, color=color)
+        debug.draw_line(
+            carla.Location(self.x_max, self.y_min, self.z_max) + location,
+            carla.Location(self.x_max, self.y_max, self.z_max) + location, life_time=1, color=color)

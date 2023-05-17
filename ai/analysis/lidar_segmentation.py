@@ -67,18 +67,13 @@ class LIDARSegmentation:
 
         # Compute bounding box for each cluster
         for cluster in clusters:
-            # Offset bounding box by vehicle's location
-            x_offset = self.vehicle.get_transform().location.x
-            y_offset = self.vehicle.get_transform().location.y
-            z_offset = self.vehicle.get_transform().location.z
+            x_min = np.min(cluster[:, 0])
+            y_min = np.min(cluster[:, 1])
+            z_min = np.min(cluster[:, 2])
 
-            x_min = np.min(cluster[:, 0]) + x_offset
-            y_min = np.min(cluster[:, 1]) + y_offset
-            z_min = np.min(cluster[:, 2]) + z_offset
-
-            x_max = np.max(cluster[:, 0]) + x_offset
-            y_max = np.max(cluster[:, 1]) + y_offset
-            z_max = np.max(cluster[:, 2]) + z_offset
+            x_max = np.max(cluster[:, 0])
+            y_max = np.max(cluster[:, 1])
+            z_max = np.max(cluster[:, 2])
 
             bounding_boxes.append(BoundingBox(x_min, y_min, z_min, x_max, y_max, z_max))
 
@@ -87,6 +82,6 @@ class LIDARSegmentation:
             self.last_render_at = time.time()
 
             for bounding_box in bounding_boxes:
-                bounding_box.render(self.vehicle.get_world())
+                bounding_box.render(self.vehicle)
 
         return bounding_boxes
