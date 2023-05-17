@@ -9,9 +9,9 @@ from sklearn.cluster import DBSCAN
 from .bounding_box import BoundingBox
 
 
-class LIDAR:
+class LIDARSegmentation:
     """
-    Simple LIDAR sensor analyzer
+    Simple LIDAR sensor analyzer (segmenter)
 
     This analyzer is responsible for analyzing LIDAR sensor data and detecting obstacles.
     It uses DBSCAN clustering algorithm to group points into clusters and then computes
@@ -88,3 +88,5 @@ class LIDAR:
 
             for bounding_box in bounding_boxes:
                 bounding_box.render(self.vehicle.get_world())
+
+        return bounding_boxes

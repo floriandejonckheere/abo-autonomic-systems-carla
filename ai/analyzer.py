@@ -1,4 +1,4 @@
-from .analysis.lidar import LIDAR
+from .analysis.lidar_segmentation import LIDARSegmentation
 
 import time
 
@@ -13,7 +13,7 @@ class Analyzer(object):
         self.debug = debug
 
         # LIDAR analyzer
-        self.lidar = LIDAR(knowledge, vehicle, debug)
+        self.lidar_segmentation = LIDARSegmentation(knowledge, vehicle, debug)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -59,7 +59,8 @@ class Analyzer(object):
             self.knowledge.state_machine.crash()
 
     def analyze_lidar_image(self):
-        self.lidar.analyze(self.knowledge.lidar_image)
+        # Analyze LIDAR data and find potential obstacle candidates
+        candidates = self.lidar_segmentation.analyze(self.knowledge.lidar_image)
 
     def analyze_proximity_data(self):
         # Proximity to obstacle in front (cruise control)
