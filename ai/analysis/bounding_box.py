@@ -1,5 +1,7 @@
 from ai.carla import carla
 
+import math
+
 
 class BoundingBox:
     """Bounding box delimiting an object in 3D space."""
@@ -12,6 +14,15 @@ class BoundingBox:
         self.x_max = x_max
         self.y_max = y_max
         self.z_max = z_max
+
+    def centroid(self):
+        return carla.Location((self.x_min + self.x_max) / 2, (self.y_min + self.y_max) / 2, (self.z_min + self.z_max) / 2)
+
+    def collides_with(self, other):
+        if self.x_max >= other.x_min and self.x_min <= other.x_max and self.y_max >= other.y_min and self.y_min <= other.y_max and self.z_max >= other.z_min and self.z_min <= other.z_max:
+            return True
+
+        return False
 
     def render(self, vehicle, color=carla.Color(255, 0, 0)):
         debug = vehicle.get_world().debug
