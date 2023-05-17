@@ -10,6 +10,8 @@ import glob
 import os
 import sys
 
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+
 try:
     sys.path.append(glob.glob('**/*%d.%d-%s.egg' % (
         sys.version_info.major,
