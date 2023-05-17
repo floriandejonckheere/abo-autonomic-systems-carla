@@ -6,17 +6,7 @@ import numpy as np
 
 from sklearn.cluster import DBSCAN
 
-
-COLORS = [
-    carla.Color(255, 0, 0),
-    carla.Color(0, 255, 0),
-    carla.Color(0, 0, 255),
-    carla.Color(255, 255, 0),
-    carla.Color(0, 255, 255),
-    carla.Color(255, 0, 255),
-    carla.Color(255, 255, 255),
-    carla.Color(0, 0, 0),
-]
+from .bounding_box import BoundingBox
 
 
 class LIDAR:
@@ -73,10 +63,11 @@ class LIDAR:
         clusters = clusters[clusters[:, -1].argsort()]
         clusters = np.split(clusters[:, :-1], np.unique(clusters[:, -1], return_index=True)[1][1:])
 
-        objects = []
+        bounding_boxes = []
 
         # Compute bounding box for each cluster
         for cluster in clusters:
+            # Offset bounding box by vehicle's location
             x_offset = self.vehicle.get_transform().location.x
             y_offset = self.vehicle.get_transform().location.y
             z_offset = self.vehicle.get_transform().location.z
@@ -89,24 +80,11 @@ class LIDAR:
             y_max = np.max(cluster[:, 1]) + y_offset
             z_max = np.max(cluster[:, 2]) + z_offset
 
-            objects.append([x_min, y_min, z_min, x_max, y_max, z_max])
+            bounding_boxes.append(BoundingBox(x_min, y_min, z_min, x_max, y_max, z_max))
 
         # Render bounding box periodically
         if self.debug and time.time() - self.last_render_at > 1:
             self.last_render_at = time.time()
 
-            for i, (x_min, y_min, z_min, x_max, y_max, z_max) in enumerate(objects):
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_min, z_min), carla.Location(x_min, y_min, z_max), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_max, z_min), carla.Location(x_min, y_max, z_max), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_max, y_min, z_min), carla.Location(x_max, y_min, z_max), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_max, y_max, z_min), carla.Location(x_max, y_max, z_max), color=COLORS[i], life_time=1)
-
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_min, z_min), carla.Location(x_max, y_min, z_min), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_min, z_max), carla.Location(x_max, y_min, z_max), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_max, z_min), carla.Location(x_max, y_max, z_min), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_max, z_max), carla.Location(x_max, y_max, z_max), color=COLORS[i], life_time=1)
-
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_min, z_min), carla.Location(x_min, y_max, z_min), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_min, y_min, z_max), carla.Location(x_min, y_max, z_max), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_max, y_min, z_min), carla.Location(x_max, y_max, z_min), color=COLORS[i], life_time=1)
-                self.vehicle.get_world().debug.draw_line(carla.Location(x_max, y_min, z_max), carla.Location(x_max, y_max, z_max), color=COLORS[i], life_time=1)
+            for bounding_box in bounding_boxes:
+                bounding_box.render(self.vehicle.get_world())
