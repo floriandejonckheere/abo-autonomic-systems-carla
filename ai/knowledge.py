@@ -20,6 +20,9 @@ class Knowledge(object):
         # Destination (end of waypoint path)
         self.destination = carla.Location(0.0, 0.0, 0.0)
 
+        # Distance to destination (using waypoint path)
+        self.distance = 0.0
+
         # Current location, rotation and velocity of the vehicle
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)

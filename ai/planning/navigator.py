@@ -11,7 +11,7 @@ from .graph import Graph
 class Navigator:
     """Create and keep track of a route plan based on the current location and destination."""
 
-    def __init__(self, knowledge, world, debug):
+    def __init__(self, knowledge, world, debug, distance=2.0):
         self.knowledge = knowledge
         self.world = world
         self.debug = debug
@@ -26,6 +26,9 @@ class Navigator:
 
         # Create graph of the map topology
         self.graph = Graph(self.map.get_topology())
+
+        # Distance between waypoints on the detailed path
+        self.distance = distance
 
     # Update internal state to make sure that there are waypoints to follow and that we have not arrived yet
     def update(self):
@@ -119,8 +122,8 @@ class Navigator:
         # Create spline interpolator for Cartesian coordinates
         interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='slinear', axis=0)
 
-        # Linearly space the distances between interpolated waypoints (2 meter)
-        linear_distances = np.arange(0.0, distances[-1], 2.0)
+        # Linearly space the distances between interpolated waypoints
+        linear_distances = np.arange(0.0, distances[-1], self.distance)
 
         # Interpolate coordinates
         interpolated = interpolator(linear_distances)
@@ -129,8 +132,8 @@ class Navigator:
         for i, (xi, yi, zi) in enumerate(interpolated):
             location = carla.Location(x=xi, y=yi, z=zi)
 
-            if exact and i > len(interpolated) - 10:
-                # Exactly interpolate the last 10 meters of the path (don't stick to only waypoints)
+            if exact and i > len(interpolated) - (5 * self.distance):
+                # Exactly interpolate the last 5 waypoints (don't stick to only waypoints)
                 self.path.append(location)
             else:
                 # Find the closest waypoint on the map

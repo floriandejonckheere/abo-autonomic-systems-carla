@@ -32,8 +32,8 @@ class Accelerate(Action):
 
         # Membership functions
         distance['low'] = fz.zmf(x_distance, 0, 60)
-        distance['medium'] = fz.gaussmf(x_distance, 15, 5)
-        distance['high'] = fz.smf(x_distance, 10, 50)
+        distance['medium'] = fz.gaussmf(x_distance, 10, 5)
+        distance['high'] = fz.smf(x_distance, 5, 20)
 
         # Aim for slightly negative delta speed (little faster than target speed)
         delta_speed['low'] = fz.zmf(x_delta_speed, -3, 30)
@@ -41,7 +41,7 @@ class Accelerate(Action):
 
         throttle['off'] = fz.zmf(x_throttle, 0, 0.01)
         throttle['medium'] = fz.gaussmf(x_throttle, 0.3, 0.2)
-        throttle['high'] = fz.smf(x_throttle, 0.5, 0.8)
+        throttle['high'] = fz.smf(x_throttle, 0.7, 0.9)
 
         brake['off'] = fz.zmf(x_brake, -0.3, 0)
         brake['low'] = fz.zmf(x_brake, 0, 0.3)
