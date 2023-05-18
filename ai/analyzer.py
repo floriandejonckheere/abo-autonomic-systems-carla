@@ -92,6 +92,13 @@ class Analyzer(object):
         self.knowledge.proximity = np.mean(self.convert_proximity_image(self.knowledge.proximity_image))
         self.knowledge.obstacle = self.knowledge.proximity < 20
 
+        # Proximity to obstacle on left and right (collision avoidance)
+        self.knowledge.proximity_left = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_left))
+        self.knowledge.obstacle_left = self.knowledge.proximity_left < 20
+
+        self.knowledge.proximity_right = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_right))
+        self.knowledge.obstacle_right = self.knowledge.proximity_right < 20
+
     def convert_proximity_image(self, image):
         array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
         array = np.reshape(array, (image.height, image.width, 4))
@@ -113,5 +120,5 @@ class Analyzer(object):
                 self.knowledge.state_machine.drive()
         else:
             # Avoid collision if proximity is too low
-            if self.knowledge.obstacle:
+            if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
                 self.knowledge.state_machine.heal()

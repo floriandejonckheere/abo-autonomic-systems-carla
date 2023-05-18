@@ -50,6 +50,14 @@ class Monitor(object):
         self.proximity = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.proximity.listen(lambda image: Monitor._on_proximity(weak_self, image))
 
+        bp.set_attribute('fov', '10')
+
+        self.proximity_left = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=-45.0)), attach_to=self.vehicle)
+        self.proximity_left.listen(lambda image: Monitor._on_proximity(weak_self, image, 'left'))
+
+        self.proximity_right = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=45.0)), attach_to=self.vehicle)
+        self.proximity_right.listen(lambda image: Monitor._on_proximity(weak_self, image, 'right'))
+
         # RGB camera (top-down)
         bp = world.get_blueprint_library().find('sensor.camera.rgb')
         bp.set_attribute('sensor_tick', '0.1')
@@ -78,10 +86,13 @@ class Monitor(object):
         self.lane_detector.destroy()
         self.collision_sensor.destroy()
         self.lidar_sensor.destroy()
+
         self.proximity.destroy()
+        self.proximity_left.destroy()
+        self.proximity_right.destroy()
 
     @staticmethod
-    def _on_proximity(weak_self, image):
+    def _on_proximity(weak_self, image, orientation='front'):
         self = weak_self()
         if not self:
             return
@@ -89,4 +100,9 @@ class Monitor(object):
         # Convert to grayscale
         image.convert(carla.ColorConverter.LogarithmicDepth)
 
-        self.knowledge.proximity_image = image
+        if orientation == 'front':
+            self.knowledge.proximity_image = image
+        elif orientation == 'left':
+            self.knowledge.proximity_image_left = image
+        elif orientation == 'right':
+            self.knowledge.proximity_image_right = image

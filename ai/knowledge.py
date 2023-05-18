@@ -46,15 +46,21 @@ class Knowledge(object):
         self.rgb_image = None
 
         self.proximity_image = None
+        self.proximity_image_left = None
+        self.proximity_image_right = None
 
         # Parsed sensor data
         self.proximity = 0.0
+        self.proximity_left = 0.0
+        self.proximity_right = 0.0
 
         self.obstacles = []
         self.obstacles_left = []
         self.obstacles_right = []
 
         self.obstacle = False
+        self.obstacle_left = False
+        self.obstacle_right = False
 
         # Execution plan
         self.plan = None

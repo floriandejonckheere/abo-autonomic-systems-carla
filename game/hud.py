@@ -40,6 +40,12 @@ class HUD:
         self._last_proximity_image_frame_number = 0
         self._last_proximity_image = None
 
+        self._last_proximity_image_left_frame_number = 0
+        self._last_proximity_image_left = None
+
+        self._last_proximity_image_right_frame_number = 0
+        self._last_proximity_image_right = None
+
         self._last_rgb_image_frame_number = 0
         self._last_rgb_image = None
 
@@ -99,8 +105,8 @@ class HUD:
             'Speed:       % 20.2f km/h' % self.features.speed.value,
             [self.features.target_speed.history, self.features.speed.history],
             '',
-            'Proximity: % 10.2f' % self.features.proximity.value,
-            self.features.proximity.history,
+            'Proximity: % 10.2f / %.2f / %.2f' % (self.features.proximity_left.value, self.features.proximity.value, self.features.proximity_right.value),
+            [self.features.proximity.history, self.features.proximity_left.history, self.features.proximity_right.history],
             '',
             'State:  % 30s' % self.features.state,
             *goals_and_actions,
@@ -163,6 +169,32 @@ class HUD:
                 self._last_proximity_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
             display.blit(self._last_proximity_image, (320, 0))
 
+        if self.features.proximity_image_left is not None:
+            # Render image only if it has changed
+            if self.features.proximity_image_left.frame_number > self._last_proximity_image_left_frame_number:
+                self._last_proximity_image_left_frame_number = self.features.proximity_image_left.frame_number
+
+                array = np.frombuffer(self.features.proximity_image_left.raw_data, dtype=np.dtype('uint8'))
+                array = np.reshape(array, (self.features.proximity_image_left.height, self.features.proximity_image_left.width, 4))
+                array = array[:, :, :3]
+                array = array[:, :, ::-1]
+
+                self._last_proximity_image_left = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+            display.blit(self._last_proximity_image_left, (320, 120))
+
+        if self.features.proximity_image_right is not None:
+            # Render image only if it has changed
+            if self.features.proximity_image_right.frame_number > self._last_proximity_image_right_frame_number:
+                self._last_proximity_image_right_frame_number = self.features.proximity_image_right.frame_number
+
+                array = np.frombuffer(self.features.proximity_image_right.raw_data, dtype=np.dtype('uint8'))
+                array = np.reshape(array, (self.features.proximity_image_right.height, self.features.proximity_image_right.width, 4))
+                array = array[:, :, :3]
+                array = array[:, :, ::-1]
+
+                self._last_proximity_image_right = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+            display.blit(self._last_proximity_image_right, (320, 240))
+
         # Render RGB camera image
         if self.features.rgb_image is not None:
             # Render image only if it has changed
@@ -197,4 +229,4 @@ class HUD:
 
             surface = pygame.surfarray.make_surface(lidar_img)
 
-            display.blit(surface, (320, 120))
+            display.blit(surface, (320, 360))
