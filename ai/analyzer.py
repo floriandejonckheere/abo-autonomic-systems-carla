@@ -1,5 +1,5 @@
-from .analysis.lidar_segmentation import LIDARSegmentation
-from .analysis.lidar_collision import LIDARCollision
+from .analysis.lidar import LIDAR
+from .analysis.bounding_box import BoundingBox
 
 import time
 
@@ -14,8 +14,12 @@ class Analyzer(object):
         self.debug = debug
 
         # LIDAR analyzer
-        self.lidar_segmentation = LIDARSegmentation(knowledge, vehicle, debug)
-        self.lidar_collision = LIDARCollision(knowledge, vehicle, debug)
+        self.lidar = LIDAR()
+
+        # Collision detection boxes
+        self.front = BoundingBox(-1.2, 2.5, 0.0, 1.2, 7.5, 2.0)
+        self.left = BoundingBox(-2.4, 0, 0.0, -1.2, 5, 2.0)
+        self.right = BoundingBox(1.2, 0, 0.0, 2.4, 5, 2.0)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
@@ -61,10 +65,27 @@ class Analyzer(object):
             self.knowledge.state_machine.crash()
 
     def analyze_lidar_image(self):
-        # Analyze LIDAR data and find potential obstacle candidates
-        candidates = self.lidar_segmentation.analyze(self.knowledge.lidar_image)
+        # Clear obstacle state
+        self.knowledge.obstacles = []
+        self.knowledge.obstacles_left = []
+        self.knowledge.obstacles_right = []
 
-        self.lidar_collision.analyze(candidates)
+        # Analyze LIDAR data and find potential obstacles
+        obstacles = self.lidar.analyze(self.knowledge.lidar_image)
+
+        # Check if any of the obstacles are within the collision detection bounds
+        for obstacle in obstacles:
+            # Front collision detection
+            if self.front.overlaps_with(obstacle):
+                self.knowledge.obstacles.append(obstacle)
+
+            # Left collision detection
+            if self.left.overlaps_with(obstacle):
+                self.knowledge.obstacles_left.append(obstacle)
+
+            # Right collision detection
+            if self.right.overlaps_with(obstacle):
+                self.knowledge.obstacles_right.append(obstacle)
 
     def analyze_proximity_data(self):
         # Proximity to obstacle in front (cruise control)

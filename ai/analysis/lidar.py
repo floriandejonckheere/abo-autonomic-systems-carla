@@ -5,7 +5,7 @@ from sklearn.cluster import DBSCAN
 from .bounding_box import BoundingBox
 
 
-class LIDARSegmentation:
+class LIDAR:
     """
     Simple LIDAR sensor analyzer (segmenter)
 
@@ -21,13 +21,6 @@ class LIDARSegmentation:
     applied (position of the LIDAR sensor relative to the vehicle).
     """
 
-
-    def __init__(self, knowledge, vehicle, debug):
-        self.knowledge = knowledge
-        self.vehicle = vehicle
-        self.debug = debug
-
-        self.last_render_at = 0
 
     def analyze(self, image):
         data = np.frombuffer(image.raw_data, dtype=np.dtype('f4'))
