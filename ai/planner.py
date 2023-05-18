@@ -72,7 +72,7 @@ class Planner(object):
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
         else:
             # Otherwise, we keep driving towards the next waypoint
-            self.knowledge.update(waypoint=waypoint, distance=len(self.navigator.path) * self.navigator.distance)
+            self.knowledge.update(waypoint=waypoint, distance=self.navigator.distance())
 
             if not self.knowledge.state_machine.driving.is_active:
                 self.knowledge.state_machine.drive()
@@ -92,7 +92,7 @@ class Planner(object):
             self.knowledge.state_machine.drive()
         else:
             # Otherwise, we keep reversing towards the previous waypoint
-            self.knowledge.update(waypoint=waypoint, distance=len(self.recovery_navigator.path) * self.recovery_navigator.distance)
+            self.knowledge.update(waypoint=waypoint, distance=self.recovery_navigator.distance())
 
             # Reverse to waypoint
             self.knowledge.plan.goals.append(goals.Reverse(self.knowledge))

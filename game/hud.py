@@ -84,7 +84,7 @@ class HUD:
             '',
             'Destination:% 26s' % ('(% 5.2f, % 5.2f)' % (destination.x, destination.y)),
             'Waypoint:   % 26s' % ('(% 5.2f, % 5.2f)' % (waypoint.x, waypoint.y)),
-            'Distance:   % 24.2f m' % self.game.autopilot.knowledge.location.distance(self.game.autopilot.knowledge.waypoint),
+            'Distance:   % 24.2f m' % self.game.autopilot.knowledge.distance,
             '',
             'Collision: % 27s' % self.features.collision,
             'Lane detector: % 23s' % ', '.join([l.name for l in self.features.lane_invasion]),
