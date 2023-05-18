@@ -51,12 +51,13 @@ class Graph:
 
                 if parallel.get((u.road_id, v.road_id)):
                     # A parallel edge already exists, add lane change edges for all segments (if allowed)
+                    # Lane changes have double the weight of normal edges, to discourage lane changes
                     for (u_, v_), (u__, v__) in zip(segments, parallel_segments[(u.road_id, v.road_id)]):
                         if not u_.lane_change.name == 'None' and not u_.is_intersection:
-                            self.graph.add_edge(u_, v__, weight=u_.transform.location.distance(v__.transform.location))
+                            self.graph.add_edge(u_, v__, weight=2*u_.transform.location.distance(v__.transform.location))
 
                         if not u__.lane_change.name == 'None' and not u__.is_intersection:
-                            self.graph.add_edge(u__, v_, weight=u__.transform.location.distance(v_.transform.location))
+                            self.graph.add_edge(u__, v_, weight=2*u__.transform.location.distance(v_.transform.location))
                 else:
                     # No parallel edge exists, register this edge
                     parallel[(u.road_id, v.road_id)] = (u, v)
@@ -67,13 +68,14 @@ class Graph:
 
                 if parallel.get((u.road_id, v.road_id)):
                     # A parallel edge already exists, add lane change edges (if allowed)
+                    # Lane changes have double the weight of normal edges, to discourage lane changes
                     u_, v_ = parallel[(u.road_id, v.road_id)]
 
                     if not u.lane_change.name == 'None' and not u.is_intersection:
-                        self.graph.add_edge(u, v_, weight=u.transform.location.distance(v_.transform.location))
+                        self.graph.add_edge(u, v_, weight=2*u.transform.location.distance(v_.transform.location))
 
                     if not u_.lane_change.name == 'None' and not u_.is_intersection:
-                        self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
+                        self.graph.add_edge(u_, v, weight=2*u_.transform.location.distance(v.transform.location))
                 else:
                     # No parallel edge exists, register this edge
                     parallel[(u.road_id, v.road_id)] = (u, v)
