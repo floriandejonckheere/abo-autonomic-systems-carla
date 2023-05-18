@@ -72,8 +72,8 @@ class Navigator:
         # Step 1: global route plan using topology waypoints
         topological_path = [wp.transform.location for wp in self.graph.shortest_path(source, destination)]
 
-        # # Add destination as final waypoint
-        topological_path.append(self.knowledge.destination)
+        # # Add source and destination as starting and final waypoints
+        topological_path = [location, *topological_path, self.knowledge.destination]
 
         # If the destination waypoint is too far from the actual destination, interpolate exactly
         exact = destination.transform.location.distance(self.knowledge.destination) > 5.0
@@ -134,12 +134,15 @@ class Navigator:
         for i, (xi, yi, zi) in enumerate(interpolated):
             location = carla.Location(x=xi, y=yi, z=zi)
 
-            if exact and i > len(interpolated) - 5:
-                # Exactly interpolate the last 5 waypoints (don't stick to only waypoints)
-                self.path.append(location)
-            else:
-                # Find the closest waypoint on the map
-                waypoint = self.map.get_waypoint(location)
+            # Find the closest waypoint location on the map
+            location = self.map.get_waypoint(location).transform.location
 
-                # Add it to the path
-                self.path.append(waypoint.transform.location)
+            # If the waypoint is close enough to the destination, stop
+            # This usually means that the route to the destination is much longer, but following only legal waypoints
+            # For example, the locations in milestone two are located a bit before junctions, so the planner
+            # would go a block around to reach them using only legal waypoints
+            if location.distance(self.knowledge.destination) < 5.0:
+                break
+
+            # Add it to the path
+            self.path.append(location)
