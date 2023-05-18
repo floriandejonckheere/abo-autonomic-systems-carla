@@ -18,6 +18,9 @@ class BoundingBox:
     def centroid(self):
         return carla.Location((self.x_min + self.x_max) / 2, (self.y_min + self.y_max) / 2, (self.z_min + self.z_max) / 2)
 
+    def volume(self):
+        return (self.x_max - self.x_min) * (self.y_max - self.y_min) * (self.z_max - self.z_min)
+
     def collides_with(self, other):
         if self.x_max >= other.x_min and self.x_min <= other.x_max and self.y_max >= other.y_min and self.y_min <= other.y_max and self.z_max >= other.z_min and self.z_min <= other.z_max:
             return True

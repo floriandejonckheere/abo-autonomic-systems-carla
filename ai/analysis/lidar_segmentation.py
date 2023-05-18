@@ -1,7 +1,3 @@
-from ai.carla import carla
-
-import time
-
 import numpy as np
 
 from sklearn.cluster import DBSCAN
@@ -51,8 +47,9 @@ class LIDARSegmentation:
         # Select only data above ground level (0.1 meters with offset of 2.1m)
         data = data[data[:, 2] > 0.1]
 
+        # No data points left
         if len(data) == 0:
-            return
+            return []
 
         # Cluster points based on density
         db = DBSCAN(eps=1.1, min_samples=10)
@@ -75,13 +72,10 @@ class LIDARSegmentation:
             y_max = np.max(cluster[:, 1])
             z_max = np.max(cluster[:, 2])
 
-            bounding_boxes.append(BoundingBox(x_min, y_min, z_min, x_max, y_max, z_max))
+            bounding_box = BoundingBox(x_min, y_min, z_min, x_max, y_max, z_max)
 
-        # Render bounding box periodically
-        if self.debug and time.time() - self.last_render_at > 1:
-            self.last_render_at = time.time()
-
-            for bounding_box in bounding_boxes:
-                bounding_box.render(self.vehicle)
+            # Consider only bounding boxes with some volume (excludes fixtures and false positives)
+            if bounding_box.volume() > 0.1:
+                bounding_boxes.append(bounding_box)
 
         return bounding_boxes
