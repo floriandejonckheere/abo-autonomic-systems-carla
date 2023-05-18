@@ -10,7 +10,7 @@ class Controller:
         self.vehicle = vehicle
 
         # Instantiate PID controllers for continuous variables
-        self.throttle_controller = PIDController(K_p=0.5, K_i=2.0, K_d=0.0)
+        self.throttle_controller = PIDController(K_p=0.2, K_i=2.5, K_d=0.0)
         self.steer_controller = PIDController(K_p=0.5, K_i=1.5, K_d=0.01)
 
     def control(self, control, dt):
