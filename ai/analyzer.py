@@ -20,13 +20,13 @@ class Analyzer(object):
         self.lidar = LIDAR()
 
         # Left and right proximity sensors (mounted on the front corners of the car)
-        self.left = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=self.vehicle.bounding_box.extent.y, z=0.5, r=2.0)
-        self.right = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=-self.vehicle.bounding_box.extent.y, z=0.5, r=2.0)
+        self.left = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=-self.vehicle.bounding_box.extent.y, z=0.5, r=2.0, color=carla.Color(255, 0, 0))
+        self.right = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=self.vehicle.bounding_box.extent.y, z=0.5, r=2.0, color=carla.Color(0, 255, 0))
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
-        self.left.render(color=carla.Color(0, 255, 0))
-        self.right.render(color=carla.Color(0, 0, 255))
+        # self.left.render()
+        # self.right.render()
 
         # Stop analyzing if vehicle is parked
         if self.knowledge.state_machine.parked.is_active:
