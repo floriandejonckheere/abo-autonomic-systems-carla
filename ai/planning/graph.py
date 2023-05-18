@@ -12,29 +12,72 @@ class Graph:
         self.topology = topology
         self.graph = nx.DiGraph()
 
+        # Maximum edge length before splitting into multiple edges
+        maximum_length = 50
+
         # Dictionary of parallel edges based on road id (maximum two lanes per road)
         parallel = {(u.road_id, v.road_id): None for (u, v) in topology}
+
+        # Dictionary of parallel edge segments based on road id
+        parallel_segments = {(u.road_id, v.road_id): [] for (u, v) in topology}
 
         for (u, v) in topology:
             # Wrap waypoints in Node objects
             u = Node(u)
             v = Node(v)
 
-            # Add edge to graph
-            self.graph.add_edge(u, v, weight=u.transform.location.distance(v.transform.location))
+            distance = u.transform.location.distance(v.transform.location)
 
-            if parallel.get((u.road_id, v.road_id)):
-                # A parallel edge already exists, add lane change edges (if allowed)
-                u_, v_ = parallel[(u.road_id, v.road_id)]
+            if distance > maximum_length:
+                # Split up long edges into multiple edges
+                u_previous = None
+                u_next = u
 
-                if not u.lane_change.name == 'None' and not u.is_intersection:
-                    self.graph.add_edge(u, v_, weight=u.transform.location.distance(v_.transform.location))
+                segments = []
 
-                if not u_.lane_change.name == 'None' and not u_.is_intersection:
-                    self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
+                for i in range(int(distance // maximum_length)):
+                    u_previous = u_next
+
+                    # Generate a new waypoint every N meters
+                    u_next = Node(u_next.next(maximum_length)[0])
+
+                    # Add edge segment to graph (and register segment)
+                    self.graph.add_edge(u_previous, u_next, weight=maximum_length)
+                    segments.append((u_previous, u_next))
+
+                # Add final edge
+                self.graph.add_edge(u_next, v, weight=u_next.transform.location.distance(v.transform.location))
+                segments.append((u_next, v))
+
+                if parallel.get((u.road_id, v.road_id)):
+                    # A parallel edge already exists, add lane change edges for all segments (if allowed)
+                    for (u_, v_), (u__, v__) in zip(segments, parallel_segments[(u.road_id, v.road_id)]):
+                        if not u_.lane_change.name == 'None' and not u_.is_intersection:
+                            self.graph.add_edge(u_, v__, weight=u_.transform.location.distance(v__.transform.location))
+
+                        if not u__.lane_change.name == 'None' and not u__.is_intersection:
+                            self.graph.add_edge(u__, v_, weight=u__.transform.location.distance(v_.transform.location))
+                else:
+                    # No parallel edge exists, register this edge
+                    parallel[(u.road_id, v.road_id)] = (u, v)
+                    parallel_segments[(u.road_id, v.road_id)] = segments
             else:
-                # No parallel edge exists, register this edge
-                parallel[(u.road_id, v.road_id)] = (u, v)
+                # Add edge to graph
+                self.graph.add_edge(u, v, weight=u.transform.location.distance(v.transform.location))
+
+                if parallel.get((u.road_id, v.road_id)):
+                    # A parallel edge already exists, add lane change edges (if allowed)
+                    u_, v_ = parallel[(u.road_id, v.road_id)]
+
+                    if not u.lane_change.name == 'None' and not u.is_intersection:
+                        self.graph.add_edge(u, v_, weight=u.transform.location.distance(v_.transform.location))
+
+                    if not u_.lane_change.name == 'None' and not u_.is_intersection:
+                        self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
+                else:
+                    # No parallel edge exists, register this edge
+                    parallel[(u.road_id, v.road_id)] = (u, v)
+
 
         print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
 
