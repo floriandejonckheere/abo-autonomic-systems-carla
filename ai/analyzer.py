@@ -1,5 +1,8 @@
-from .analysis.lidar import LIDAR
+from ai.carla import carla
+
 from .analysis.bounding_box import BoundingBox
+from .analysis.lidar import LIDAR
+from .analysis.proximity import Proximity
 
 import time
 
@@ -16,13 +19,15 @@ class Analyzer(object):
         # LIDAR analyzer
         self.lidar = LIDAR()
 
-        # Collision detection boxes
-        self.front = BoundingBox(-1.2, 2.5, 0.0, 1.2, 7.5, 2.0)
-        self.left = BoundingBox(-2.4, 0, 0.0, -1.2, 5, 2.0)
-        self.right = BoundingBox(1.2, 0, 0.0, 2.4, 5, 2.0)
+        # Left and right proximity sensors (mounted on the front corners of the car)
+        self.left = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=self.vehicle.bounding_box.extent.y, z=0.5, r=2.0)
+        self.right = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=-self.vehicle.bounding_box.extent.y, z=0.5, r=2.0)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
+        self.left.render(color=carla.Color(0, 255, 0))
+        self.right.render(color=carla.Color(0, 0, 255))
+
         # Stop analyzing if vehicle is parked
         if self.knowledge.state_machine.parked.is_active:
             return
@@ -36,11 +41,11 @@ class Analyzer(object):
         # Analyze LIDAR sensor data
         self.analyze_lidar_image()
 
-        # Analyze proximity sensor data
-        self.analyze_proximity_data()
+        # Analyze depth camera data
+        self.analyze_depth_image()
 
         # Avoid collisions and transition to healing state
-        self.avoid_collision()
+        # self.avoid_collision()
 
     def save_location(self):
         # Save location history periodically
@@ -65,39 +70,24 @@ class Analyzer(object):
             self.knowledge.state_machine.crash()
 
     def analyze_lidar_image(self):
-        # Clear obstacle state
-        self.knowledge.obstacles = []
-        self.knowledge.obstacles_left = []
-        self.knowledge.obstacles_right = []
-
         # Analyze LIDAR data and find potential obstacles
-        obstacles = self.lidar.analyze(self.knowledge.lidar_image)
+        self.knowledge.obstacles = self.lidar.analyze(self.knowledge.lidar_image)
 
-        # Check if any of the obstacles are within the collision detection bounds
-        for obstacle in obstacles:
-            # Front collision detection
-            if self.front.overlaps_with(obstacle):
-                self.knowledge.obstacles.append(obstacle)
-
-            # Left collision detection
-            if self.left.overlaps_with(obstacle):
-                self.knowledge.obstacles_left.append(obstacle)
-
-            # Right collision detection
-            if self.right.overlaps_with(obstacle):
-                self.knowledge.obstacles_right.append(obstacle)
-
-    def analyze_proximity_data(self):
+    def analyze_depth_image(self):
         # Proximity to obstacle in front (cruise control)
         self.knowledge.proximity = np.mean(self.convert_proximity_image(self.knowledge.proximity_image))
         self.knowledge.obstacle = self.knowledge.proximity < 20
 
         # Proximity to obstacle on left and right (collision avoidance)
-        self.knowledge.proximity_left = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_left))
-        self.knowledge.obstacle_left = self.knowledge.proximity_left < 20
+        if len(self.knowledge.obstacles) > 0:
+            self.knowledge.proximity_left = min([self.left.distance_to(obstacle) for obstacle in self.knowledge.obstacles])
+            self.knowledge.obstacle_left = self.knowledge.proximity_left < 2.0
 
-        self.knowledge.proximity_right = np.mean(self.convert_proximity_image(self.knowledge.proximity_image_right))
-        self.knowledge.obstacle_right = self.knowledge.proximity_right < 20
+            self.knowledge.proximity_right = min([self.right.distance_to(obstacle) for obstacle in self.knowledge.obstacles])
+            self.knowledge.obstacle_right = self.knowledge.proximity_right < 2.0
+        else:
+            self.knowledge.proximity_left = 1000.0
+            self.knowledge.proximity_right = 1000.0
 
     def convert_proximity_image(self, image):
         array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))

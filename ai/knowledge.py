@@ -54,9 +54,8 @@ class Knowledge(object):
         self.proximity_left = 0.0
         self.proximity_right = 0.0
 
+        # Potential obstacles
         self.obstacles = []
-        self.obstacles_left = []
-        self.obstacles_right = []
 
         self.obstacle = False
         self.obstacle_left = False
