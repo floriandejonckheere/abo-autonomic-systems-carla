@@ -45,8 +45,6 @@ class Graph:
             if not u_.lane_change.name == 'None' and not u_.is_intersection:
                 self.graph.add_edge(u_, v, weight=u_.transform.location.distance(v.transform.location))
 
-        print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
-
     # Return the shortest path between two waypoints in the graph
     def shortest_path(self, source, destination):
         # Find the ending waypoint on the edge of the current lane
