@@ -2,7 +2,7 @@ import numpy as np
 
 from sklearn.cluster import DBSCAN
 
-from .bounding_box import BoundingBox
+from .obstacle import Obstacle
 
 
 class LIDAR:
@@ -12,7 +12,7 @@ class LIDAR:
     This analyzer is responsible for analyzing LIDAR sensor data and detecting obstacles.
     It uses DBSCAN clustering algorithm to group points into clusters and then computes
     the bounding box for each cluster. The bounding box is then used to determine the
-    obstacle's position and size.
+    obstacle's proximity.
 
     The LIDAR sensor data needs to be processed in order to be usable. The data is
     first converted to a numpy array and then reshaped to a 2D array with 3 columns
@@ -53,7 +53,7 @@ class LIDAR:
         clusters = clusters[clusters[:, -1].argsort()]
         clusters = np.split(clusters[:, :-1], np.unique(clusters[:, -1], return_index=True)[1][1:])
 
-        bounding_boxes = []
+        obstacles = []
 
         # Compute bounding box for each cluster
         for cluster in clusters:
@@ -65,10 +65,10 @@ class LIDAR:
             y_max = np.max(cluster[:, 1])
             z_max = np.max(cluster[:, 2])
 
-            bounding_box = BoundingBox(x_min, y_min, z_min, x_max, y_max, z_max)
+            obstacle = Obstacle(x_min, y_min, z_min, x_max, y_max, z_max)
 
-            # Consider only bounding boxes with some volume (excludes fixtures and false positives)
-            if bounding_box.volume() > 0.1:
-                bounding_boxes.append(bounding_box)
+            # Consider only obstacles with some volume (excludes false positives like lantern poles and traffic signs)
+            if obstacle.volume() > 0.1:
+                obstacles.append(obstacle)
 
-        return bounding_boxes
+        return obstacles

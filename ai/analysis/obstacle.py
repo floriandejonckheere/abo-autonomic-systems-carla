@@ -3,8 +3,8 @@ from ai.carla import carla
 import time
 
 
-class BoundingBox:
-    """Bounding box delimiting an object in 3D space."""
+class Obstacle:
+    """Potential obstacle, delimited by a bounding box in 3D space."""
 
     def __init__(self, x_min, y_min, z_min, x_max, y_max, z_max):
         self.x_min = x_min
