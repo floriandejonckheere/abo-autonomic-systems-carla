@@ -48,16 +48,8 @@ class Monitor(object):
         # Location of sensor is front of vehicle, 1 meter above ground
         location = carla.Location(x=self.vehicle.bounding_box.extent.x, z=1.0)
 
-        self.proximity = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
-        self.proximity.listen(lambda image: Monitor._on_proximity(weak_self, image))
-
-        bp.set_attribute('fov', '10')
-
-        self.proximity_left = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=-45.0)), attach_to=self.vehicle)
-        self.proximity_left.listen(lambda image: Monitor._on_proximity(weak_self, image, 'left'))
-
-        self.proximity_right = world.spawn_actor(bp, carla.Transform(location, carla.Rotation(yaw=45.0)), attach_to=self.vehicle)
-        self.proximity_right.listen(lambda image: Monitor._on_proximity(weak_self, image, 'right'))
+        self.depth = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
+        self.depth.listen(lambda image: Monitor._on_depth(weak_self, image))
 
         # RGB camera (top-down)
         bp = world.get_blueprint_library().find('sensor.camera.rgb')
@@ -88,12 +80,10 @@ class Monitor(object):
         self.collision_sensor.destroy()
         self.lidar_sensor.destroy()
 
-        self.proximity.destroy()
-        self.proximity_left.destroy()
-        self.proximity_right.destroy()
+        self.depth.destroy()
 
     @staticmethod
-    def _on_proximity(weak_self, image, orientation='front'):
+    def _on_depth(weak_self, image):
         self = weak_self()
         if not self:
             return
@@ -101,9 +91,4 @@ class Monitor(object):
         # Convert to grayscale
         image.convert(carla.ColorConverter.LogarithmicDepth)
 
-        if orientation == 'front':
-            self.knowledge.proximity_image = image
-        elif orientation == 'left':
-            self.knowledge.proximity_image_left = image
-        elif orientation == 'right':
-            self.knowledge.proximity_image_right = image
+        self.knowledge.depth_image = image

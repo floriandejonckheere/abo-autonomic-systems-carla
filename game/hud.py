@@ -37,14 +37,8 @@ class HUD:
 
         self._font_mono = pygame.font.Font(pygame.font.match_font('consolas'), 14)
 
-        self._last_proximity_image_frame_number = 0
-        self._last_proximity_image = None
-
-        self._last_proximity_image_left_frame_number = 0
-        self._last_proximity_image_left = None
-
-        self._last_proximity_image_right_frame_number = 0
-        self._last_proximity_image_right = None
+        self._last_depth_image_frame_number = 0
+        self._last_depth_image = None
 
         self._last_rgb_image_frame_number = 0
         self._last_rgb_image = None
@@ -155,45 +149,19 @@ class HUD:
                 display.blit(surface, (8, v_offset))
             v_offset += 18
 
-        # Render proximity images
-        if self.features.proximity_image is not None:
+        # Render depth images
+        if self.features.depth_image is not None:
             # Render image only if it has changed
-            if self.features.proximity_image.frame_number > self._last_proximity_image_frame_number:
-                self._last_proximity_image_frame_number = self.features.proximity_image.frame_number
+            if self.features.depth_image.frame_number > self._last_depth_image_frame_number:
+                self._last_depth_image_frame_number = self.features.depth_image.frame_number
 
-                array = np.frombuffer(self.features.proximity_image.raw_data, dtype=np.dtype('uint8'))
-                array = np.reshape(array, (self.features.proximity_image.height, self.features.proximity_image.width, 4))
+                array = np.frombuffer(self.features.depth_image.raw_data, dtype=np.dtype('uint8'))
+                array = np.reshape(array, (self.features.depth_image.height, self.features.depth_image.width, 4))
                 array = array[:, :, :3]
                 array = array[:, :, ::-1]
 
-                self._last_proximity_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
-            display.blit(self._last_proximity_image, (320, 0))
-
-        if self.features.proximity_image_left is not None:
-            # Render image only if it has changed
-            if self.features.proximity_image_left.frame_number > self._last_proximity_image_left_frame_number:
-                self._last_proximity_image_left_frame_number = self.features.proximity_image_left.frame_number
-
-                array = np.frombuffer(self.features.proximity_image_left.raw_data, dtype=np.dtype('uint8'))
-                array = np.reshape(array, (self.features.proximity_image_left.height, self.features.proximity_image_left.width, 4))
-                array = array[:, :, :3]
-                array = array[:, :, ::-1]
-
-                self._last_proximity_image_left = pygame.surfarray.make_surface(array.swapaxes(0, 1))
-            display.blit(self._last_proximity_image_left, (320, 120))
-
-        if self.features.proximity_image_right is not None:
-            # Render image only if it has changed
-            if self.features.proximity_image_right.frame_number > self._last_proximity_image_right_frame_number:
-                self._last_proximity_image_right_frame_number = self.features.proximity_image_right.frame_number
-
-                array = np.frombuffer(self.features.proximity_image_right.raw_data, dtype=np.dtype('uint8'))
-                array = np.reshape(array, (self.features.proximity_image_right.height, self.features.proximity_image_right.width, 4))
-                array = array[:, :, :3]
-                array = array[:, :, ::-1]
-
-                self._last_proximity_image_right = pygame.surfarray.make_surface(array.swapaxes(0, 1))
-            display.blit(self._last_proximity_image_right, (320, 240))
+                self._last_depth_image = pygame.surfarray.make_surface(array.swapaxes(0, 1))
+            display.blit(self._last_depth_image, (320, 0))
 
         # Render RGB camera image
         if self.features.rgb_image is not None:
@@ -229,4 +197,4 @@ class HUD:
 
             surface = pygame.surfarray.make_surface(lidar_img)
 
-            display.blit(surface, (320, 360))
+            display.blit(surface, (320, 120))

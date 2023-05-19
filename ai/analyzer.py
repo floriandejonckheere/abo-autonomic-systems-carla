@@ -39,11 +39,11 @@ class Analyzer(object):
         # Detect collision and transition to crashed state
         self.detect_collision()
 
-        # Analyze LIDAR sensor data
-        self.analyze_lidar_image()
-
         # Analyze depth camera data
         self.analyze_depth_image()
+
+        # Analyze LIDAR sensor data
+        self.analyze_lidar_image()
 
         # Avoid collisions and transition to healing state
         # self.avoid_collision()
@@ -70,34 +70,31 @@ class Analyzer(object):
             # Transition to crashed state
             self.knowledge.state_machine.crash()
 
+    def analyze_depth_image(self):
+        array = np.frombuffer(self.knowledge.depth_image.raw_data, dtype=np.dtype("uint8"))
+        array = np.reshape(array, (self.knowledge.depth_image.height, self.knowledge.depth_image.width, 4))
+        array = array[:, :, :3]
+        array = array[:, :, ::-1]
+
+        # Proximity to obstacle in front
+        self.knowledge.proximity = np.mean(array)
+
+        # Check if obstacle is in front
+        self.knowledge.obstacle = self.knowledge.proximity < 20
+
     def analyze_lidar_image(self):
         # Analyze LIDAR data and find potential obstacles
         self.knowledge.obstacles = self.lidar.analyze(self.knowledge.lidar_image)
-
-    def analyze_depth_image(self):
-        # Proximity to obstacle in front (cruise control)
-        self.knowledge.proximity = np.mean(self.convert_proximity_image(self.knowledge.proximity_image))
 
         # Proximity to obstacle on left and right (collision avoidance)
         self.knowledge.proximity_left = min([self.proximity_left.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
         self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
 
-    def convert_proximity_image(self, image):
-        array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
-        array = np.reshape(array, (image.height, image.width, 4))
-        array = array[:, :, :3]
-        array = array[:, :, ::-1]
-
-        return array
-
-    def avoid_collision(self):
-        # Check if obstacle is in front
-        self.knowledge.obstacle = self.knowledge.proximity < 20
-
         # Check if obstacle is on left or right side
         self.knowledge.obstacle_left = self.knowledge.proximity_left < 2
         self.knowledge.obstacle_right = self.knowledge.proximity_right < 2
 
+    def avoid_collision(self):
         # Do not avoid collision if already crashed or recovering
         if self.knowledge.state_machine.crashed.is_active or self.knowledge.state_machine.recovering.is_active:
             return
