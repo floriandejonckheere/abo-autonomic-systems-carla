@@ -25,11 +25,12 @@ class Planner(object):
         state = self.knowledge.state_machine.current_state
 
         if state == StateMachine.driving:
-            # Drive to waypoint
-            self.drive()
-        elif state == StateMachine.healing:
-            # Avoid collision with an obstacle
-            self.knowledge.plan.goals.append(goals.AvoidCollision(self.knowledge))
+            if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
+                # Avoid collision with an obstacle (if any)
+                self.knowledge.state_machine.heal()
+            else:
+                # Drive to waypoint
+                self.drive()
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
             if self.knowledge.destination is not None and self.knowledge.location.distance(self.knowledge.destination) > 5.0:
@@ -53,6 +54,15 @@ class Planner(object):
 
                 # Transition to recovering state
                 self.knowledge.state_machine.recover()
+        elif state == StateMachine.healing:
+            last_event, timestamp = self.knowledge.state_machine.history[-1]
+
+            if time.time() - timestamp < 5.0:
+                # If the vehicle is healing, avoid collision with an obstacle
+                self.knowledge.plan.goals.append(goals.AvoidCollision(self.knowledge))
+            else:
+                # Transition to driving state
+                self.knowledge.state_machine.drive()
         elif state == StateMachine.recovering:
             last_event, timestamp = self.knowledge.state_machine.history[-1]
 

@@ -45,9 +45,6 @@ class Analyzer(object):
         # Analyze LIDAR sensor data
         self.analyze_lidar_image()
 
-        # Avoid collisions and transition to healing state
-        # self.avoid_collision()
-
     def save_location(self):
         # Save location history periodically
         if not self.knowledge.last_location_at or time.time() - self.knowledge.last_location_at > 0.5:
@@ -91,21 +88,5 @@ class Analyzer(object):
         self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in obstacles]) if len(obstacles) > 0 else 1000.0
 
         # Check if obstacle is on left or right side
-        self.knowledge.obstacle_left = self.knowledge.proximity_left < 2
-        self.knowledge.obstacle_right = self.knowledge.proximity_right < 2
-
-    def avoid_collision(self):
-        # Do not avoid collision if already crashed or recovering
-        if self.knowledge.state_machine.crashed.is_active or self.knowledge.state_machine.recovering.is_active:
-            return
-
-        if self.knowledge.state_machine.healing.is_active:
-            last_event, timestamp = self.knowledge.state_machine.history[-1]
-
-            # Go back to driving if healing timeout has passed
-            if time.time() - timestamp > 5.0:
-                self.knowledge.state_machine.drive()
-        else:
-            # Avoid collision if proximity is too low
-            if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
-                self.knowledge.state_machine.heal()
+        self.knowledge.obstacle_left = self.knowledge.proximity_left < 1.5
+        self.knowledge.obstacle_right = self.knowledge.proximity_right < 1.5
