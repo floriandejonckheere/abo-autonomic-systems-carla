@@ -32,6 +32,8 @@ class Lidar(Scenario):
             if event.other_actor.type_id.split('.')[0] == 'vehicle':
                 print("Test FAILED")
 
+            event.actor.destroy()
+
         for location in locations:
             spawn_point = carla.Transform(location=location,  rotation=carla.Rotation(yaw=90))
 
