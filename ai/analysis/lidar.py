@@ -32,13 +32,13 @@ class LIDAR:
         data[:, 1] = -data[:, 1]
 
         # Apply Z-axis offset (LIDAR sensor position)
-        data[:, 2] = 2.1 - data[:, 2]
+        data[:, 2] = 2.5 - data[:, 2]
 
         # Decimate data
         data = data[::1]
 
-        # Select only data above ground level (0.1 meters with offset of 2.1m)
-        data = data[data[:, 2] > 0.1]
+        # Select only data above ground level (0.5 meters)
+        data = data[data[:, 2] > 0.5]
 
         # No data points left
         if len(data) == 0:
