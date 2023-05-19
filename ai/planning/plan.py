@@ -1,6 +1,3 @@
-from ai.carla import carla
-
-
 class Plan:
     """Execution plan created by the planner, composed of high-level goals and low-level actions"""
 

@@ -1,10 +1,10 @@
 import time
 
-from .monitor import *
-from .analyzer import *
-from .planner import *
-from .executor import *
-from .knowledge import *
+from .monitor import Monitor
+from .analyzer import Analyzer
+from .planner import Planner
+from .executor import Executor
+from .knowledge import Knowledge
 
 
 # Manager script
@@ -53,7 +53,7 @@ class Autopilot(object):
         self.monitor.destroy()
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
-    def set_destination(self, destination: carla.Location):
+    def set_destination(self, destination):
         # Set destination in knowledge, so that planner can plan the route
         self.knowledge.update(destination=destination)
 

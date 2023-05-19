@@ -1,6 +1,3 @@
-from ai.carla import carla
-
-
 class Node:
     """Node wrapping a waypoint in the topological waypoint graph."""
 

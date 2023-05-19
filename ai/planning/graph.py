@@ -1,8 +1,7 @@
-from ai.carla import carla
-
 import networkx as nx
 
 from .node import Node
+from ..configuration import Configuration
 
 
 class Graph:
@@ -11,9 +10,6 @@ class Graph:
     def __init__(self, topology):
         self.topology = topology
         self.graph = nx.DiGraph()
-
-        # Maximum edge length before splitting into multiple edges
-        maximum_length = 50
 
         # Dictionary of parallel edges based on road id (maximum two lanes per road)
         parallel = {(u.road_id, v.road_id): None for (u, v) in topology}
@@ -28,21 +24,21 @@ class Graph:
 
             distance = u.transform.location.distance(v.transform.location)
 
-            if distance > maximum_length:
+            if distance > Configuration.maximum_edge_length:
                 # Split up long edges into multiple edges
                 u_previous = None
                 u_next = u
 
                 segments = []
 
-                for i in range(int(distance // maximum_length)):
+                for i in range(int(distance // Configuration.maximum_edge_length)):
                     u_previous = u_next
 
                     # Generate a new waypoint every N meters
-                    u_next = Node(u_next.next(maximum_length)[0])
+                    u_next = Node(u_next.next(Configuration.maximum_edge_length)[0])
 
                     # Add edge segment to graph (and register segment)
-                    self.graph.add_edge(u_previous, u_next, weight=maximum_length)
+                    self.graph.add_edge(u_previous, u_next, weight=Configuration.maximum_edge_length)
                     segments.append((u_previous, u_next))
 
                 # Add final edge
