@@ -1,5 +1,3 @@
-import math
-
 from collections import deque
 
 from ai.carla import carla
@@ -27,6 +25,9 @@ class Knowledge(object):
         self.location = carla.Location(0.0, 0.0, 0.0)
         self.rotation = carla.Rotation(0.0, 0.0, 0.0)
         self.velocity = carla.Vector3D(0.0, 0.0, 0.0)
+
+        # Calculated speed
+        self.speed = 0.0
 
         # Location history (used for crash recovery)
         self.location_history = deque(maxlen=3)
@@ -63,9 +64,6 @@ class Knowledge(object):
 
         # Execution plan
         self.plan = None
-
-    def speed(self):
-        return 3.6 * math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2 + self.velocity.z ** 2)
 
     # A function to receive data from monitor
     def update(self, **kwargs):

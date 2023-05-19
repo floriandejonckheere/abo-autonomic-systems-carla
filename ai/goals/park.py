@@ -12,5 +12,5 @@ class Park(Goal):
             actions.Brake(self.knowledge.location.distance(self.knowledge.waypoint)),
 
             # Apply handbrake when stopped
-            actions.Handbrake(self.knowledge.speed()),
+            actions.Handbrake(self.knowledge.speed),
         ]

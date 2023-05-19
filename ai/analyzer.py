@@ -1,10 +1,10 @@
 from ai.carla import carla
 
-from .analysis.bounding_box import BoundingBox
 from .analysis.lidar import LIDAR
 from .analysis.proximity import Proximity
 
 import time
+import math
 
 import numpy as np
 
@@ -31,6 +31,9 @@ class Analyzer(object):
         # Stop analyzing if vehicle is parked
         if self.knowledge.state_machine.parked.is_active:
             return
+
+        # Calculate speed
+        self.knowledge.speed = 3.6 * math.sqrt(self.knowledge.velocity.x ** 2 + self.knowledge.velocity.y ** 2 + self.knowledge.velocity.z ** 2)
 
         # Save location history
         self.save_location()

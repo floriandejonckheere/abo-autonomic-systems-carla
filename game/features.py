@@ -66,7 +66,7 @@ class Features:
         self.heading += 'E' if 179.5 > self.rotation.yaw > 0.5 else ''
         self.heading += 'W' if -0.5 > self.rotation.yaw > -179.5 else ''
 
-        self.speed.update(knowledge.speed(), ceiling=50)
+        self.speed.update(knowledge.speed, ceiling=50)
         self.target_speed.update(knowledge.target_speed, ceiling=50)
 
         control = vehicle.get_control()

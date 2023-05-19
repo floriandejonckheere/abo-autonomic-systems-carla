@@ -20,11 +20,11 @@ class Drive(Goal):
             actions.Shift(reverse=False),
 
             # Accelerate towards the end of the waypoint path
-            actions.Accelerate(self.knowledge.distance, self.knowledge.speed(), self.knowledge.target_speed),
+            actions.Accelerate(self.knowledge.distance, self.knowledge.speed, self.knowledge.target_speed),
 
             # Steer towards a waypoint
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target),
 
             # Stop-and-go in dense traffic
-            # actions.Cruise(self.knowledge.proximity, self.knowledge.speed()),
+            # actions.Cruise(self.knowledge.proximity, self.knowledge.speed),
         ]

@@ -20,7 +20,7 @@ class Reverse(Goal):
             actions.Shift(reverse=True),
 
             # Accelerate (gently) towards the destination
-            actions.Accelerate(self.knowledge.distance, self.knowledge.speed(), self.knowledge.target_speed),
+            actions.Accelerate(self.knowledge.distance, self.knowledge.speed, self.knowledge.target_speed),
 
             # Steer (gently) towards a waypoint
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target, bounds=(-0.3, 0.3)),

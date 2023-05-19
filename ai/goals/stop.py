@@ -12,5 +12,5 @@ class Stop(Goal):
             actions.Brake(3.0),
 
             # Apply handbrake when stopped
-            actions.Handbrake(self.knowledge.speed()),
+            actions.Handbrake(self.knowledge.speed),
         ]
