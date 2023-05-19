@@ -47,6 +47,15 @@ python ai_test.py --debug
 python ai_test.py --follow
 ```
 
+Run the `extract_graph.py` script to extract the navigation graph from the map.
+
+```sh
+python extract_graph.py
+```
+
+Extracting the planned paths requires modifying the `Navigator` class.
+See the note at the end of the `extract_graph.py` file for more information.
+
 ## Troubleshooting
 
 When running any Python script:
