@@ -4,7 +4,7 @@ from .scenario import Scenario
 
 
 class Curve(Scenario):
-    """Across a curved road."""
+    """Traverse a long, curved road."""
 
     def __init__(self, world):
         super().__init__(world)

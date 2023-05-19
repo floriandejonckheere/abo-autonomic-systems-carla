@@ -9,7 +9,7 @@ import game.utils as utils
 
 
 class Kamikaze(Scenario):
-    """Straight towards the roundabout, enter, and avoid the kamikaze"""
+    """Straight towards the roundabout, enter, and avoid the kamikaze."""
 
     waypoints = [
         carla.Location(42.5959, -4.3443, 1.8431),

@@ -6,7 +6,7 @@ import game.utils as utils
 
 
 class Lidar(Scenario):
-    """LIDAR test scenario."""
+    """Stuck in dense traffic."""
 
     waypoints = [
         carla.Location(-6.5, 50.9, 1.8431),

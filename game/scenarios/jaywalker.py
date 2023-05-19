@@ -6,7 +6,7 @@ import game.utils as utils
 
 
 class Jaywalker(Scenario):
-    """Jaywalker crossing the road"""
+    """Invincible jaywalker crossing the road."""
 
     waypoints = [
         carla.Location(-6.5, 38.9, 1.8431),

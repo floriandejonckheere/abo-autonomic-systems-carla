@@ -6,7 +6,7 @@ import game.utils as utils
 
 
 class MilestoneThree(Scenario):
-    """Straight towards the roundabout, avoid the kamikaze, then enter and drive a bit"""
+    """Straight towards the roundabout, avoid the kamikaze, then enter and drive a bit."""
 
     waypoints = [
         carla.Location(42.5959, -4.3443, 1.8431),

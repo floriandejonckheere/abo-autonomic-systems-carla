@@ -7,10 +7,9 @@ from .planning import Navigator, Plan, RecoveryNavigator
 from .configuration import Configuration
 
 
-# Planner is responsible for creating a plan for moving around
-# In our case it creates a list of waypoints to follow so that vehicle arrives at destination
-# Alternatively this can also provide a list of waypoints to try avoid crashing or 'uncrash' itself
 class Planner(object):
+    """Planner is responsible for creating a plan for moving around, based on the current state of the vehicle."""
+
     def __init__(self, knowledge, vehicle, debug):
         self.knowledge = knowledge
         self.vehicle = vehicle

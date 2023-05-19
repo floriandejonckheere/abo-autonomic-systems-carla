@@ -4,7 +4,7 @@ import ai.actions as actions
 
 
 class Stop(Goal):
-    """Stop the vehicle"""
+    """Stop the vehicle."""
 
     def actions(self):
         return [

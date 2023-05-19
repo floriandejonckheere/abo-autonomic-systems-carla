@@ -6,7 +6,7 @@ import ai.actions as actions
 
 
 class Reverse(Goal):
-    """Reverse towards the previous waypoint"""
+    """Reverse towards the previous waypoint."""
 
     def actions(self):
         # Target location vector (relative to source)

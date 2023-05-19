@@ -6,6 +6,8 @@ import statemachine as sm
 
 
 class StateMachine(sm.StateMachine):
+    """System state machine for the vehicle."""
+
     def __init__(self):
         super().__init__()
 

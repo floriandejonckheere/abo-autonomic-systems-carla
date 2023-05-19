@@ -1,5 +1,5 @@
 class Configuration:
-    """Configuration parameters for the AI."""
+    """Configuration parameters for the autonomic manager."""
 
     # Maximum distance to destination to be considered arrived
     maximum_destination_distance = 5.0

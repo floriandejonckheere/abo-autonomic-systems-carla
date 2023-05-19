@@ -5,7 +5,7 @@ from .action import Action
 
 
 class Swerve(Action):
-    """Swerve to avoid an obstacle"""
+    """Swerve to avoid an obstacle."""
 
     Left = -1.0
     Right = 1.0

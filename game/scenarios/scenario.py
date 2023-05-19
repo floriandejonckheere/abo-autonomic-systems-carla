@@ -1,4 +1,6 @@
 class Scenario:
+    """Base class for all scenarios."""
+
     waypoints = []
 
     def __init__(self, world):

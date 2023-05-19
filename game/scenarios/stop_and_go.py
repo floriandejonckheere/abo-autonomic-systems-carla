@@ -9,7 +9,7 @@ import game.utils as utils
 
 
 class StopAndGo(Scenario):
-    """Stop-and-go traffic"""
+    """Stuck behind a slow moving driver."""
 
     waypoints = [
         carla.Location(-6.5, 38.9, 1.8431),

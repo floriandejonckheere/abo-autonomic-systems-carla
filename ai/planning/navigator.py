@@ -10,7 +10,13 @@ from ..configuration import Configuration
 
 
 class Navigator:
-    """Create and keep track of a route plan based on the current location and destination."""
+    """
+    Create and keep track of a route plan based on the current location and destination.
+
+    The route plan is created in two phases:
+    1. Topological path: using a rough graph of the map, a path is created from the current location to the destination
+    2. Detailed path: the topological path is refined by following waypoints on the map
+    """
 
     def __init__(self, knowledge, world, debug):
         self.knowledge = knowledge

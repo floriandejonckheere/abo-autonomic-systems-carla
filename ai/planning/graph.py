@@ -5,7 +5,17 @@ from ..configuration import Configuration
 
 
 class Graph:
-    """Weighted directed graph of the topological waypoints on the map."""
+    """
+    Weighted directed graph of the topological waypoints on the map.
+
+    The graph is constructed in several phases:
+    1. The topology of CARLA's map is extracted and stored in a list of edges.
+    2. The edges are split up into segments of maximum length.
+       This is necessary for long roads that curve, as the waypoints are not evenly spaced.
+    3. The segments are added to the graph as edges.
+    4. Extra edges are added for each parallel segment, to allow lane changes.
+       This is only done if lane changes are allowed for the segment.
+    """
 
     def __init__(self, topology):
         self.topology = topology

@@ -4,7 +4,7 @@ import ai.actions as actions
 
 
 class Park(Goal):
-    """Park the vehicle"""
+    """Park the vehicle (brake and apply handbrake)."""
 
     def actions(self):
         return [

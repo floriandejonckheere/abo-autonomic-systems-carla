@@ -7,8 +7,9 @@ from .executor import Executor
 from .knowledge import Knowledge
 
 
-# Manager script
 class Autopilot(object):
+    """Autopilot is responsible for managing all the modules and updating them at appropriate intervals."""
+
     def __init__(self, vehicle, debug, profile):
         # Vehicle (CARLA actor)
         self.vehicle = vehicle

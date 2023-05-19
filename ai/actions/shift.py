@@ -1,11 +1,8 @@
-import numpy as np
-import skfuzzy as fz
-
 from .action import Action
 
 
 class Shift(Action):
-    """Shift gears to reverse or drive"""
+    """Shift gears to reverse or drive."""
 
     def __init__(self, reverse):
         self.reverse = reverse

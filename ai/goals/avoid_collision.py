@@ -4,7 +4,7 @@ import ai.actions as actions
 
 
 class AvoidCollision(Goal):
-    """Avoid collision with an obstacle"""
+    """Avoid collision with an obstacle."""
 
     def actions(self):
         if self.knowledge.obstacle:

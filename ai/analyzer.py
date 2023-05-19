@@ -9,8 +9,9 @@ import math
 import numpy as np
 
 
-# Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into something usable
 class Analyzer(object):
+    """Analyzer is responsible for parsing all the data that the knowledge has received from Monitor and turning it into something usable."""
+
     def __init__(self, knowledge, vehicle, debug):
         self.knowledge = knowledge
         self.vehicle = vehicle

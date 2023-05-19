@@ -3,9 +3,9 @@ from ai.carla import carla
 from .control.controller import Controller
 
 
-# Executor is responsible for moving the vehicle around
-# In this implementation it only needs to match the steering and speed so that we arrive at provided waypoints
 class Executor(object):
+    """Executor is responsible for moving the vehicle around using the execution plan."""
+
     def __init__(self, knowledge, vehicle, debug):
         self.vehicle = vehicle
         self.knowledge = knowledge

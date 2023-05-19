@@ -2,7 +2,7 @@ from .action import Action
 
 
 class EmergencyBrake(Action):
-    """Apply emergency brake"""
+    """Apply emergency brake."""
 
     def apply(self, control):
         # Set throttle and brake

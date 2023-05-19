@@ -1,5 +1,5 @@
 class Plan:
-    """Execution plan created by the planner, composed of high-level goals and low-level actions"""
+    """Execution plan created by the planner, composed of high-level goals and low-level actions."""
 
     def __init__(self):
         self.goals = []

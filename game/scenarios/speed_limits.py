@@ -1,15 +1,10 @@
 from ai.carla import carla
 
-import threading
-import time
-
 from .scenario import Scenario
-
-import game.utils as utils
 
 
 class SpeedLimits(Scenario):
-    """Straight raod with changing speed limits"""
+    """Straight road with changing speed limits."""
 
     waypoints = [
         carla.Location(148.5, 193.1, 1.8431),

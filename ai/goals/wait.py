@@ -6,7 +6,7 @@ import ai.actions as actions
 
 
 class Wait(Goal):
-    """Wait at traffic lights"""
+    """Wait at traffic lights."""
 
     def actions(self):
         # Don't wait if there is no traffic light or if the traffic light is green

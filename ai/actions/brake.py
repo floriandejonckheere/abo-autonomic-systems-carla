@@ -5,7 +5,7 @@ from .action import Action
 
 
 class Brake(Action):
-    """Apply brake based on distance"""
+    """Apply brake based on distance."""
 
     def __init__(self, distance):
         self.distance = distance

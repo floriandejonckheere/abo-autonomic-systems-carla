@@ -5,7 +5,7 @@ from .action import Action
 
 
 class Steer(Action):
-    """Steer based on the angle to a waypoint"""
+    """Steer based on the angle to a waypoint."""
 
     def __init__(self, source, target, bounds=(-0.7, 0.7)):
         self.source = source

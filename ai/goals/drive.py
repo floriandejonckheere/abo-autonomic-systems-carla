@@ -6,7 +6,7 @@ import ai.actions as actions
 
 
 class Drive(Goal):
-    """Drive towards the next waypoint"""
+    """Drive towards the next waypoint."""
 
     def actions(self):
         # Target location vector (relative to source)

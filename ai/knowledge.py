@@ -6,8 +6,9 @@ from .state.state_machine import StateMachine
 from .state.value import Value
 
 
-# Class that holds the knowledge of the current state and serves as interaction point for all the modules
 class Knowledge(object):
+    """Knowledge is responsible for storing the current state of the vehicle."""
+
     def __init__(self):
         # Vehicle state
         self.state_machine = StateMachine()

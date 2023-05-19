@@ -1,7 +1,8 @@
 from collections import deque
 
+
 class Value:
-    """A value that can be used to store a float value and its history."""
+    """A class that can be used to store a numerical value and its history."""
 
     def __init__(self, value=0.0, size=100):
         self.value = value

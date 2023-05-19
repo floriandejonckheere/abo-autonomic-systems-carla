@@ -5,9 +5,7 @@ import time
 
 
 class Proximity:
-    """
-    Simple proximity sensor that detects objects in a given radius
-    """
+    """Simple proximity sensor that detects objects in a given radius."""
 
     def __init__(self, vehicle, x, y, z, r, color=carla.Color(255, 0, 0)):
         self.vehicle = vehicle

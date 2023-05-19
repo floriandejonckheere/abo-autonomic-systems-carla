@@ -3,8 +3,9 @@ import weakref
 from ai.carla import carla
 
 
-# Monitor is responsible for reading the data from the sensors and telling it to the knowledge
 class Monitor(object):
+    """Monitor is responsible for reading the data from the sensors and updating the knowledge."""
+
     def __init__(self, knowledge, vehicle, debug):
         self.vehicle = vehicle
         self.knowledge = knowledge

@@ -6,7 +6,7 @@ import game.utils as utils
 
 
 class Crash(Scenario):
-    """Unavoidable collision with a vehicle"""
+    """Unavoidable collision with a vehicle."""
 
     waypoints = [
         carla.Location(42.5959, -4.3443, 1.8431),

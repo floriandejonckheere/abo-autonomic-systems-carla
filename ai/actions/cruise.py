@@ -5,7 +5,7 @@ from .action import Action
 
 
 class Cruise(Action):
-    """Stop-and-go based on proximity and speed"""
+    """Stop-and-go based on proximity and speed."""
 
     def __init__(self, proximity, speed):
         self.proximity = proximity

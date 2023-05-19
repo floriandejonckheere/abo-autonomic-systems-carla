@@ -2,7 +2,7 @@ from .action import Action
 
 
 class Handbrake(Action):
-    """Apply handbrake"""
+    """Apply handbrake if speed is low enough."""
 
     def __init__(self, speed):
         self.speed = speed
