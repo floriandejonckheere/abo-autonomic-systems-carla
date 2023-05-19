@@ -4,8 +4,8 @@ from collections import deque
 
 from ai.carla import carla
 
-from .state_machine import StateMachine
-from .value import Value
+from .state.state_machine import StateMachine
+from .state.value import Value
 
 
 # Class that holds the knowledge of the current state and serves as interaction point for all the modules

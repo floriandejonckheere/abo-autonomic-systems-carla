@@ -1,6 +1,6 @@
 import math
 
-from ai.value import Value
+from ai.state.value import Value
 
 
 def get_actor_display_name(actor, truncate=250):

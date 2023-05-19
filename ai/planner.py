@@ -2,7 +2,7 @@ import time
 
 import ai.goals as goals
 
-from .state_machine import StateMachine
+from .state.state_machine import StateMachine
 from .planning import Navigator, Plan, RecoveryNavigator
 
 
