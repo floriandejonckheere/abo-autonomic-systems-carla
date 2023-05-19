@@ -11,7 +11,6 @@ class RecoveryNavigator(Navigator):
     def update(self):
         # If there are no more waypoints, we have arrived
         if len(self.path) == 0:
-            print(f'arrived')
             return
 
         # If we are close enough to the next waypoint, remove it from the list

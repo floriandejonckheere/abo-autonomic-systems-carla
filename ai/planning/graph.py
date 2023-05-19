@@ -86,8 +86,6 @@ class Graph:
                     # No parallel edge exists, register this edge
                     parallel[(u.road_id, v.road_id)] = (u, v)
 
-        print(f'Nodes={len(self.graph.nodes)} Edges={len(self.graph.edges)} Waypoints={len(topology)}')
-
     # Return the shortest path between two waypoints in the graph
     def shortest_path(self, source, destination):
         # Find the ending waypoint on the edge of the current lane
