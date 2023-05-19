@@ -31,7 +31,7 @@ class Analyzer(object):
             return
 
         # Calculate speed
-        self.knowledge.speed = 3.6 * math.sqrt(self.knowledge.velocity.x ** 2 + self.knowledge.velocity.y ** 2 + self.knowledge.velocity.z ** 2)
+        self.knowledge.update(speed=(3.6 * math.sqrt(self.knowledge.velocity.x ** 2 + self.knowledge.velocity.y ** 2 + self.knowledge.velocity.z ** 2)))
 
         # Save location history
         self.save_location()
@@ -56,13 +56,13 @@ class Analyzer(object):
             if len(self.knowledge.location_history) != 0 and self.knowledge.location_history[-1].distance(self.knowledge.location) < 1.0:
                 return
 
-            self.knowledge.last_location_at = time.time()
+            self.knowledge.update(last_location_at=time.time())
             self.knowledge.location_history.append(self.knowledge.location)
 
     def detect_collision(self):
         if self.knowledge.collision and not self.knowledge.state_machine.crashed.is_active and not self.knowledge.state_machine.recovering.is_active:
             # Clear collision state
-            self.knowledge.collision = False
+            self.knowledge.update(collision=False)
 
             # Transition to crashed state
             self.knowledge.state_machine.crash()
@@ -74,10 +74,10 @@ class Analyzer(object):
         array = array[:, :, ::-1]
 
         # Proximity to obstacle in front
-        self.knowledge.proximity = np.mean(array)
-
-        # Check if obstacle is in front
-        self.knowledge.obstacle = self.knowledge.proximity < 20
+        self.knowledge.update(
+            proximity=np.mean(array),
+            obstacle=self.knowledge.proximity < 20
+        )
 
     def analyze_lidar_image(self):
         # Analyze LIDAR data and find potential obstacles
