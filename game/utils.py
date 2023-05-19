@@ -5,6 +5,9 @@ def try_spawn_random_vehicle_at(world, transform, recursion=0, filter='vehicle.*
     blueprints = world.get_blueprint_library().filter(filter)
     blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
     blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
+
+    # Volkwagen T2 is a difficult vehicle to work with
+    blueprints = [x for x in blueprints if not x.id == 'vehicle.volkswagen.t2']
     blueprint = random.choice(blueprints)
 
     if blueprint.has_attribute('color'):
