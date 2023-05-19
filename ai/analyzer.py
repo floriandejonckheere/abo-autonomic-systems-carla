@@ -21,14 +21,11 @@ class Analyzer(object):
         self.lidar = LIDAR()
 
         # Left and right proximity sensors (mounted on the front corners of the car)
-        self.left = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=-self.vehicle.bounding_box.extent.y, z=0.5, r=2.0, color=carla.Color(255, 0, 0))
-        self.right = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=self.vehicle.bounding_box.extent.y, z=0.5, r=2.0, color=carla.Color(0, 255, 0))
+        self.proximity_left = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=self.vehicle.bounding_box.extent.y, z=0.5)
+        self.proximity_right = Proximity(vehicle, x=self.vehicle.bounding_box.extent.x, y=-self.vehicle.bounding_box.extent.y, z=0.5)
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
-        # self.left.render()
-        # self.right.render()
-
         # Stop analyzing if vehicle is parked
         if self.knowledge.state_machine.parked.is_active:
             return
@@ -80,18 +77,10 @@ class Analyzer(object):
     def analyze_depth_image(self):
         # Proximity to obstacle in front (cruise control)
         self.knowledge.proximity = np.mean(self.convert_proximity_image(self.knowledge.proximity_image))
-        self.knowledge.obstacle = self.knowledge.proximity < 20
 
         # Proximity to obstacle on left and right (collision avoidance)
-        if len(self.knowledge.obstacles) > 0:
-            self.knowledge.proximity_left = min([self.left.distance_to(obstacle) for obstacle in self.knowledge.obstacles])
-            self.knowledge.obstacle_left = self.knowledge.proximity_left < 2.0
-
-            self.knowledge.proximity_right = min([self.right.distance_to(obstacle) for obstacle in self.knowledge.obstacles])
-            self.knowledge.obstacle_right = self.knowledge.proximity_right < 2.0
-        else:
-            self.knowledge.proximity_left = 1000.0
-            self.knowledge.proximity_right = 1000.0
+        self.knowledge.proximity_left = min([self.proximity_left.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
+        self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
 
     def convert_proximity_image(self, image):
         array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
@@ -102,6 +91,13 @@ class Analyzer(object):
         return array
 
     def avoid_collision(self):
+        # Check if obstacle is in front
+        self.knowledge.obstacle = self.knowledge.proximity < 20
+
+        # Check if obstacle is on left or right side
+        self.knowledge.obstacle_left = self.knowledge.proximity_left < 2
+        self.knowledge.obstacle_right = self.knowledge.proximity_right < 2
+
         # Do not avoid collision if already crashed or recovering
         if self.knowledge.state_machine.crashed.is_active or self.knowledge.state_machine.recovering.is_active:
             return
