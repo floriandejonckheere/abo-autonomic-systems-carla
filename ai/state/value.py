@@ -6,7 +6,9 @@ class Value:
 
     def __init__(self, value=0.0, size=100):
         self.value = value
-        self.history = deque(size * [0.0], size)
+        self.size = size
+
+        self.history = deque(size * [value], size)
 
     def update(self, value, ceiling=None):
         self.value = value
@@ -16,3 +18,6 @@ class Value:
         else:
             # Relativize points
             self.history.append(min(value / ceiling, ceiling))
+
+    def average(self):
+        return sum(self.history) / len(self.history)

@@ -49,10 +49,12 @@ class Knowledge(object):
 
         self.depth_image = None
 
-        # Parsed sensor data
+        # Proximity to obstacle in front
         self.proximity = 0.0
-        self.proximity_left = 0.0
-        self.proximity_right = 0.0
+
+        # Proximity to obstacle left and right (moving average)
+        self.proximity_left = Value(value=float('inf'), size=5)
+        self.proximity_right = Value(value=float('inf'), size=5)
 
         # Obstacle detected
         self.obstacle = False

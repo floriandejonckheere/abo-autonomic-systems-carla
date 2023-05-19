@@ -15,13 +15,13 @@ class AvoidCollision(Goal):
         if self.knowledge.obstacle_left:
             return [
                 # Steer right and brake to avoid the obstacle on the left
-                actions.Swerve(actions.Swerve.Right, self.knowledge.proximity_left),
+                actions.Swerve(actions.Swerve.Right, self.knowledge.proximity_left.average()),
                 actions.Brake(3.0),
             ]
         elif self.knowledge.obstacle_right:
             return [
                 # Steer left and brake to avoid the obstacle on the right
-                actions.Swerve(actions.Swerve.Left, self.knowledge.proximity_right),
+                actions.Swerve(actions.Swerve.Left, self.knowledge.proximity_right.average()),
                 actions.Brake(3.0),
             ]
         else:

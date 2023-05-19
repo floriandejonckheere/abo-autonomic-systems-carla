@@ -83,10 +83,21 @@ class Analyzer(object):
         # Analyze LIDAR data and find potential obstacles
         obstacles = self.lidar.analyze(self.knowledge.lidar_image)
 
-        # Proximity to obstacle on left and right (collision avoidance)
-        self.knowledge.proximity_left = min([self.proximity_left.distance_to(obstacle) for obstacle in obstacles]) if len(obstacles) > 0 else 1000.0
-        self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in obstacles]) if len(obstacles) > 0 else 1000.0
+        if len(obstacles) > 0:
+            self.knowledge.update(
+                # Proximity to obstacle on left and right (collision avoidance)
+                proximity_left=min([self.proximity_left.distance_to(obstacle) for obstacle in obstacles]),
+                proximity_right=min([self.proximity_right.distance_to(obstacle) for obstacle in obstacles])
+            )
+        else:
+            self.knowledge.update(
+                # Proximity to obstacle on left and right (collision avoidance)
+                proximity_left=1000.0,
+                proximity_right=1000.0
+            )
 
         # Check if obstacle is on left or right side
-        self.knowledge.obstacle_left = self.knowledge.proximity_left < 1.5
-        self.knowledge.obstacle_right = self.knowledge.proximity_right < 1.5
+        self.knowledge.update(
+            obstacle_left=self.knowledge.proximity_left.average() < 1.5,
+            obstacle_right=self.knowledge.proximity_right.average() < 1.5
+        )
