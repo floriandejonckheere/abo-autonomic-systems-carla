@@ -55,10 +55,20 @@ class Planner(object):
                 # Transition to recovering state
                 self.knowledge.state_machine.recover()
         elif state == StateMachine.recovering:
-            # Recover from crash
-            self.recover()
-        else:
-            raise RuntimeError(f'Invalid state: {state}')
+            last_event, timestamp = self.knowledge.state_machine.history[-1]
+
+            if time.time() - timestamp < 5.0:
+                # If the vehicle is recovering, reverse according to the recovery plan
+                self.recover()
+            else:
+                # Clear collision state
+                self.knowledge.collision = False
+
+                # Create a new plan
+                self.navigator.plan()
+
+                # Transition to driving state
+                self.drive()
 
     def drive(self):
         # Update plan based on current knowledge
