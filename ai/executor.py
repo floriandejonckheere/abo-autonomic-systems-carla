@@ -21,8 +21,9 @@ class Executor(object):
         # Apply plan (determine reference points)
         self.knowledge.plan.apply(control)
 
-        # Apply PID control
-        self.controller.control(control, dt)
+        # Apply PID control (if none of the goals require emergency actions)
+        if not any([goal.emergency for goal in self.knowledge.plan.goals]):
+            self.controller.control(control, dt)
 
         # Apply control to the vehicle
         self.vehicle.apply_control(control)

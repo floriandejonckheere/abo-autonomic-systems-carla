@@ -6,6 +6,9 @@ import ai.actions as actions
 class AvoidCollision(Goal):
     """Avoid collision with an obstacle."""
 
+    def __init__(self, knowledge):
+        super().__init__(knowledge, emergency=True)
+
     def actions(self):
         if self.knowledge.obstacle:
             return [
