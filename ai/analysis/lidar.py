@@ -34,9 +34,6 @@ class LIDAR:
         # Apply Z-axis offset (LIDAR sensor position)
         data[:, 2] = 2.5 - data[:, 2]
 
-        # Decimate data
-        data = data[::1]
-
         # Select only data above ground level (0.5 meters)
         data = data[data[:, 2] > 0.5]
 
