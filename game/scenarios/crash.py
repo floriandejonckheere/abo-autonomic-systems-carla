@@ -36,4 +36,4 @@ class Crash(Scenario):
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
-        kamikaze.apply_control(carla.VehicleControl(throttle=0.70))
+        kamikaze.apply_control(carla.VehicleControl(throttle=0.40))
