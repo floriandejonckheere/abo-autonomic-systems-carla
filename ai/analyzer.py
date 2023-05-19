@@ -84,11 +84,11 @@ class Analyzer(object):
 
     def analyze_lidar_image(self):
         # Analyze LIDAR data and find potential obstacles
-        self.knowledge.obstacles = self.lidar.analyze(self.knowledge.lidar_image)
+        obstacles = self.lidar.analyze(self.knowledge.lidar_image)
 
         # Proximity to obstacle on left and right (collision avoidance)
-        self.knowledge.proximity_left = min([self.proximity_left.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
-        self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in self.knowledge.obstacles]) if len(self.knowledge.obstacles) > 0 else 1000.0
+        self.knowledge.proximity_left = min([self.proximity_left.distance_to(obstacle) for obstacle in obstacles]) if len(obstacles) > 0 else 1000.0
+        self.knowledge.proximity_right = min([self.proximity_right.distance_to(obstacle) for obstacle in obstacles]) if len(obstacles) > 0 else 1000.0
 
         # Check if obstacle is on left or right side
         self.knowledge.obstacle_left = self.knowledge.proximity_left < 2
