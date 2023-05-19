@@ -1,7 +1,6 @@
 import networkx as nx
 
 from .node import Node
-from ..configuration import Configuration
 
 
 class Graph:
@@ -34,21 +33,21 @@ class Graph:
 
             distance = u.transform.location.distance(v.transform.location)
 
-            if distance > Configuration.maximum_edge_length:
+            if distance > 50:
                 # Split up long edges into multiple edges
                 u_previous = None
                 u_next = u
 
                 segments = []
 
-                for i in range(int(distance // Configuration.maximum_edge_length)):
+                for i in range(int(distance // 50)):
                     u_previous = u_next
 
                     # Generate a new waypoint every N meters
-                    u_next = Node(u_next.next(Configuration.maximum_edge_length)[0])
+                    u_next = Node(u_next.next(50)[0])
 
                     # Add edge segment to graph (and register segment)
-                    self.graph.add_edge(u_previous, u_next, weight=Configuration.maximum_edge_length)
+                    self.graph.add_edge(u_previous, u_next, weight=50)
                     segments.append((u_previous, u_next))
 
                 # Add final edge

@@ -6,7 +6,6 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from .graph import Graph
-from ..configuration import Configuration
 
 
 class Navigator:
@@ -41,7 +40,7 @@ class Navigator:
             return
 
         # If we are close enough to the next waypoint, remove it from the list
-        if self.knowledge.location.distance(self.path[0]) < Configuration.maximum_destination_distance:
+        if self.knowledge.location.distance(self.path[0]) < 5.0:
             self.visited.append(self.path.popleft())
 
         if len(self.path) == 0:
@@ -83,7 +82,7 @@ class Navigator:
         topological_path = [location, *topological_path, self.knowledge.destination]
 
         # If the destination waypoint is too far from the actual destination, interpolate exactly
-        exact = destination.transform.location.distance(self.knowledge.destination) > Configuration.maximum_destination_distance
+        exact = destination.transform.location.distance(self.knowledge.destination) > 5.0
 
         # Step 2: detailed route plan using local waypoints
         self.enhance(topological_path, exact)
@@ -132,7 +131,7 @@ class Navigator:
         interpolator = interp1d(distances, np.stack((x, y, z), axis=1), kind='slinear', axis=0)
 
         # Linearly space the distances between interpolated waypoints
-        linear_distances = np.arange(0.0, distances[-1], Configuration.waypoint_distance)
+        linear_distances = np.arange(0.0, distances[-1], 2.0)
 
         # Interpolate coordinates
         interpolated = interpolator(linear_distances)
@@ -149,7 +148,7 @@ class Navigator:
             # This usually means that the route to the destination is much longer, but following only legal waypoints
             # For example, the locations in milestone two are located a bit before junctions, so the planner
             # would go a block around to reach them using only legal waypoints
-            if location.distance(self.knowledge.destination) < Configuration.maximum_destination_distance:
+            if location.distance(self.knowledge.destination) < 5.0:
                 break
 
             # Add it to the path

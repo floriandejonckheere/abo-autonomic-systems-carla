@@ -4,7 +4,6 @@ import ai.goals as goals
 
 from .state.state_machine import StateMachine
 from .planning import Navigator, Plan, RecoveryNavigator
-from .configuration import Configuration
 
 
 class Planner(object):
@@ -33,7 +32,7 @@ class Planner(object):
             self.knowledge.plan.goals.append(goals.AvoidCollision(self.knowledge))
         elif state == StateMachine.arrived or state == StateMachine.idle:
             # Check for a new destination and plan the path
-            if self.knowledge.destination is not None and self.knowledge.location.distance(self.knowledge.destination) > Configuration.maximum_destination_distance:
+            if self.knowledge.destination is not None and self.knowledge.location.distance(self.knowledge.destination) > 5.0:
                 self.navigator.plan()
 
             # Drive to new waypoint

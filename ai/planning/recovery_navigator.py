@@ -1,7 +1,6 @@
 from ai.carla import carla
 
 from .navigator import Navigator
-from ..configuration import Configuration
 
 
 class RecoveryNavigator(Navigator):
@@ -14,7 +13,7 @@ class RecoveryNavigator(Navigator):
             return
 
         # If we are close enough to the next waypoint, remove it from the list
-        if self.knowledge.location.distance(self.path[0]) < (Configuration.maximum_destination_distance / 2):
+        if self.knowledge.location.distance(self.path[0]) < 2.5:
             self.path.popleft()
 
         if len(self.path) == 0:
