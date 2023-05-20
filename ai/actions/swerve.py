@@ -18,7 +18,7 @@ class Swerve(Action):
         self.x_proximity = np.arange(0, 1000, 1)
 
         # Fuzzy membership functions
-        self.prox_lo = fz.zmf(self.x_proximity, 0, 30)
+        self.prox_lo = fz.zmf(self.x_proximity, 0, 3)
 
     def apply(self, control):
         # Set steering
@@ -27,6 +27,8 @@ class Swerve(Action):
     def calculate_steer(self):
         # Steer is inverse proportional to the proximity
         steer = fz.interp_membership(self.x_proximity, self.prox_lo, self.proximity)
+
+        print(f'p={self.proximity:.2f} steer={steer:.2f}')
 
         # Steer in right direction
         steer *= self.direction
