@@ -14,6 +14,7 @@ stateDiagram-v2
     Idle --> Driving: drive
     Healing --> Driving: drive
     Recovering --> Driving: drive
+    Waiting --> Driving: drive
 
     Driving --> Arrived: arrive
     Idle --> Arrived: arrive
@@ -27,8 +28,10 @@ stateDiagram-v2
 
     Driving --> Parked: park
     Arrived --> Parked: park
-    
+
     Crashed --> Recovering: recover
+
+    Driving --> Waiting: wait
 
     Parked --> [*]
 ```

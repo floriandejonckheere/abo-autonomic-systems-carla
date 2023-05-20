@@ -1,3 +1,5 @@
+from ai.carla import carla
+
 import time
 
 import ai.goals as goals
@@ -25,6 +27,10 @@ class Planner(object):
         state = self.knowledge.state_machine.current_state
 
         if state == StateMachine.driving:
+            # If the vehicle is at a red traffic light, transition to waiting
+            if self.knowledge.is_at_traffic_light and self.knowledge.traffic_light.state == carla.TrafficLightState.Red:
+                return self.knowledge.state_machine.wait()
+
             if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
                 # Avoid collision with an obstacle (if any)
                 self.knowledge.state_machine.heal()
@@ -39,6 +45,13 @@ class Planner(object):
             # Drive to new waypoint
             # FIXME: vehicle will end up in an infinite loop if the destination is not changed from outside
             self.drive()
+        elif state == StateMachine.waiting:
+            # If the traffic light turned green, transition to driving
+            if not self.knowledge.is_at_traffic_light or self.knowledge.traffic_light.state == carla.TrafficLightState.Green:
+                self.drive()
+            else:
+                # Wait for traffic lights
+                self.knowledge.plan.goals.append(goals.Stop(self.knowledge))
         elif state == StateMachine.parked:
             # If the vehicle is parking, apply handbrake and do nothing
             self.knowledge.plan.goals.append(goals.Park(self.knowledge))
@@ -98,9 +111,6 @@ class Planner(object):
 
             # Drive to waypoint
             self.knowledge.plan.goals.append(goals.Drive(self.knowledge))
-
-            # Wait for traffic lights
-            self.knowledge.plan.goals.append(goals.Wait(self.knowledge))
 
     def recover(self):
         # Update plan based on current knowledge
