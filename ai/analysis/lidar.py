@@ -1,5 +1,6 @@
 import numpy as np
 
+from sklearn.linear_model import RANSACRegressor
 from sklearn.cluster import DBSCAN
 
 from .obstacle import Obstacle
@@ -34,14 +35,20 @@ class LIDAR:
         # Apply Z-axis offset (LIDAR sensor position)
         data[:, 2] = 2.5 - data[:, 2]
 
-        # Select only data above ground level (0.5 meters)
-        data = data[data[:, 2] > 0.5]
+        # Remove ground plane using RANSAC (RANdom SAmple Consensus) algorithm
+        # https://en.wikipedia.org/wiki/RANSAC
+        ransac = RANSACRegressor(residual_threshold=0.4)
+        ransac.fit(data[:, :2], data[:, 2])
+
+        # Remove ground plane points
+        data = data[np.logical_not(ransac.inlier_mask_)]
 
         # No data points left
         if len(data) == 0:
             return []
 
-        # Cluster points based on density
+        # Cluster points using DBSCAN (Density-Based Spatial Clustering of Applications with Noise) algorithm
+        # https://en.wikipedia.org/wiki/DBSCAN
         db = DBSCAN(eps=1.1, min_samples=10)
         db.fit(data)
 
