@@ -1,3 +1,5 @@
+from threading import Timer
+
 from ai.carla import carla
 
 from collections import deque
@@ -111,22 +113,23 @@ class Game:
         return self.world.get_map().get_waypoint(start_point.location)
 
     def after_transition(self, event, source, target):
-        # Handle only arrived state change
-        if target is not self.autopilot.knowledge.state_machine.arrived:
-            return
+        if target is self.autopilot.knowledge.state_machine.arrived:
+            # Check if vehicle arrived at destination
+            pos = self.autopilot.vehicle.get_transform().location
+            print(f'Vehicle arrived at destination: {pos}')
 
-        pos = self.autopilot.vehicle.get_transform().location
-        print(f'Vehicle arrived at destination: {pos}')
+            if pos.distance(carla.Location(self.autopilot.knowledge.destination)) < 5.0:
+                if len(self.waypoints) == 0:
+                    print('Excercise route finished')
 
-        if pos.distance(carla.Location(self.autopilot.knowledge.destination)) < 5.0:
-            if len(self.waypoints) == 0:
-                print('Excercise route finished')
+                    # Park car (final destination reached)
+                    self.autopilot.knowledge.state_machine.park()
 
-                # Park car (final destination reached)
-                self.autopilot.knowledge.state_machine.park()
-
-                # Stop autopilot
-                # self.running = False
-            else:
-                # Set next destination
-                self.autopilot.set_destination(self.waypoints.popleft())
+                    # Stop autopilot
+                    # self.running = False
+                else:
+                    # Set next destination
+                    self.autopilot.set_destination(self.waypoints.popleft())
+        elif target is self.autopilot.knowledge.state_machine.waiting:
+            # Turn traffic light green after 2 seconds
+            Timer(2, self.autopilot.vehicle.get_traffic_light().set_state, [carla.TrafficLightState.Green]).start()
