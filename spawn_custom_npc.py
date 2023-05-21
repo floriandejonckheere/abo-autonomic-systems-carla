@@ -62,6 +62,11 @@ def main():
         default=None,
         type=int,
         help='Seed for the random number generator')
+    argparser.add_argument(
+        '-f', '--follow',
+        default=False,
+        action='store_true',
+        help='Position camera behind newly spawned vehicles (default: false)')
     args = argparser.parse_args()
 
     # Initialize RNG
@@ -89,6 +94,20 @@ def main():
 
             # Start simulation (in a separate thread)
             simulation.start()
+
+            if args.follow:
+                # Move camera behind the new vehicle
+                transform = simulation.autopilot.vehicle.get_transform()
+
+                vector = transform.get_forward_vector()
+                vector += carla.Vector3D(x=6*vector.x, y=6*vector.y, z=-5)
+
+                world.get_spectator().set_transform(
+                    carla.Transform(
+                        transform.location - vector,
+                        carla.Rotation(pitch=-20, yaw=transform.rotation.yaw),
+                    )
+                )
 
             # Wait for a bit
             time.sleep(args.delay)
