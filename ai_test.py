@@ -161,8 +161,8 @@ def main():
             )
         # Main loop
         while True:
-            # Limit main loop to 60 FPS
-            clock.tick(60)
+            # Limit main loop to 30 FPS
+            clock.tick(30)
 
             # Handle events
             for event in pygame.event.get():
