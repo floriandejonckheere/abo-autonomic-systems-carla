@@ -25,8 +25,8 @@ import pygame
 
 from pygame.locals import K_ESCAPE, K_l, K_q
 
-import random
 import argparse
+import random
 import threading
 
 from game.game import Game
@@ -38,6 +38,17 @@ TICK = pygame.USEREVENT + 1
 def main():
     argparser = argparse.ArgumentParser(
         description=__doc__)
+    argparser.add_argument(
+        '--host',
+        metavar='H',
+        default='127.0.0.1',
+        help='IP of the host server (default: 127.0.0.1)')
+    argparser.add_argument(
+        '-p', '--port',
+        metavar='P',
+        default=2000,
+        type=int,
+        help='TCP port to listen to (default: 2000)')
     argparser.add_argument(
         '-m', '--milestone-number',
         metavar='M',
@@ -96,7 +107,7 @@ def main():
     t = None
 
     try:
-        client = carla.Client('localhost', 2000)
+        client = carla.Client(args.host, args.port)
         client.set_timeout(20.0)
         world = client.get_world()
 
