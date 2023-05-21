@@ -40,7 +40,7 @@ class Monitor(object):
 
         # Proximity sensors
         bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '0.01')
+        bp.set_attribute('sensor_tick', '0.1')
         bp.set_attribute('image_size_x', '160')
         bp.set_attribute('image_size_y', '120')
         bp.set_attribute('fov', '25')
@@ -51,18 +51,19 @@ class Monitor(object):
         self.depth = world.spawn_actor(bp, carla.Transform(location), attach_to=self.vehicle)
         self.depth.listen(lambda image: Monitor._on_depth(weak_self, image))
 
-        # RGB camera (top-down)
-        bp = world.get_blueprint_library().find('sensor.camera.rgb')
-        bp.set_attribute('sensor_tick', '0.1')
-        bp.set_attribute('image_size_x', '160')
-        bp.set_attribute('image_size_y', '120')
+        if self.debug:
+            # RGB camera (top-down)
+            bp = world.get_blueprint_library().find('sensor.camera.rgb')
+            bp.set_attribute('sensor_tick', '0.1')
+            bp.set_attribute('image_size_x', '160')
+            bp.set_attribute('image_size_y', '120')
 
-        # Location of sensor is above vehicle, looking down
-        location = carla.Location(z=7.5)
-        rotation = carla.Rotation(pitch=-90, yaw=-90)
+            # Location of sensor is above vehicle, looking down
+            location = carla.Location(z=7.5)
+            rotation = carla.Rotation(pitch=-90, yaw=-90)
 
-        self.rgb_camera = world.spawn_actor(bp, carla.Transform(location, rotation), attach_to=self.vehicle)
-        self.rgb_camera.listen(lambda image: self.knowledge.update(rgb_image=image))
+            self.rgb_camera = world.spawn_actor(bp, carla.Transform(location, rotation), attach_to=self.vehicle)
+            self.rgb_camera.listen(lambda image: self.knowledge.update(rgb_image=image))
 
     # Function that is called at time intervals to update ai-state
     def update(self, dt):
