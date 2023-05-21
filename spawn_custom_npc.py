@@ -12,6 +12,8 @@ import glob
 import os
 import sys
 
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = '1'
+
 try:
     sys.path.append(glob.glob('**/*%d.%d-%s.egg' % (
         sys.version_info.major,
@@ -24,9 +26,10 @@ import carla
 
 import argparse
 import random
-import time
+import threading
 
-from ai.autopilot import Autopilot
+from game.scenarios.random import Random
+from game.simulation import Simulation
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -55,86 +58,50 @@ def main():
         type=float,
         help='delay in seconds between spawns (default: 2.0)')
     argparser.add_argument(
-        '--safe',
-        action='store_true',
-        help='avoid spawning vehicles prone to accidents')
+        '--seed',
+        metavar='S',
+        default=None,
+        type=int,
+        help='Seed for the random number generator')
     args = argparser.parse_args()
 
-    actor_list = []
-    vai_list = []
-    client = carla.Client(args.host, args.port)
-    client.set_timeout(2.0)
+    # Initialize RNG
+    seed = args.seed if args.seed is not None else random.randrange(sys.maxsize)
+    print(f'Using random seed {seed}')
+    random.seed(seed)
+
+    # Write seed to file
+    with open('seed.txt', 'a') as f:
+        f.write(f'{seed}\n')
+
+    simulations = []
 
     try:
-
+        client = carla.Client(args.host, args.port)
+        client.set_timeout(20.0)
         world = client.get_world()
-        blueprints = world.get_blueprint_library().filter('vehicle.*')
 
-        if args.safe:
-            blueprints = [x for x in blueprints if int(x.get_attribute('number_of_wheels')) == 4]
-            blueprints = [x for x in blueprints if not x.id.endswith('isetta')]
+        for i in range(0, args.number_of_vehicles):
+            # Initialize simulation context with random destinations
+            simulation = Simulation(world, args.debug, args.profile, 'Random')
 
-        #This is definition of a callback function that will be called when the autopilot arrives at destination
-        def route_finished(autopilot):
-            print("Vehicle arrived at destination")
-            #After vehicle has arrived we set a random spawn point as a new destination
-            #TODO: Make an 'intelligent' list of targets where cars could go (has annotated waypoints so you could use that)
-            controller.set_destination(random.choice(world.get_map().get_spawn_points()))
-            #TODO, BONUS: Make fixed exit and entry points (for example parking lots), 
-            #so that cars are removed from simulation when they enter those and new ones are created from random points.
-            #use try_spawn_random_vehicle_at(random.choice(spawn_points)) to spawn new cars
-            
+            # Add simulation to list of simulations
+            simulations.append(simulation)
 
-        #Function to spawn new vehicles
-        def try_spawn_random_vehicle_at(transform):
-            blueprint = random.choice(blueprints)
-            if blueprint.has_attribute('color'):
-                color = random.choice(blueprint.get_attribute('color').recommended_values)
-                blueprint.set_attribute('color', color)
-            blueprint.set_attribute('role_name', 'autopilot')
-            vehicle = world.try_spawn_actor(blueprint, transform)
-            if vehicle is not None:
-                actor_list.append(vehicle)
-                #Instead of setting default autopilot, we create our own and append it to the list of autopilots 
-                autopilot = Autopilot(vehicle)
-                #We also register callback to know when the vehicle has arrived at it's destination
-                autopilot.set_route_finished_callback(route_finished)
-                vai_list.append(autopilot)
+            # Start simulation (in a separate thread)
+            simulation.start()
 
-                #vehicle.set_autopilot()
-                print('spawned %r at %s' % (vehicle.type_id, transform.location))
-                return True
-            return False
-
-        spawn_points = list(world.get_map().get_spawn_points())
-        random.shuffle(spawn_points)	
-
-        print('found %d spawn points.' % len(spawn_points))
-
-        count = args.number_of_vehicles
-
-        for spawn_point in spawn_points:
-            if try_spawn_random_vehicle_at(spawn_point):
-                count -= 1
-            if count <= 0:
-                break
-
-        print('spawned %d vehicles, press Ctrl+C to exit.' % args.number_of_vehicles)
-
-        #Infinite loop to update car statuses
-        while True:
-	    #This could be done in parallel with threading for better performance
-            for controller in vai_list:
-                status = controller.update()
-                    
+        # Wait for all simulations to finish
+        for simulation in simulations:
+            simulation.thread.join()
+    except KeyboardInterrupt:
+        pass
     finally:
-
-        print('\ndestroying %d actors' % len(actor_list))
-        client.apply_batch([carla.command.DestroyActor(x.id) for x in actor_list])
+        for simulation in simulations:
+            simulation.stop()
 
 
 if __name__ == '__main__':
-
     try:
         main()
     except KeyboardInterrupt:

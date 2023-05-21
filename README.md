@@ -27,12 +27,21 @@ python manual_control.py
 ## Usage
 
 Run the `manual_control.py` script to control the vehicle in the simulation.
+Append `--help` to see the available options.
 
 ```sh
 python manual_control.py
 ```
 
+Run the `spawn_custom_npc.py` script to spawn a number of autonomic vehicles in the simulation.
+Append `--help` to see the available options.
+
+```sh
+python spawn_custom_npc.py
+```
+
 Run the `ai_test.py` script to test the AI controller.
+Append `--help` to see the available options.
 
 ```sh
 python ai_test.py

@@ -17,7 +17,7 @@ def try_spawn_random_vehicle_at(world, transform, recursion=0, filter='vehicle.*
     vehicle = world.try_spawn_actor(blueprint, transform)
 
     if vehicle is not None:
-        print('spawned %r at %s' % (vehicle.type_id, transform.location))
+        print(f'Spawned vehicle {vehicle.type_id} at {transform.location}')
     else:
         if recursion > 20:
             print('WARNING: vehicle not spawned, NONE returned')
