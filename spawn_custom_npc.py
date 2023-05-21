@@ -115,17 +115,15 @@ def main():
         # Wait for all simulations to finish
         for simulation in simulations:
             simulation.thread.join()
+
+        print('Done.')
     except KeyboardInterrupt:
         pass
     finally:
+        print('Exiting...')
         for simulation in simulations:
             simulation.stop()
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        print('\ndone.')
+    main()
