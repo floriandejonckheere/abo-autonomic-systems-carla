@@ -15,3 +15,4 @@ from .lidar import Lidar
 from .crash import Crash
 from .straight import Straight
 from .curve import Curve
+from .parking import Parking
