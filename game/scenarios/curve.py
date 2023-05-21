@@ -11,7 +11,7 @@ class Curve(Scenario):
 
         self.use_spawnpoint = False
 
-    waypoints = [
+    WAYPOINTS = [
         carla.Location(229.6, 60.4, 1.8431),
         carla.Location(5.5, 183.5, 1.8431),
     ]

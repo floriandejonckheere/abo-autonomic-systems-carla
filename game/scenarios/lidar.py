@@ -8,7 +8,7 @@ import game.utils as utils
 class Lidar(Scenario):
     """Stuck in dense traffic."""
 
-    waypoints = [
+    WAYPOINTS = [
         carla.Location(-6.5, 50.9, 1.8431),
         carla.Location(-5.4, 187.0, 1.8431),
     ]

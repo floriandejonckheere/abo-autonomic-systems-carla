@@ -21,7 +21,6 @@ class Simulation:
 
         self.autopilot = None
         self.actors = []
-        self.waypoints = deque()
 
         self.running = True
         self.counter = 0
@@ -35,24 +34,14 @@ class Simulation:
 
         self.scenario = klass(self.world)
 
-        # Setup waypoints
-        self.waypoints = deque(self.scenario.waypoints)
-
-        if len(self.waypoints) < 2:
-            raise Exception('Scenario needs at least 2 waypoints')
-
-        # Source is first waypoint
-        first = self.waypoints.popleft()
+        # Starting point is first waypoint
+        first = self.scenario.next_waypoint()
 
         # First destination is second waypoint
-        second = self.waypoints.popleft()
+        second = self.scenario.next_waypoint()
 
-        if self.debug:
-            # Render waypoints
-            for i, wp in enumerate(self.scenario.waypoints):
-                self.world.debug.draw_string(wp, f'WP {i}', draw_shadow=False,
-                                             color=carla.Color(r=255, g=0, b=0), life_time=20.0,
-                                             persistent_lines=True)
+        if first is None or second is None:
+            raise Exception('Scenario needs at least 2 waypoints')
 
         # Getting waypoint to spawn
         if self.scenario.use_spawnpoint:
@@ -121,7 +110,9 @@ class Simulation:
             print(f'Vehicle arrived at destination: {pos}')
 
             if pos.distance(carla.Location(self.autopilot.knowledge.destination)) < 5.0:
-                if len(self.waypoints) == 0:
+                waypoint = self.scenario.next_waypoint()
+
+                if waypoint is None:
                     print('Excercise route finished')
 
                     # Park car (final destination reached)
@@ -131,7 +122,7 @@ class Simulation:
                     # self.running = False
                 else:
                     # Set next destination
-                    self.autopilot.set_destination(self.waypoints.popleft())
+                    self.autopilot.set_destination(waypoint)
         elif target is self.autopilot.knowledge.state_machine.waiting:
             # Turn traffic light green after 2 seconds
             Timer(2, self.autopilot.vehicle.get_traffic_light().set_state, [carla.TrafficLightState.Green]).start()
