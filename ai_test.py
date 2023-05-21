@@ -69,7 +69,7 @@ def main():
         '-f', '--follow',
         default=False,
         action='store_true',
-        help='Follow the vehicle with the camera (default: false)')
+        help='Position camera behind the newly spawned vehicle (default: false)')
     argparser.add_argument(
         '--res',
         metavar='WIDTHxHEIGHT',
@@ -146,6 +146,19 @@ def main():
         if args.debug:
             world.on_tick(hud.on_world_tick)
 
+        if args.follow:
+            # Move camera behind the new vehicle
+            transform = simulation.autopilot.vehicle.get_transform()
+
+            vector = transform.get_forward_vector()
+            vector += carla.Vector3D(x=6*vector.x, y=6*vector.y, z=-5)
+
+            world.get_spectator().set_transform(
+                carla.Transform(
+                    transform.location - vector,
+                    carla.Rotation(pitch=-20, yaw=transform.rotation.yaw),
+                )
+            )
         # Main loop
         while True:
             # Limit main loop to 60 FPS
@@ -171,20 +184,6 @@ def main():
                         file = '_out/%s/%08d' % (args.scenario, frame)
                         image.save_to_disk(file)
                         print(f'RGB image saved to {file}.png')
-
-            # Update spectator camera
-            if args.follow:
-                transform = simulation.autopilot.vehicle.get_transform()
-
-                vector = transform.get_forward_vector()
-                vector += carla.Vector3D(x=6*vector.x, y=6*vector.y, z=-5)
-
-                world.get_spectator().set_transform(
-                    carla.Transform(
-                        transform.location - vector,
-                        carla.Rotation(pitch=-20, yaw=transform.rotation.yaw),
-                    )
-                )
 
             # Update HUD
             if args.debug:
