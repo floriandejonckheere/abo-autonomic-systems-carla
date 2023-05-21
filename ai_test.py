@@ -29,7 +29,7 @@ import argparse
 import random
 import threading
 
-from game.game import Game
+from game.simulation import Simulation
 from game.hud import HUD
 
 
@@ -120,6 +120,7 @@ def main():
         for actor in actors:
             actor.destroy()
 
+        # Initialize HUD
         if args.debug:
             # Set pygame window position
             os.environ['SDL_VIDEO_WINDOW_POS'] = "0,30"
@@ -133,8 +134,8 @@ def main():
         if args.milestone_number:
             args.scenario = {1: "MilestoneOne", 2: "MilestoneTwo", 3: "MilestoneThree", 4: "MilestoneFour"}[args.milestone_number]
 
-        # Initialize game context
-        game = Game(world, args.debug, args.profile, args.scenario)
+        # Initialize simulation context
+        game = Simulation(world, args.debug, args.profile, args.scenario)
 
         # Initialize HUD
         hud = HUD(game, args.width, args.height)

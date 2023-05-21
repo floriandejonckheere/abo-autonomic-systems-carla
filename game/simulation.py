@@ -10,7 +10,9 @@ import game.utils as utils
 import game.scenarios as scenarios
 
 
-class Game:
+class Simulation:
+    """Simulation is responsible for setting up a scenario and running the simulation."""
+
     def __init__(self, world, debug, profile, scenario):
         self.world = world
         self.debug = debug
