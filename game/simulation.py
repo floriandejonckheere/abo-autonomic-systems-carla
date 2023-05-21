@@ -25,6 +25,9 @@ class Simulation:
         self.running = True
         self.counter = 0
 
+        # Simulation thread
+        self.thread = None
+
     def setup(self):
         # Instantiate scenario
         klass = getattr(scenarios, self.scenario)
@@ -67,9 +70,6 @@ class Simulation:
         # Set up callback for destination arrival
         self.autopilot.knowledge.state_machine.add_observer(self)
 
-        # Simulation thread
-        self.thread = None
-
     def start(self):
         # Setup simulation (actors, autopilot)
         self.setup()
@@ -82,7 +82,7 @@ class Simulation:
         self.running = False
 
         # Wait for simulation thread to finish
-        self.thread.join()
+        self.thread and self.thread.join()
 
         # Destroy actors and autopilot
         self.destroy()

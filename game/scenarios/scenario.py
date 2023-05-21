@@ -24,6 +24,6 @@ class Scenario:
 
     def next_waypoint(self):
         try:
-            return self.waypoints.pop()
+            return self.waypoints.popleft()
         except IndexError:
             return None
