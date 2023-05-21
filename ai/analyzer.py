@@ -92,8 +92,8 @@ class Analyzer(object):
         else:
             self.knowledge.update(
                 # Proximity to obstacle on left and right (collision avoidance)
-                proximity_left=1000.0,
-                proximity_right=1000.0
+                proximity_left=float('inf'),
+                proximity_right=float('inf')
             )
 
         # Check if obstacle is on left or right side

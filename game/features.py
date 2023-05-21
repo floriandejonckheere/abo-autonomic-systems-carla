@@ -83,5 +83,9 @@ class Features:
         self.depth_image = knowledge.depth_image
 
         self.proximity.update(knowledge.proximity, ceiling=100)
-        self.proximity_left.update(knowledge.proximity_left.average(), ceiling=100)
-        self.proximity_right.update(knowledge.proximity_right.average(), ceiling=100)
+
+        proximity_left = knowledge.proximity_left.average()
+        self.proximity_left.update(0.0 if proximity_left == float('inf') else proximity_left, ceiling=100)
+
+        proximity_right = knowledge.proximity_right.average()
+        self.proximity_right.update(0.0 if proximity_right == float('inf') else proximity_right, ceiling=100)
