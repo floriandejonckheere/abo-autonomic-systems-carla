@@ -12,7 +12,9 @@ class Controller:
         # Instantiate PID controllers for continuous variables
         self.throttle_controller = PIDController(K_p=0.2, K_i=2.5, K_d=0.0)
         self.brake_controller = PIDController(K_p=0.35, K_i=2.0, K_d=0.0)
-        self.steer_controller = PIDController(K_p=0.5, K_i=1.5, K_d=0.01)
+
+        # Steering controller needs less history to prevent oscillations after turns
+        self.steer_controller = PIDController(K_p=0.5, K_i=1.5, K_d=0.01, size=5)
 
     def control(self, control, dt):
         # Convert dt to seconds
