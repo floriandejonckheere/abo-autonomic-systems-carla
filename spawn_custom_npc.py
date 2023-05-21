@@ -26,9 +26,8 @@ import carla
 
 import argparse
 import random
-import threading
+import time
 
-from game.scenarios.random import Random
 from game.simulation import Simulation
 
 def main():
@@ -83,13 +82,16 @@ def main():
 
         for i in range(0, args.number_of_vehicles):
             # Initialize simulation context with random destinations
-            simulation = Simulation(world, args.debug, args.profile, 'Random')
+            simulation = Simulation(world, False, False, 'Random')
 
             # Add simulation to list of simulations
             simulations.append(simulation)
 
             # Start simulation (in a separate thread)
             simulation.start()
+
+            # Wait for a bit
+            time.sleep(args.delay)
 
         # Wait for all simulations to finish
         for simulation in simulations:
