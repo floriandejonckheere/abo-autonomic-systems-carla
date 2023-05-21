@@ -37,7 +37,7 @@ class LIDAR:
 
         # Remove ground plane using RANSAC (RANdom SAmple Consensus) algorithm
         # https://en.wikipedia.org/wiki/RANSAC
-        ransac = RANSACRegressor(residual_threshold=0.4)
+        ransac = RANSACRegressor(residual_threshold=0.5)
         ransac.fit(data[:, :2], data[:, 2])
 
         # Remove ground plane points

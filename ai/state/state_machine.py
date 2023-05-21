@@ -33,3 +33,10 @@ class StateMachine(sm.StateMachine):
 
     def on_transition(self, event, state):
         self.history.append((state, time.time()))
+
+    def last_state_at(self, state):
+        for s, t in reversed(self.history):
+            if s == state:
+                return t
+
+        return 0.0

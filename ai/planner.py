@@ -31,7 +31,11 @@ class Planner(object):
             if self.knowledge.is_at_traffic_light and self.knowledge.traffic_light.state == carla.TrafficLightState.Red:
                 return self.knowledge.state_machine.wait()
 
-            if self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right:
+            last_healing_at = self.knowledge.state_machine.last_state_at(StateMachine.healing)
+
+            # If there is an obstacle, and the vehicle has not healed recently, transition to healing
+            # The healing timeout prevents the vehicle from getting into healing state immediately after recovering
+            if (self.knowledge.obstacle or self.knowledge.obstacle_left or self.knowledge.obstacle_right) and (time.time() - last_healing_at > 5.0):
                 # Avoid collision with an obstacle (if any)
                 self.knowledge.state_machine.heal()
             else:
