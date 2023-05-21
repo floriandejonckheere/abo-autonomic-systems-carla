@@ -1,5 +1,7 @@
 from collections import deque
 
+from ai.carla import carla
+
 
 class Scenario:
     """Base class for all scenarios."""
@@ -10,7 +12,7 @@ class Scenario:
         self.world = world
         self.actors = []
 
-        self.waypoints = deque(self.WAYPOINTS)
+        self.waypoints = deque([carla.Transform(location=wp) for wp in self.WAYPOINTS])
 
         # Use nearby CARLA spawnpoint
         self.use_spawnpoint = True

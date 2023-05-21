@@ -41,16 +41,16 @@ class Simulation:
         first = self.scenario.next_waypoint()
 
         # First destination is second waypoint
-        second = self.scenario.next_waypoint()
+        second = self.scenario.next_waypoint().location
 
         if first is None or second is None:
             raise Exception('Scenario needs at least 2 waypoints')
 
         # Getting waypoint to spawn
         if self.scenario.use_spawnpoint:
-            start = self.get_start_point(first)
+            start = self.get_start_point(first.location)
         else:
-            start = self.world.get_map().get_waypoint(first)
+            start = first
 
         # Spawn vehicle
         vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)
@@ -152,7 +152,7 @@ class Simulation:
                     self.running = False
                 else:
                     # Set next destination
-                    self.autopilot.set_destination(waypoint)
+                    self.autopilot.set_destination(waypoint.location)
         elif target is self.autopilot.knowledge.state_machine.waiting:
             # Turn traffic light green after 2 seconds
             Timer(2, self.autopilot.vehicle.get_traffic_light().set_state, [carla.TrafficLightState.Green]).start()
