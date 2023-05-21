@@ -113,15 +113,38 @@ class Navigator:
 
     # Create a detailed path by interpolating the topological path
     def enhance(self, topological_path, exact):
-        x = [waypoint.x for waypoint in topological_path]
-        y = [waypoint.y for waypoint in topological_path]
-        z = [waypoint.z for waypoint in topological_path]
+        # Interpolate the path using a spline
+        interpolated = self.interpolate(topological_path)
 
-        # List of distances between waypoints
+        # Create a list of waypoints from the interpolated coordinates
+        for i, (xi, yi, zi) in enumerate(interpolated):
+            location = carla.Location(x=xi, y=yi, z=zi)
+
+            # Find the closest waypoint location on the map (except for the last few waypoints)
+            if not (exact and i > len(interpolated) - 5):
+                location = self.map.get_waypoint(location).transform.location
+
+            # Add it to the path
+            self.path.append(location)
+
+            # If the waypoint is close enough to the destination, stop
+            # This usually means that the route to the destination is much longer, but following only legal waypoints
+            # For example, the locations in milestone two are located a bit before junctions, so the planner
+            # would go a block around to reach them using only legal waypoints
+            if location.distance(self.knowledge.destination) < 5.0:
+                break
+
+    def interpolate(self, path):
+        # Cartesian coordinates of waypoints
+        x = [waypoint.x for waypoint in path]
+        y = [waypoint.y for waypoint in path]
+        z = [waypoint.z for waypoint in path]
+
+        # List of distances between waypoints on path
         distances = [0.0]
 
         # Calculate Euclidean distance between subsequent waypoints
-        for start, end in zip(topological_path[:-1], topological_path[1:]):
+        for start, end in zip(path[:-1], path[1:]):
             distances.append(start.distance(end))
 
         # Cumulative sum of distances
@@ -134,22 +157,4 @@ class Navigator:
         linear_distances = np.arange(0.0, distances[-1], 2.0)
 
         # Interpolate coordinates
-        interpolated = interpolator(linear_distances)
-
-        # Create a list of waypoints from the interpolated coordinates
-        for i, (xi, yi, zi) in enumerate(interpolated):
-            location = carla.Location(x=xi, y=yi, z=zi)
-
-            # Find the closest waypoint location on the map (except for the last few waypoints)
-            if not (exact and i > len(interpolated) - 5):
-                location = self.map.get_waypoint(location).transform.location
-
-            # If the waypoint is close enough to the destination, stop
-            # This usually means that the route to the destination is much longer, but following only legal waypoints
-            # For example, the locations in milestone two are located a bit before junctions, so the planner
-            # would go a block around to reach them using only legal waypoints
-            if location.distance(self.knowledge.destination) < 5.0:
-                break
-
-            # Add it to the path
-            self.path.append(location)
+        return interpolator(linear_distances)
