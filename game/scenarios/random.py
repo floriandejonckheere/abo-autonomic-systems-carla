@@ -16,4 +16,4 @@ class Random(Scenario):
     def __init__(self, world, length=5):
         super().__init__(world)
 
-        self.waypoints = deque([random.choice(world.get_map().get_spawn_points()) for _ in range(length)])
+        self.waypoints = deque([random.choice(world.get_map().get_spawn_points()).location for _ in range(length)])
