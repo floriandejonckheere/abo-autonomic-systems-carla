@@ -90,20 +90,16 @@ class Navigator:
         # Step 3: add final destination
         self.path.append(self.knowledge.destination)
 
-        # if self.debug:
-        #     # Print waypoints
-        #     # for waypoint in self.path:
-        #     #     print(waypoint)
-        #
-        #     # Draw source and destination
-        #     self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
-        #     self.world.debug.draw_string(self.knowledge.destination, 'Destination', life_time=20, color=carla.Color(0, 255, 0))
-        #
-        #     # Draw planned route (red lines)
-        #     for i in range(0, len(self.path)-1):
-        #         self.world.debug.draw_string(self.path[i], str(i), life_time=30, color=carla.Color(255, 0, 0))
-        #         self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
-        #
+        if self.debug:
+            # Draw source and destination
+            self.world.debug.draw_string(self.knowledge.location, 'Source', life_time=20, color=carla.Color(255, 255, 0))
+            self.world.debug.draw_string(self.knowledge.destination, 'Destination', life_time=20, color=carla.Color(0, 255, 0))
+
+            # Draw planned route (red lines)
+            for i in range(0, len(self.path)-1):
+                self.world.debug.draw_string(self.path[i], str(i), life_time=30, color=carla.Color(255, 0, 0))
+                self.world.debug.draw_line(self.path[i], self.path[i+1], thickness=0.2, life_time=30, color=carla.Color(255, 0, 0))
+
         #     # Draw all waypoints in 75m radius (green lines)
         #     for (u, v) in self.graph.graph.edges:
         #         if u.transform.location.distance(self.knowledge.location) < 75.0 or v.transform.location.distance(self.knowledge.location) < 75.0:
