@@ -27,7 +27,6 @@ from pygame.locals import K_ESCAPE, K_l, K_q
 
 import argparse
 import random
-import threading
 
 from game.simulation import Simulation
 from game.hud import HUD
@@ -103,8 +102,7 @@ def main():
     pygame.init()
     pygame.font.init()
 
-    game = None
-    t = None
+    simulation = None
 
     try:
         client = carla.Client(args.host, args.port)
@@ -135,32 +133,18 @@ def main():
             args.scenario = {1: "MilestoneOne", 2: "MilestoneTwo", 3: "MilestoneThree", 4: "MilestoneFour"}[args.milestone_number]
 
         # Initialize simulation context
-        game = Simulation(world, args.debug, args.profile, args.scenario)
+        simulation = Simulation(world, args.debug, args.profile, args.scenario)
 
-        # Initialize HUD
-        hud = HUD(game, args.width, args.height)
-        if args.debug:
-            world.on_tick(hud.on_world_tick)
-
-        # Setup game (actors, autopilot)
-        game.setup()
-
-        # Game (autopilot) loop
-        def game_loop():
-            clock = pygame.time.Clock()
-
-            while game.running:
-                game.tick()
-
-                # Limit game loop to 10 FPS
-                clock.tick(10)
-
-        # Start game (autopilot) loop
-        t = threading.Thread(target=game_loop)
-        t.start()
+        # Start simulation (in a separate thread)
+        simulation.start()
 
         # Setup clock
         clock = pygame.time.Clock()
+
+        # Initialize HUD
+        hud = HUD(simulation, args.width, args.height)
+        if args.debug:
+            world.on_tick(hud.on_world_tick)
 
         # Main loop
         while True:
@@ -176,21 +160,21 @@ def main():
                         return
                     elif event.key == K_l:
                         # Save LIDAR image
-                        image = game.autopilot.knowledge.lidar_image
+                        image = simulation.autopilot.knowledge.lidar_image
                         frame = image.frame_number
                         file = '_out/%s/%08d' % (args.scenario, frame)
                         image.save_to_disk(file)
                         print(f'LIDAR image saved to {file}.ply')
 
                         # Save RGB image
-                        image = game.autopilot.knowledge.rgb_image
+                        image = simulation.autopilot.knowledge.rgb_image
                         file = '_out/%s/%08d' % (args.scenario, frame)
                         image.save_to_disk(file)
                         print(f'RGB image saved to {file}.png')
 
             # Update spectator camera
             if args.follow:
-                transform = game.autopilot.vehicle.get_transform()
+                transform = simulation.autopilot.vehicle.get_transform()
 
                 vector = transform.get_forward_vector()
                 vector += carla.Vector3D(x=6*vector.x, y=6*vector.y, z=-5)
@@ -211,13 +195,7 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        if game:
-            # Stop game (autopilot)
-            game.running = False
-
-            game.destroy()
-
-            t and t.join()
+        simulation.stop()
 
         pygame.display.quit()
         pygame.quit()

@@ -1,8 +1,8 @@
-from threading import Timer
+from threading import Thread, Timer
+
+import pygame
 
 from ai.carla import carla
-
-from collections import deque
 
 from ai.autopilot import Autopilot
 
@@ -67,6 +67,36 @@ class Simulation:
         # Set up callback for destination arrival
         self.autopilot.knowledge.state_machine.add_observer(self)
 
+        # Simulation thread
+        self.thread = None
+
+    def start(self):
+        # Setup simulation (actors, autopilot)
+        self.setup()
+
+        # Start simulation (autopilot) loop
+        self.thread = Thread(target=self.run)
+        self.thread.start()
+
+    def stop(self):
+        self.running = False
+
+        # Wait for simulation thread to finish
+        self.thread.join()
+
+        # Destroy actors and autopilot
+        self.destroy()
+
+    # Simulation (autopilot) loop
+    def run(self):
+        clock = pygame.time.Clock()
+
+        while self.running:
+            self.tick()
+
+            # Limit simulation to 10 FPS
+            clock.tick(10)
+
     def tick(self):
         # Update autopilot
         status = self.autopilot.update()
@@ -119,7 +149,7 @@ class Simulation:
                     self.autopilot.knowledge.state_machine.park()
 
                     # Stop autopilot
-                    # self.running = False
+                    self.running = False
                 else:
                     # Set next destination
                     self.autopilot.set_destination(waypoint)
