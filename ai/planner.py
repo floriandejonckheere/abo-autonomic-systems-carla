@@ -47,7 +47,6 @@ class Planner(object):
                 self.navigator.plan()
 
             # Drive to new waypoint
-            # FIXME: vehicle will end up in an infinite loop if the destination is not changed from outside
             self.drive()
         elif state == StateMachine.waiting:
             # If the traffic light turned green, transition to driving

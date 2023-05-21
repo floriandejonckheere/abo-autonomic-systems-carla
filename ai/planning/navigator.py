@@ -51,7 +51,6 @@ class Navigator:
             return self.path[0]
 
     # Total distance of the current route plan
-    # TODO: precalculate distances between waypoints when planning
     def distance(self):
         return sum([self.path[i].distance(self.path[i + 1]) for i in range(len(self.path) - 1)])
 
