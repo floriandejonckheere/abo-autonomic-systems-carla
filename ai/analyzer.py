@@ -98,6 +98,6 @@ class Analyzer(object):
 
         # Check if obstacle is on left or right side
         self.knowledge.update(
-            obstacle_left=self.knowledge.proximity_left.average() < 1.5,
-            obstacle_right=self.knowledge.proximity_right.average() < 1.5
+            obstacle_left=self.knowledge.proximity_left.average() < 1.25,
+            obstacle_right=self.knowledge.proximity_right.average() < 1.25
         )
