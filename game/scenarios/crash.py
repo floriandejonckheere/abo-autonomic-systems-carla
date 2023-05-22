@@ -4,14 +4,15 @@ from .scenario import Scenario
 
 import game.utils as utils
 
+from threading import Timer
+
 
 class Crash(Scenario):
     """Unavoidable collision with a vehicle."""
 
     WAYPOINTS = [
         carla.Location(42.5959, -4.3443, 1.8431),
-        carla.Location(22, -4, 1.8431),
-        carla.Location(9, -22, 1.8431),
+        carla.Location(-30, 167, 1.8431),
     ]
 
     def setup(self):
@@ -28,12 +29,9 @@ class Crash(Scenario):
                 return
             print('Collision with: ', event.other_actor.type_id)
 
-            if event.other_actor.type_id.split('.')[0] == 'vehicle':
-                print("Test FAILED")
-
             sensor.destroy()
             kamikaze.destroy()
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
-        kamikaze.apply_control(carla.VehicleControl(throttle=0.40))
+        Timer(3.2, kamikaze.apply_control, [carla.VehicleControl(throttle=1.0)]).start()
