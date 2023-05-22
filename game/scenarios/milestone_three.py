@@ -4,6 +4,8 @@ from .scenario import Scenario
 
 import game.utils as utils
 
+from threading import Timer
+
 
 class MilestoneThree(Scenario):
     """Straight towards the roundabout, avoid the kamikaze, then enter and drive a bit."""
@@ -36,4 +38,4 @@ class MilestoneThree(Scenario):
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
-        kamikaze.apply_control(carla.VehicleControl(throttle=1.0, steer=-0.07))
+        Timer(2.5, kamikaze.apply_control, [carla.VehicleControl(throttle=1.0, steer=-0.07)]).start()
