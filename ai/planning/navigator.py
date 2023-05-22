@@ -116,7 +116,7 @@ class Navigator:
             location = carla.Location(x=xi, y=yi, z=zi)
 
             # Find the closest waypoint location on the map (except for the last few waypoints)
-            if not (exact and i > len(interpolated) - 5):
+            if not (exact and i > len(interpolated) - 10):
                 location = self.map.get_waypoint(location).transform.location
 
             # Add it to the path
