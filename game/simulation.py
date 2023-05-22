@@ -41,7 +41,7 @@ class Simulation:
         first = self.scenario.next_waypoint()
 
         # First destination is second waypoint
-        second = self.scenario.next_waypoint().location
+        second = self.scenario.next_waypoint()
 
         if first is None or second is None:
             raise Exception('Scenario needs at least 2 waypoints')
@@ -50,10 +50,10 @@ class Simulation:
         if self.scenario.use_spawnpoint:
             start = self.get_start_point(first.location)
         else:
-            start = first
+            start = self.world.get_map().get_waypoint(first.location).transform
 
         # Spawn vehicle
-        vehicle = utils.try_spawn_random_vehicle_at(self.world, start.transform)
+        vehicle = utils.try_spawn_random_vehicle_at(self.world, start)
 
         if vehicle is None:
             raise Exception('Could not spawn vehicle')
@@ -65,7 +65,7 @@ class Simulation:
 
         # Set up autopilot
         self.autopilot = Autopilot(vehicle, self.debug, self.profile)
-        self.autopilot.set_destination(second)
+        self.autopilot.set_destination(second.location)
 
         # Set up callback for destination arrival
         self.autopilot.knowledge.state_machine.add_observer(self)
@@ -131,7 +131,7 @@ class Simulation:
                 td = d
                 index = ti
         start_point = points[index]
-        return self.world.get_map().get_waypoint(start_point.location)
+        return self.world.get_map().get_waypoint(start_point.location).transform
 
     def after_transition(self, event, source, target):
         if target is self.autopilot.knowledge.state_machine.arrived:
