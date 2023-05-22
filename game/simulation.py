@@ -97,6 +97,9 @@ class Simulation:
             # Limit simulation to 10 FPS
             clock.tick(10)
 
+        # After simulation is done, reset vehicle control
+        self.autopilot.reset()
+
     def tick(self):
         # Update autopilot
         status = self.autopilot.update()

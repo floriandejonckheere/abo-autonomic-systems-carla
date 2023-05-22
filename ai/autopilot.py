@@ -1,5 +1,7 @@
 import time
 
+from ai.carla import carla
+
 from .monitor import Monitor
 from .analyzer import Analyzer
 from .planner import Planner
@@ -52,6 +54,9 @@ class Autopilot(object):
 
     def destroy(self):
         self.monitor.destroy()
+
+    def reset(self):
+        self.vehicle.apply_control(carla.VehicleControl())
 
     # Main interaction point with autopilot - set the destination, so that it does the rest
     def set_destination(self, destination):
