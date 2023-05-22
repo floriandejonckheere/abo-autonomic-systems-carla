@@ -69,7 +69,7 @@ class Graph:
                     parallel_segments[(u.road_id, v.road_id)] = segments
             else:
                 # Add edge to graph
-                self.graph.add_edge(u, v, weight=distance)
+                self.graph.add_edge(u, v, weight=u.transform.location.distance(v.transform.location))
 
                 if parallel.get((u.road_id, v.road_id)):
                     # A parallel edge already exists, add lane change edges (if allowed)
@@ -88,7 +88,7 @@ class Graph:
     # Return the shortest path between two waypoints in the graph
     def shortest_path(self, source, destination):
         # Find the ending waypoint on the edge of the current lane
-        source = next(u for (u, v) in self.topology if u.road_id == source.road_id and u.lane_id == source.lane_id)
+        source = next(v for (u, v) in self.topology if u.road_id == source.road_id and u.lane_id == source.lane_id)
 
         # Find the starting waypoint on the edge of the destination lane
         destination = next(u for (u, v) in self.topology if v.road_id == destination.road_id and v.lane_id == destination.lane_id)
