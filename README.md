@@ -1,5 +1,7 @@
 # Autonomic Systems and Software (IT00CE05)
 
+[Florian Dejonckheere](mailto:florian.dejonckheere@abo.fi) (2300437)
+
 This repository contains the CARLA simulation project for the Autonomic Systems and Software course (IT00CE05).
 
 ## Setup
