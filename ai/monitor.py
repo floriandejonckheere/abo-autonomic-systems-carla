@@ -40,7 +40,7 @@ class Monitor(object):
 
         # Proximity sensors
         bp = world.get_blueprint_library().find('sensor.camera.depth')
-        bp.set_attribute('sensor_tick', '0.1')
+        bp.set_attribute('sensor_tick', '0.01')
         bp.set_attribute('image_size_x', '160')
         bp.set_attribute('image_size_y', '120')
         bp.set_attribute('fov', '25')

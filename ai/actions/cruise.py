@@ -5,7 +5,7 @@ from .action import Action
 
 
 class Cruise(Action):
-    """Stop-and-go based on proximity and speed."""
+    """Stop-and-go based on proximity."""
 
     def __init__(self, proximity, speed):
         self.proximity = proximity
@@ -15,8 +15,8 @@ class Cruise(Action):
         self.x_proximity = np.arange(0, 1000, 1)
 
         # Fuzzy membership functions
-        self.prox_lo = fz.zmf(self.x_proximity, 0, 40)
-        self.prox_hi = fz.smf(self.x_proximity, 20, 40)
+        self.prox_lo = fz.zmf(self.x_proximity, 0, 80)
+        self.prox_hi = fz.smf(self.x_proximity, 30, 100)
 
     def apply(self, control):
         # Set throttle and brake
