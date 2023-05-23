@@ -157,5 +157,5 @@ class Simulation:
                     # Set next destination
                     self.autopilot.set_destination(waypoint.location)
         elif target is self.autopilot.knowledge.state_machine.waiting:
-            # Turn traffic light green after 2 seconds
-            Timer(2, self.autopilot.vehicle.get_traffic_light().set_state, [carla.TrafficLightState.Green]).start()
+            # Turn traffic light green after a couple of seconds
+            Timer(4, self.autopilot.vehicle.get_traffic_light().set_state, [carla.TrafficLightState.Green]).start()
