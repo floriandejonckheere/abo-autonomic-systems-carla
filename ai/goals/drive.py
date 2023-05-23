@@ -26,5 +26,5 @@ class Drive(Goal):
             actions.Steer(self.knowledge.rotation.get_forward_vector(), target),
 
             # Stop-and-go in dense traffic
-            actions.Cruise(self.knowledge.proximity, self.knowledge.speed),
+            actions.Cruise(self.knowledge.proximity),
         ]

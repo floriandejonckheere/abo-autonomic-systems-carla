@@ -7,9 +7,8 @@ from .action import Action
 class Cruise(Action):
     """Stop-and-go based on proximity."""
 
-    def __init__(self, proximity, speed):
+    def __init__(self, proximity):
         self.proximity = proximity
-        self.speed = speed
 
         # Universe variables
         self.x_proximity = np.arange(0, 1000, 1)
