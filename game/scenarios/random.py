@@ -7,7 +7,6 @@ from ai.carla import carla
 from .scenario import Scenario
 
 
-# TODO: Make an 'intelligent' list of targets where cars could go (has annotated waypoints so you could use that)
 class Random(Scenario):
     """Random scenario."""
 
