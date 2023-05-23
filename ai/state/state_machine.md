@@ -1,4 +1,7 @@
-# State machine
+
+\
+\
+\# State machine
 
 This file describes the vehicle state machine.
 It uses [MermaidJS](https://mermaid.js.org/) to display the diagram.
@@ -23,6 +26,7 @@ stateDiagram-v2
     Driving --> Crashed: crash
     Idle --> Crashed: crash
     Healing --> Crashed: crash
+    Waiting --> Crashed: crash
 
     Driving --> Healing: heal
 
