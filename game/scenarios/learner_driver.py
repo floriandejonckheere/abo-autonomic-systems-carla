@@ -13,8 +13,7 @@ class LearnerDriver(Scenario):
 
     WAYPOINTS = [
         carla.Location(42.5959, -4.3443, 1.8431),
-        carla.Location(22, -4, 1.8431),
-        carla.Location(9, -22, 1.8431),
+        carla.Location(-30, 167, 1.8431),
     ]
 
     def __init__(self, world):

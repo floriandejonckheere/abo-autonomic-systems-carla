@@ -38,4 +38,4 @@ class MilestoneThree(Scenario):
 
         sensor.listen(lambda event: _on_collision(kamikaze, event))
 
-        Timer(2.5, kamikaze.apply_control, [carla.VehicleControl(throttle=1.0, steer=-0.07)]).start()
+        Timer(1, kamikaze.apply_control, [carla.VehicleControl(throttle=1.0, steer=-0.07)]).start()
