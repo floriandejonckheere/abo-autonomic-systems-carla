@@ -4,7 +4,17 @@ This repository contains the CARLA simulation project for the Autonomic Systems 
 
 ## Demonstration
 
-The presentation can be found in [presentation.pdf](presentation.pdf).
+The presentation can be found in [presentation.](presentation.pdf).
+
+Several short demonstration video's of various scenario's were recorded:
+
+- [Milestone One](demo/milestone_one.mp4): drive to the roundabout, stop, then enter and go around
+- [Milestone Two](demo/milestone_two.mp4): full simulation of pathfinding towards a destination
+- [Milestone Three](demo/milestone_three.mp4): collision avoidance
+- [Crash](demo/crash.mp4): crash detection and recovery
+- [Learner driver](demo/learner_driver.mp4): traffic observation
+- [Stop and go](demo/stop_and_go.mp4): stop and go in dense traffic
+- [Traffic lights](demo/traffic_lights.mp4): traffic light detection
 
 ## Setup
 
