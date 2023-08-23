@@ -2,6 +2,10 @@
 
 This repository contains the CARLA simulation project for the Autonomic Systems and Software course (IT00CE05).
 
+## Demonstration
+
+The presentation can be found in [presentation.pdf](presentation.pdf).
+
 ## Setup
 
 Download the CARLA simulator v0.9.4 from [Github](https://github.com/carla-simulator/carla/releases/tag/0.9.4) and extract the files into the repository directory.
